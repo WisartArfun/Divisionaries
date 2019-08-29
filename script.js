@@ -2,12 +2,18 @@ var c = document.getElementById('game-canvas');
 c.height = 500;
 c.width = 500;
 
-image_size = 50;
+field_size = 50;
+// field_types = {
+//     ground: "graphics/empty.jpg",
+//     king: "graphics/crown.jpg",
+// }
 
 var ctx = c.getContext('2d');
 
+var map;
 
-function sprite(src, x_pos, y_pos, width, height) { //(options) {
+
+function sprite(src, x_pos, y_pos, width, height) {
     var that = {};
 
     that.image = new Image();
@@ -23,25 +29,92 @@ function sprite(src, x_pos, y_pos, width, height) { //(options) {
         ctx.drawImage(that.image, that.x_pos, that.y_pos, that.width, that.height);
     }
 
+    that.change_src = function(src) {
+        that.src = src;
+        that.image.src = that.src;
+    };
+
     that.image.onload = function() {
         that.render(that.x_pos, that.y_pos);
-    }
+    };
 
     return that;
 }
 
-var map = [];
-for (i = 0; i < c.width; i += image_size) {
-    var col = [];
-    for (j = 0; j < c.height; j += image_size) {
-        obj = sprite("graphics/empty.jpg", i, j, image_size, image_size);
-        col.push(obj);
+function field(x_num, y_num, field_size) {
+    var that = {};
+
+    that.x_num = x_num;
+    that.y_num = y_num;
+    that.field_size = field_size;
+    that.x_pos = that.x_num * that.field_size;
+    that.y_pos = that.y_num * that.field_size;
+
+    that.update_data = function() {
+        that.x_pos = that.x_num * that.field_size;
+        that.y_pos = that.y_num * that.field_size;
     }
-    map.push(col);
+
+    that.change_field_type = function(type) {
+        // src = map.get_type
+        src = map_ttt.get_type(type); // PROBLEM HERE
+        that.sprite.change_src(src);
+        // that.sprite.change_src(field_types[type]);
+    }
+
+    that.sprite = sprite("", that.x_pos, that.y_pos, that.field_size, that.field_size);
+    
+    return that;
 }
 
-map[0][3].image.src = "graphics/crown.jpg";
-map[8][9].image.src = "graphics/crown.jpg";
+function map(field_canvas) { // (field_canvas) {
+    var that = {};
+    
+    that.canvas = field_canvas; // change ctx and canvas path
+    that.field_types = {
+        ground: "graphics/empty.jpg",
+        king: "graphics/crown.jpg",
+    };
+    that.fields = [];
+
+    that.get_type = function(type) {
+        return that.field_types[type];
+    };
+
+    for (i = 0; i < c.width/field_size; i+=1) {
+        var col = [];
+        for (j = 0; j < c.height/field_size; j+=1) {
+            // obj = sprite("graphics/empty.jpg", i, j, image_size, image_size);
+            obj = field(i, j, field_size);
+            // obj.change_field_type()
+            col.push(obj);
+        }
+        that.fields.push(col);
+    }
+    // that.canvas = field_canvas;
+
+    return that;
+}
+
+map = map();
+
+// var map = [];
+// for (i = 0; i < c.width/field_size; i+=1) {
+//     var col = [];
+//     for (j = 0; j < c.height/field_size; j+=1) {
+//         // obj = sprite("graphics/empty.jpg", i, j, image_size, image_size);
+//         obj = field(i, j, field_size);
+//         col.push(obj);
+//     }
+//     map.push(col);
+// }
+
+// map[0][3].sprite.change_src("graphics/crown.jpg");
+// map[0][3].change_field_type('king');
+
+// map[0][3].change_src("graphics/crown.jpg");
+// map[8][9].change_src("graphics/crown.jpg");
+map.fields[0][2].change_field_type('king');
 
 // while (true) {
 
