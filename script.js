@@ -3,18 +3,26 @@ c.height = 500;
 c.width = 500;
 
 field_size = 50;
-// field_types = {
-//     ground: "graphics/empty.jpg",
-//     king: "graphics/crown.jpg",
-// }
 
 var ctx = c.getContext('2d');
 
-var map;
+// var map;
 
+class GraphicMapper {
+    static get_src(type, mapping = 'default') {
+        let field_types = {
+            default: {
+                ground: "graphics/empty.jpg",
+                king: "graphics/crown.jpg",
+            },
+        };
+
+        return field_types[mapping][type];
+    }
+}
 
 function sprite(src, x_pos, y_pos, width, height) {
-    var that = {};
+    let that = {};
 
     that.image = new Image();
     that.image.src = src;
@@ -23,18 +31,18 @@ function sprite(src, x_pos, y_pos, width, height) {
     that.width = width;
     that.height = height;
 
-    that.render = function(x_pos, y_pos) {
+    that.render = (x_pos, y_pos) => {
         that.x_pos = x_pos;
         that.y_pos = y_pos;
         ctx.drawImage(that.image, that.x_pos, that.y_pos, that.width, that.height);
     }
 
-    that.change_src = function(src) {
+    that.change_src = (src) => {
         that.src = src;
         that.image.src = that.src;
     };
 
-    that.image.onload = function() {
+    that.image.onload = () => {
         that.render(that.x_pos, that.y_pos);
     };
 
@@ -57,35 +65,33 @@ function field(x_num, y_num, field_size) {
 
     that.change_field_type = function(type) {
         // src = map.get_type
-        src = map_ttt.get_type(type); // PROBLEM HERE
+        // src = map_ttt.get_type(type); // PROBLEM HERE
+        src = GraphicMapper.get_src(type);
         that.sprite.change_src(src);
         // that.sprite.change_src(field_types[type]);
     }
 
     that.sprite = sprite("", that.x_pos, that.y_pos, that.field_size, that.field_size);
-    
+
     return that;
 }
 
 function map(field_canvas) { // (field_canvas) {
     var that = {};
-    
+
     that.canvas = field_canvas; // change ctx and canvas path
-    that.field_types = {
-        ground: "graphics/empty.jpg",
-        king: "graphics/crown.jpg",
-    };
     that.fields = [];
 
     that.get_type = function(type) {
         return that.field_types[type];
     };
 
-    for (i = 0; i < c.width/field_size; i+=1) {
+    for (i = 0; i < c.width / field_size; i += 1) {
         var col = [];
-        for (j = 0; j < c.height/field_size; j+=1) {
+        for (j = 0; j < c.height / field_size; j += 1) {
             // obj = sprite("graphics/empty.jpg", i, j, image_size, image_size);
             obj = field(i, j, field_size);
+            obj.change_field_type(GraphicMapper.get_src('ground'));
             // obj.change_field_type()
             col.push(obj);
         }
