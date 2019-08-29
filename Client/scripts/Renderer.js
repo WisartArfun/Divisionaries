@@ -144,7 +144,6 @@ class Map {
 
     // FUNCTION
     update_single_state(x, y, single_state, field_size = this.field_size) { // change field size when selected? only state should affect map???
-        console.log(single_state);
         this.fields[y][x].update_state(single_state);
     }
 }
