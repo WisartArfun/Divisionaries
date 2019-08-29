@@ -1,21 +1,33 @@
 import { Map } from './Renderer.js';
 
+class State {
+    constructor(x_size, y_size, canvas) {
+        this.state = {};
+        this.state.x_fields = x_size;
+        this.state.y_fields = y_size;
 
+        let col = new Array(this.state.x_fields);
+        col.fill({ type: 'fog' });
+        this.state.fields = new Array(this.state.y_fields);
+        this.state.fields.fill(col);
 
-let state = {}
-state.x_fields = 10;
-state.y_fields = 10;
-state.fields = []
-
-for (let y = 0; y < state.y_fields; y += 1) {
-    let col = [];
-    for (let x = 0; x < state.x_fields; x += 1) {
-        let field = {};
-        field.type = 'fog';
-        col.push(field);
+        this.map = new Map(canvas, this.state);
     }
-    state.fields.push(col);
+
+    change(change) {
+        let x = change.x;
+        let y = change.y;
+        let new_state = change.state;
+        this.map.update_single_state(x, y, new_state);
+    }
 }
+
+/////////
+// DONE OUTSIDE
+/////////
+
+let canvas = document.getElementById('game-canvas');
+let state_interpreter = new State(10, 10, canvas);
 
 let kings = [
     [1, 2],
@@ -27,23 +39,5 @@ for (let i in kings) {
     let k = kings[i];
     let x = k[0];
     let y = k[1];
-    state.fields[y][x].type = 'king';
+    state_interpreter.change({ x: x, y: y, state: { type: 'king' } });
 }
-
-///// called from outside
-
-let canvas = document.getElementById('game-canvas');
-
-let field_size = 20;
-let map = new Map(canvas, state, field_size);
-
-function timeout() {
-    setTimeout(function() {
-        field_size -= 1;
-        // map.update(state, field_size);
-        map.update_size(field_size);
-        timeout();
-    }, 250);
-}
-
-// timeout()

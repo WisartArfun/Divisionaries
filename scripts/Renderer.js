@@ -98,7 +98,7 @@ class Field {
 // MAP  - collection of logical fields and meta data management
 class Map {
     // CONSTRUCTOR  - initializes all the fields, sets content, sets transform
-    constructor(canvas, state, field_size) {
+    constructor(canvas, state, field_size = 30) { // is state even needed or only implement changes??? // field_size ???
         this.canvas = canvas;
         let ctx = this.canvas.getContext("2d");
 
