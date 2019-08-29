@@ -8,6 +8,9 @@ class GraphicMapper {
             },
         };
 
-        return field_types[mapping][type];
+        return field_types[mapping][type]; // [WARNING] what to return when nothing? default value?
     }
 }
+
+const _GraphicMapper = GraphicMapper;
+export { _GraphicMapper as GraphicMapper };
