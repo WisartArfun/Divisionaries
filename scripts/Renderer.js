@@ -1,25 +1,13 @@
-class GraphicMapper {
-    static get_src(type, mapping = 'default') {
-        let field_types = {
-            default: {
-                ground: "graphics/empty.jpg",
-                king: "graphics/crown.jpg",
-                fog: "graphics/fog.jpg",
-            },
-        };
-
-        return field_types[mapping][type];
-    }
-}
+import { GraphicMapper } from './GraphicMapping.js';
 
 class Sprite {
-    constructor(src, x_pos, y_pos, width, height, ctx) {   
+    constructor(src, x_pos, y_pos, width, height, ctx) {
         this.x_pos = x_pos;
         this.y_pos = y_pos;
         this.width = width;
         this.height = height;
         this.ctx = ctx;
-        
+
         this.image = new Image();
         this.image.src = src;
         this.image.onload = () => {
@@ -118,13 +106,13 @@ class Map {
 ///////
 
 state = {}
-state.x_fields = 100;
-state.y_fields = 100;
+state.x_fields = 10;
+state.y_fields = 10;
 state.fields = []
 
-for (let i=0; i<state.x_fields; i += 1) {
+for (let i = 0; i < state.x_fields; i += 1) {
     let col = [];
-    for (let i=0; i<state.x_fields; i += 1) {
+    for (let i = 0; i < state.x_fields; i += 1) {
         let field = {};
         field.type = 'fog';
         col.push(field);
@@ -132,7 +120,12 @@ for (let i=0; i<state.x_fields; i += 1) {
     state.fields.push(col);
 }
 
-let kings = [[1, 2], [5, 8], [8, 9], [8, 1]];
+let kings = [
+    [1, 2],
+    [5, 8],
+    [8, 9],
+    [8, 1]
+];
 for (i in kings) {
     let k = kings[i];
     let x = k[0];
@@ -154,20 +147,20 @@ map = new Map(canvas, state, field_size);
 
 // while (true) {
 // sleep(2000).then(() =>{
-    // field_size -= 5;
-    // console.log(field_size);
-    // map.update(state, field_size);
+// field_size -= 5;
+// console.log(field_size);
+// map.update(state, field_size);
 // });
 function timeout() {
-    setTimeout(function () {
+    setTimeout(function() {
         field_size -= 1;
         console.log(field_size);
         map.update(state, field_size);
         timeout();
-    },250);
+    }, 250);
 }
 
-timeout();
+// timeout();
 // }
 
 // map.fields[5][3].change_field_type('fog');
@@ -175,4 +168,4 @@ timeout();
 // Map = new Map(canvas, 10, 10, 80);
 // Map.fields[0][2].change_field_type('king');
 // Map.fields[8][7].change_field_type('king');
-// Map.fields[5][4].change_field_type('fog');
+// Map.fields[5][4].change_field_type('fog')
