@@ -1,0 +1,2 @@
+cargo:rustc-cfg=syn_omit_await_from_token_macro
+cargo:rustc-cfg=syn_disable_nightly_tests

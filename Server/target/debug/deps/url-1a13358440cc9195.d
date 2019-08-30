@@ -1,0 +1,13 @@
+C:\xampp\htdocs\divisionaries\Server\target\debug\deps\liburl-1a13358440cc9195.rlib: C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\lib.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\host.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\origin.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\parser.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\path_segments.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\query_encoding.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\slicing.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\form_urlencoded.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\quirks.rs
+
+C:\xampp\htdocs\divisionaries\Server\target\debug\deps\url-1a13358440cc9195.d: C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\lib.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\host.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\origin.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\parser.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\path_segments.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\query_encoding.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\slicing.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\form_urlencoded.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\quirks.rs
+
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\lib.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\host.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\origin.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\parser.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\path_segments.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\query_encoding.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\slicing.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\form_urlencoded.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.0\src\quirks.rs:

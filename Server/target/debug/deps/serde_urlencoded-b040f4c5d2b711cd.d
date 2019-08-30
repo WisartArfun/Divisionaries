@@ -1,0 +1,11 @@
+C:\xampp\htdocs\divisionaries\Server\target\debug\deps\libserde_urlencoded-b040f4c5d2b711cd.rlib: C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\lib.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\de.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\ser\mod.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\ser\key.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\ser\pair.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\ser\part.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\ser\value.rs
+
+C:\xampp\htdocs\divisionaries\Server\target\debug\deps\serde_urlencoded-b040f4c5d2b711cd.d: C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\lib.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\de.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\ser\mod.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\ser\key.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\ser\pair.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\ser\part.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\ser\value.rs
+
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\lib.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\de.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\ser\mod.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\ser\key.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\ser\pair.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\ser\part.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\serde_urlencoded-0.6.1\src\ser\value.rs:
