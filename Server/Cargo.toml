@@ -5,9 +5,9 @@ authors = ["WisartArfun <daro.daro15@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-# ws = "0.9.0"
-# rand = "*"
-# actix = "0.7"
-actix-web = "1.0.0"
-actix-http = "*"
-mime = "*"
+actix = "0.8.3"
+actix-web = "1.0.7"
+actix-http = "0.2.9"
+mime = "0.3.13"
+actix-web-actors = "1.0.2"
+tungstenite = "0.9.1"

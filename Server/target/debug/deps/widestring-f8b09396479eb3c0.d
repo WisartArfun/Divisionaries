@@ -1,0 +1,11 @@
+C:\xampp\htdocs\divisionaries\Server\target\debug\deps\widestring-f8b09396479eb3c0.rmeta: C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\lib.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\widestring.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\widecstring.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\platform\mod.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\platform\windows.rs
+
+C:\xampp\htdocs\divisionaries\Server\target\debug\deps\libwidestring-f8b09396479eb3c0.rlib: C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\lib.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\widestring.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\widecstring.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\platform\mod.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\platform\windows.rs
+
+C:\xampp\htdocs\divisionaries\Server\target\debug\deps\widestring-f8b09396479eb3c0.d: C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\lib.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\widestring.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\widecstring.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\platform\mod.rs C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\platform\windows.rs
+
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\lib.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\widestring.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\widecstring.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\platform\mod.rs:
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\widestring-0.2.2\src\platform\windows.rs:

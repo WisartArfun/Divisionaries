@@ -1,6 +1,6 @@
 // let net = require('net');
 
-var socket = new WebSocket('ws://localhost:8000/ws');
+var socket = new WebSocket('ws://localhost:9001');
 
 // Open the socket
 socket.onopen = function(event) {
@@ -11,6 +11,7 @@ socket.onopen = function(event) {
     // Listen for messages
     socket.onmessage = function(event) {
         console.log('Client received a message', event);
+        socket.send(event.data);
     };
 
     // Listen for socket closes
@@ -20,5 +21,7 @@ socket.onopen = function(event) {
 
     // To close the socket....
     //socket.close()
+
+    socket.send("hello");
 
 };
