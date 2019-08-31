@@ -1,0 +1,39 @@
+// SOCKET
+struct Ws { // HTTP ACTOR
+    id: i32,
+    // count: Rc<Cell<u32>>,
+}
+
+impl Actor for Ws {
+    type Context = ws::WebsocketContext<Self>;
+}
+
+/// Handler for ws::Message message
+impl StreamHandler<ws::Message, ws::ProtocolError> for Ws {
+    fn handle(&mut self, msg: ws::Message, ctx: &mut Self::Context) {
+        match msg {
+            ws::Message::Ping(msg) => ctx.pong(&msg),
+            ws::Message::Text(text) => {
+                println!("message from Client #{}: {}", self.id, text);
+                ctx.text(text)
+            },
+            ws::Message::Binary(bin) => ctx.binary(bin),
+            _ => (),
+        }
+    }
+}
+
+
+fn ws_index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
+    let resp;
+    let mut ws;
+    unsafe { // GET RID OF THIS
+        ws = Ws {id: CLIENT_NUM};
+        let ws2 = Ws{id: CLIENT_NUM};
+        resp = ws::start(ws2, &req, stream);
+        // CLIENT_NUM += 1;
+    }
+    // ws.text("hi");
+    println!("{:?}", ws);
+    resp
+}
