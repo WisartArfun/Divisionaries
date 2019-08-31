@@ -39,5 +39,5 @@ class State {
 //     state_interpreter.update({ x: x, y: y, state: { type: 'king' } });
 // }
 
-// const _State = State;
-// export { _State as State };
+const _State = State;
+export { _State as State };
