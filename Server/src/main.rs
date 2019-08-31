@@ -1,6 +1,7 @@
 use std::net::TcpListener;
 use std::thread::spawn;
 use tungstenite::server::accept;
+use tungstenite;
 
 mod http_server;
 
@@ -9,7 +10,7 @@ fn main() -> std::io::Result<()> {
     http_game_server.start();
 
     let server = TcpListener::bind("127.0.0.1:9001").unwrap();
-    for stream in server.incoming() {
+    for stream in server.incoming() { // handle connectionclosed
         println!("hello there");
         spawn (move || {
             // let mut websocket = accept(stream.unwrap(), None).unwrap();
@@ -19,7 +20,8 @@ fn main() -> std::io::Result<()> {
 
                 // We do not want to send back ping/pong messages.
                 if msg.is_binary() || msg.is_text() {
-                    websocket.write_message(msg).unwrap();
+                    // websocket.write_message(msg).unwrap();
+                    websocket.write_message(tungstenite::Message::Text("21020311".to_string())).unwrap(); // nicer
                 }
             }
         });

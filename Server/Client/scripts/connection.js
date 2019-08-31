@@ -1,4 +1,11 @@
-// let net = require('net');
+import { ProtocolInterpreter } from './ProtocolInterpreter.js';
+import { State } from './State.js';
+
+let canvas = document.getElementById('game-canvas');
+let state = new State(10, 10, canvas);
+let inp = new ProtocolInterpreter(state);
+
+// inp.translate_packet([2, 1, 0, 2, 0, 3, 1, 1]);
 
 var socket = new WebSocket('ws://localhost:9001');
 
@@ -11,7 +18,9 @@ socket.onopen = function(event) {
     // Listen for messages
     socket.onmessage = function(event) {
         console.log('Client received a message', event);
-        socket.send(event.data);
+        console.log(event.data.split(''));
+        inp.translate_packet(event.data.split(''));
+        // socket.send(event.data);
     };
 
     // Listen for socket closes

@@ -27,12 +27,15 @@ class ProtocolInterpreter {
     }
 }
 
+const _ProtocolInterpreter = ProtocolInterpreter;
+export { _ProtocolInterpreter as ProtocolInterpreter };
+
 ///////
 // OUTSIDE
 ///////
 
-let canvas = document.getElementById('game-canvas');
-let state = new State(10, 10, canvas);
-let inp = new ProtocolInterpreter(state);
+// let canvas = document.getElementById('game-canvas');
+// let state = new State(10, 10, canvas);
+// let inp = new ProtocolInterpreter(state);
 
-inp.translate_packet([2, 1, 0, 2, 0, 3, 1, 1]);
+// inp.translate_packet([2, 1, 0, 2, 0, 3, 1, 1]);
