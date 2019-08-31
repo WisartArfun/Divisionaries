@@ -1,102 +1,77 @@
 use std::fs::File;
 use std::io::Read;
 
-use actix_web::{web, App, HttpResponse, HttpServer, Responder};
-// use actix_http::http::header::ContentType;
-// use actix_http::Response;
-// use mime::TEXT_HTML;
-use actix_http::{http, Request, Response};
+use actix_web::{App, Responder, HttpServer, web}; // httpResponse vs Response
+use actix_http::{http, Response};
 
-fn index() -> impl Responder {
-    match File::open("Client/index.html") {
-        Ok(mut file) => {
-            let mut buf = String::new();
-            file.read_to_string(&mut buf).unwrap();
-            
-            HttpResponse::Ok().body(buf)
-        },
-        Err(_) => {
-            HttpResponse::Ok().body("Hello world!")
-        }
-    }
-}
 
-fn protocol_interpreter() -> impl Responder {
-    match File::open("Client/scripts/ProtocolInterpreter.js") {
+// GET FILE AND SET MIME
+fn get_file(src: &str, mime: &str) -> impl Responder {
+    match File::open(src) { // add path management // check if vec is slower than string => seperate depending on mime
         Ok(mut file) => {
-            let mut buf = String::new();
-            file.read_to_string(&mut buf).unwrap();
+            // let path = Path::new(&file_name); // if !path.exists() { //     return String::from("Not Found!").into(); // }
+            let mut file_content = Vec::new();
+            file.read_to_end(&mut file_content).expect("Unable to read");
+            // let mut buf = String::new(); // file.read_to_string(&mut buf).unwrap();
 
             Response::Ok()
-            // .header("X-TEST", "value")
-            .header(http::header::CONTENT_TYPE, "application/javascript")
-            .body(buf)
+            .header(http::header::CONTENT_TYPE, mime)
+            .body(file_content)
         },
-        Err(_) => {
-            HttpResponse::Ok().body("Hello world!")
+        Err(err) => {
+            println!("Error: {:?}", err);
+            Response::Ok().body("Hello world!")
         }
     }
 }
 
-fn state() -> impl Responder {
-    match File::open("Client/scripts/State.js") {
-        Ok(mut file) => {
-            let mut buf = String::new();
-            file.read_to_string(&mut buf).unwrap();
-
-            Response::Ok()
-            // .header("X-TEST", "value")
-            .header(http::header::CONTENT_TYPE, "application/javascript")
-            .body(buf)
-        },
-        Err(_) => {
-            HttpResponse::Ok().body("Hello world!")
-        }
-    }
+// HTML
+fn get_index() -> impl Responder {
+    get_file("Client/index.html", "text/html") // correct?
 }
 
-fn renderer() -> impl Responder {
-    match File::open("Client/scripts/Renderer.js") {
-        Ok(mut file) => {
-            let mut buf = String::new();
-            file.read_to_string(&mut buf).unwrap();
-
-            Response::Ok()
-            // .header("X-TEST", "value")
-            .header(http::header::CONTENT_TYPE, "application/javascript")
-            .body(buf)
-        },
-        Err(_) => {
-            HttpResponse::Ok().body("Hello world!")
-        }
-    }
+// JAVASCRIPT
+fn get_protocol_interpreter() -> impl Responder {
+    get_file("Client/scripts/ProtocolInterpreter.js", "application/javascript")
 }
 
-fn graphic_mapping() -> impl Responder {
-    match File::open("Client/scripts/GraphicMapping.js") {
-        Ok(mut file) => {
-            let mut buf = String::new();
-            file.read_to_string(&mut buf).unwrap();
-
-            Response::Ok()
-            // .header("X-TEST", "value")
-            .header(http::header::CONTENT_TYPE, "application/javascript")
-            .body(buf)
-        },
-        Err(_) => {
-            HttpResponse::Ok().body("Hello world!")
-        }
-    }
+fn get_state() -> impl Responder {
+    get_file("Client/scripts/State.js", "application/javascript")
 }
 
+fn get_renderer() -> impl Responder {
+    get_file("Client/scripts/Renderer.js", "application/javascript")
+}
+
+fn get_graphic_mapping() -> impl Responder {
+    get_file("Client/scripts/GraphicMapping.js", "application/javascript")
+}
+
+// GRAPHICS
+fn get_crown() -> impl Responder {
+    get_file("Client/graphics/crown.jpg", "image/jpeg")
+}
+
+fn get_fog() -> impl Responder {
+    get_file("Client/graphics/fog.jpg", "image/jpeg")
+}
+
+fn get_empty() -> impl Responder {
+    get_file("Client/graphics/empty.jpg", "image/jpeg")
+}
+
+// MAIN
 fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
-        App::new()
-            .route("/", web::get().to(index))
-            .route("/Client/scripts/ProtocolInterpreter.js", web::get().to(protocol_interpreter))
-            .route("/Client/scripts/State.js", web::get().to(state))
-            .route("/Client/scripts/Renderer.js", web::get().to(renderer))
-            .route("/Client/scripts/GraphicMapping.js", web::get().to(graphic_mapping))
+        App::new() // only one handler for scripts, html, graphics?
+            .route("/", web::get().to(get_index))
+            .route("/Client/scripts/ProtocolInterpreter.js", web::get().to(get_protocol_interpreter))
+            .route("/Client/scripts/State.js", web::get().to(get_state))
+            .route("/Client/scripts/Renderer.js", web::get().to(get_renderer))
+            .route("/Client/scripts/GraphicMapping.js", web::get().to(get_graphic_mapping))
+            .route("/Client/graphics/crown.jpg", web::get().to(get_crown))
+            .route("/Client/graphics/fog.jpg", web::get().to(get_fog))
+            .route("/Client/graphics/king.jpg", web::get().to(get_empty))
     })
     .bind("127.0.0.1:8000")
     .unwrap()
@@ -105,106 +80,3 @@ fn main() -> std::io::Result<()> {
 
     Ok(())
 }
-
-
-
-
-
-
-
-
-
-
-
-
-// // extern crate ws;
-// // extern crate rand;
-// // extern crate mime_guess;
-
-// // use std::thread;
-// // use rand::Rng;
-// // use std::sync::mpsc;
-// use std::fs::File;
-// use std::io::Read;
-// // use std::fmt;
-// // use std::fmt::Debug;
-// use ws::{Handler, Sender, Message, Request, Response};
-// // use std::env::args;
-
-// #[derive(Clone)]
-// struct Server {
-//     out: Sender,
-//     name: String,
-//     number: usize,
-//     local_addr: String,
-// }
-
-// impl Handler for Server{
-
-//     fn on_request(&mut self, req: &Request) -> ws::Result<Response> {
-        
-//         println!("{})", req);
-//         match req.resource() {
-//             "/" => {
-
-//                 let mut buf = String::new();
-
-//                 File::open("Client/index.html").unwrap().read_to_string(&mut buf).unwrap();
-                
-//                 buf = buf.replace("<IP>", self.local_addr.as_str());
-                
-//                 let mut response = Response::new(200, "Ok", buf.as_bytes().into());
-//                 response.header_mut("Content-Type = application/javascript");
-
-//                 Ok(response)
-//             },
-//             "/ws" => Response::from_request(req),
-//             res => {
-
-                // match File::open(format!(".{}",res)) {
-                //     Ok(mut file) => {
-                //         let mut buf = String::new();
-
-                //         file.read_to_string(&mut buf).unwrap();
-                        
-                //         Ok(Response::new(200, "Ok", buf.into()))
-                //     },
-                //     Err(_) => {
-                //         Ok(Response::new(404,"Not Found", "404 - Not Found".into()))
-                //     }
-                // }
-//             }
-//         }
-//     }
-
-//     fn on_message(&mut self, msg: Message) -> ws::Result<()>{
-
-//         println!("received message: {}", msg);
-//         // self.out.send(format!("new_shift {}", newshift.clone())).expect("server was unable to send new_shift");
-
-//         self.out.broadcast(format!("[{}] {}<br>", self.name, msg))?;
-
-//         let msgs = msg.as_text().unwrap().split(" ").collect::<Vec<&str>>();
-//         match msgs.iter().nth(0) {
-//             Some(&cmd) => match cmd {
-//                 _ => {
-//                     Ok(())
-//                 }
-//             }
-//             ,
-//             None => {
-//                 Ok(())
-//             }
-//         }
-//     }
-// }
-
-// fn main() {
-//     let ip = "0.0.0.0:8000";
-//     ws::listen(&ip,|out| Server {
-//         out,
-//         name: "".into(),
-//         number: rand::random(),
-//         local_addr: ip.clone().to_string(),
-//     }).unwrap();
-// }
