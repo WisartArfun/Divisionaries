@@ -75,17 +75,23 @@ fn get_empty() -> impl Responder {
 pub struct GameHttpServer {
     ip: Arc<Mutex<String>>,
     port: Arc<Mutex<String>>,
+    running: bool,
+    pub handle: Option<thread::JoinHandle<std::io::Result<()>>>,
 }
 
 impl GameHttpServer {
     pub fn new<S>(ip: S, port: S) -> GameHttpServer where S: Into<String> {
-        GameHttpServer {ip: Arc::new(Mutex::new(ip.into())), port: Arc::new(Mutex::new(port.into()))}
+        GameHttpServer {ip: Arc::new(Mutex::new(ip.into())), port: Arc::new(Mutex::new(port.into())), running: false, handle: None}
     }
 
     pub fn start(&mut self) {
+        if self.running {return;}
+        self.running = true;
+
         let ip = self.ip.clone();
         let port = self.port.clone();
-        thread::spawn(move || -> std::io::Result<()> {
+
+        let handle = thread::spawn(move || -> std::io::Result<()> {
             HttpServer::new(|| {
                 App::new() // only one handler for scripts, html, graphics?
                     // INDEX
@@ -109,5 +115,7 @@ impl GameHttpServer {
 
             Ok(())
         });
+
+        self.handle = Some(handle);
     }
 }
