@@ -51,8 +51,12 @@ fn get_graphic_mapping() -> impl Responder {
     get_file("Client/scripts/GraphicMapping.js", "application/javascript")
 }
 
-fn get_connection() -> impl Responder {
-    get_file("Client/scripts/Connection.js", "application/javascript")
+fn get_game_connection() -> impl Responder {
+    get_file("Client/scripts/GameConnection.js", "application/javascript")
+}
+
+fn get_game() -> impl Responder {
+    get_file("Client/scripts/Game.js", "application/javascript")
 }
 
 // GRAPHICS
@@ -91,7 +95,8 @@ impl GameHttpServer {
                     .route("/Client/scripts/State.js", web::get().to(get_state))
                     .route("/Client/scripts/Renderer.js", web::get().to(get_renderer))
                     .route("/Client/scripts/GraphicMapping.js", web::get().to(get_graphic_mapping))
-                    .route("/Client/scripts/Connection.js", web::get().to(get_connection))
+                    .route("/Client/scripts/GameConnection.js", web::get().to(get_game_connection))
+                    .route("/Client/scripts/Game.js", web::get().to(get_game))
                     // GRAPHICS
                     .route("/Client/graphics/crown.jpg", web::get().to(get_crown))
                     .route("/Client/graphics/fog.jpg", web::get().to(get_fog))

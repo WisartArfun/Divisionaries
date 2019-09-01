@@ -1,9 +1,9 @@
 import { State } from './State.js';
 
 class ProtocolInterpreter {
-    constructor(state) {
-        this.state = state;
-    }
+    // constructor(state) {
+    //     this.state = state;
+    // }
 
     static get_type(type_encoding) {
         let types = { 0: 'ground', 1: 'fog', 2: 'king' };
@@ -15,7 +15,7 @@ class ProtocolInterpreter {
         return colors[color_encoding];
     }
 
-    translate_packet(packet) { // packet = list of u8 (unsigned 8 bit integers)
+    static translate_packet(packet) { // packet = list of u8 (unsigned 8 bit integers)
         let x = packet[0];
         let y = packet[1];
         let color = packet[2];
@@ -23,7 +23,9 @@ class ProtocolInterpreter {
         let type_specific = (packet[4] << 16) + (packet[5] << 8) + (packet[6]); // 24 bit number // for example amount of troops // check somewhere when overflow
         console.log(x + " " + y + "\t" + color + "\t" + type + " " + type_specific);
 
-        this.state.update(x, y, { type: type });
+        let state = { type: type };
+        return ({ x: x, y: y, state: state });
+        // this.state.update(x, y, { type: type });
     }
 }
 
