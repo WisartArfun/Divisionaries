@@ -1,6 +1,3 @@
-// import { ProtocolInterpreter } from './ProtocolInterpreter.js';
-// import { State } from './State.js';
-
 class GameConnection {
     constructor(ip, port) {
         this.ip = ip;

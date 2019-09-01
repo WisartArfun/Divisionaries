@@ -1,10 +1,6 @@
 import { State } from './State.js';
 
 class ProtocolInterpreter {
-    // constructor(state) {
-    //     this.state = state;
-    // }
-
     static get_type(type_encoding) {
         let types = { 0: 'ground', 1: 'fog', 2: 'king' };
         return types[type_encoding];
@@ -25,19 +21,8 @@ class ProtocolInterpreter {
 
         let state = { type: type };
         return ({ x: x, y: y, state: state });
-        // this.state.update(x, y, { type: type });
     }
 }
 
 const _ProtocolInterpreter = ProtocolInterpreter;
 export { _ProtocolInterpreter as ProtocolInterpreter };
-
-///////
-// OUTSIDE
-///////
-
-// let canvas = document.getElementById('game-canvas');
-// let state = new State(10, 10, canvas);
-// let inp = new ProtocolInterpreter(state);
-
-// inp.translate_packet([2, 1, 0, 2, 0, 3, 1, 1]);
