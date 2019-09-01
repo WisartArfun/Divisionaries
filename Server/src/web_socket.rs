@@ -1,20 +1,25 @@
-use std::thread;
+use std::{thread, time};
 use std::net::TcpListener;
-use tungstenite::server::accept;
+// use std::io::{self, Read};
+
+use tungstenite;
 
 use std::sync::Arc;
 use std::sync::Mutex;
+
+mod client;
 
 pub struct WebSocket {
     ip: Arc<Mutex<String>>,
     port: Arc<Mutex<String>>,
     running: bool,
     pub handle: Option<thread::JoinHandle<std::io::Result<()>>>,
+    clients: Arc<Mutex<Vec<client::Client>>>,
 }
 
 impl WebSocket {
     pub fn new<S>(ip: S, port: S) -> WebSocket where S: Into<String> {
-        WebSocket{ip: Arc::new(Mutex::new(ip.into())), port: Arc::new(Mutex::new(port.into())), running: false, handle: None}
+        WebSocket{ip: Arc::new(Mutex::new(ip.into())), port: Arc::new(Mutex::new(port.into())), running: false, handle: None, clients: Arc::new(Mutex::new(Vec::new()))}
     }
 
     pub fn start(&mut self) {
@@ -24,28 +29,58 @@ impl WebSocket {
         let ip = self.ip.clone();
         let port = self.port.clone();
 
-        let handle = thread::spawn(move || -> std::io::Result<()> {
+        let clients = self.clients.clone();
+        let web_socket_handle = thread::spawn(move || -> std::io::Result<()> {
             let server = TcpListener::bind(format!("{}:{}", ip.lock().unwrap(), port.lock().unwrap())).unwrap();
             for stream in server.incoming() { // handle connection closed
-                println!("hello there");
-                thread::spawn (move || { // add keep-alive stuff ?
-                    // let mut websocket = accept(stream.unwrap(), None).unwrap();
-                    let mut websocket = accept(stream.unwrap()).unwrap();
-                    loop {
-                        let msg = websocket.read_message().unwrap();
+                let stream = stream?;
+                stream.set_nonblocking(true).expect("set_nonblocking call failed");
+                
+                println!("A new client connected.");
+                thread::sleep(time::Duration::from_millis(5)); // somehow set_nonblocking needs time => error
 
-                        // no ping/pong
-                        if msg.is_binary() || msg.is_text() {
-                            // websocket.write_message(msg).unwrap();
-                            websocket.write_message(tungstenite::Message::Text("21020311".to_string())).unwrap(); // nicer
-                        }
+                let websocket = Arc::new(Mutex::new(tungstenite::server::accept(stream).unwrap()));
+
+                let websocket_clone = websocket.clone();
+                let client_handle = thread::spawn (move || -> std::io::Result<()> { // add keep-alive stuff ?
+                    let websocket = websocket_clone;
+                    
+                    // let mut web_clone = websocket.clone();
+                    // thread::spawn(move || -> std::io::Result<()> {
+                    //     loop {
+                    //         thread::sleep(time::Duration::from_millis(1000));
+                    //         web_clone.lock().unwrap().write_message(tungstenite::Message::Text("21020311".to_string())).unwrap();
+                    //     }
+
+                    //     Ok(())
+                    // });
+
+                    loop {
+                        match websocket.lock().unwrap().read_message() {
+                            Ok(msg) => {
+                                if msg.is_binary() || msg.is_text() {
+                                    println!("received message from client: {:?}", msg);
+                                }
+                                break;
+                            },
+                            // correct error handling
+                            Err(ref _e) => { //if e.kind == io::ErrorKind::WouldBlock => {
+                                break;
+                            }
+                            // Err(e) => panic!("encountered IO error: {}", e),
+                        };
                     }
+
+                    Ok(())
                 });
+
+                let client = client::Client::new(client_handle, websocket);
+                clients.lock().unwrap().push(client);
             }
 
             Ok(())
         });
 
-        self.handle = Some(handle);
+        self.handle = Some(web_socket_handle);
     }
 }
