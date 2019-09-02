@@ -7,7 +7,9 @@ use tungstenite;
 use std::sync::Arc;
 use std::sync::Mutex;
 
-mod client;
+pub mod client;
+
+type Callback = fn(client: client::Client);
 
 pub struct WebSocket {
     ip: Arc<Mutex<String>>,
@@ -15,11 +17,12 @@ pub struct WebSocket {
     running: bool,
     pub handle: Option<thread::JoinHandle<std::io::Result<()>>>,
     clients: Arc<Mutex<Vec<client::Client>>>,
+    callback: Callback,
 }
 
 impl WebSocket {
-    pub fn new<S>(ip: S, port: S) -> WebSocket where S: Into<String> {
-        WebSocket{ip: Arc::new(Mutex::new(ip.into())), port: Arc::new(Mutex::new(port.into())), running: false, handle: None, clients: Arc::new(Mutex::new(Vec::new()))}
+    pub fn new<S>(ip: S, port: S, callback: Callback) -> WebSocket where S: Into<String> {
+        WebSocket{ip: Arc::new(Mutex::new(ip.into())), port: Arc::new(Mutex::new(port.into())), running: false, handle: None, clients: Arc::new(Mutex::new(Vec::new())), callback}
     }
 
     pub fn start(&mut self) {
@@ -75,7 +78,8 @@ impl WebSocket {
                 });
 
                 let client = client::Client::new(client_handle, websocket);
-                clients.lock().unwrap().push(client);
+                (self.callback)(client);
+                // clients.lock().unwrap().push(client);
             }
 
             Ok(())
