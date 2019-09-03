@@ -1,1 +1,0 @@
-{"rustc":8617792432618773455,"features":"[\"default\", \"rev-mappings\"]","target":14468028523595003862,"profile":9935990280773120926,"path":14356386627820828473,"deps":[["mime v0.3.13","mime",5837632016678711061],["unicase v2.4.0","unicase",4928601486353034813]],"local":[{"Precalculated":"2.0.1"}],"rustflags":[],"edition":"Edition2015"}

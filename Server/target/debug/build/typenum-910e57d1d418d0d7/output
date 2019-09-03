@@ -1,2 +1,0 @@
-cargo:rustc-env=TYPENUM_BUILD_OP=C:\xampp\htdocs\divisionaries\Server\target\debug\build\typenum-910e57d1d418d0d7\out\consts.rs
-cargo:rustc-env=TYPENUM_BUILD_CONSTS=C:\xampp\htdocs\divisionaries\Server\target\debug\build\typenum-910e57d1d418d0d7\out\op.rs
