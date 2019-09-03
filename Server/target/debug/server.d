@@ -1,0 +1,1 @@
+/home/david/Documents/Divisionaries/Server/target/debug/server: /home/david/Documents/Divisionaries/Server/src/http_server.rs /home/david/Documents/Divisionaries/Server/src/main.rs /home/david/Documents/Divisionaries/Server/src/web_socket/client.rs /home/david/Documents/Divisionaries/Server/src/web_socket.rs

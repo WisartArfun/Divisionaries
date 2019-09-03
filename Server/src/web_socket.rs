@@ -7,9 +7,11 @@ use tungstenite;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+use std::boxed::Box;
+
 pub mod client;
 
-type Callback = fn(client: client::Client);
+type Callback = fn(client: &Box<client::Client>);
 
 pub struct WebSocket {
     ip: Arc<Mutex<String>>,
@@ -25,7 +27,7 @@ impl WebSocket {
         WebSocket{ip: Arc::new(Mutex::new(ip.into())), port: Arc::new(Mutex::new(port.into())), running: false, handle: None, clients: Arc::new(Mutex::new(Vec::new())), callback}
     }
 
-    pub fn start(&mut self) {
+    pub fn start<'a>(&mut self) {
         if self.running {return;}
         self.running = true;
 
@@ -45,40 +47,45 @@ impl WebSocket {
                 let websocket = Arc::new(Mutex::new(tungstenite::server::accept(stream).unwrap()));
 
                 let websocket_clone = websocket.clone();
-                let client_handle = thread::spawn (move || -> std::io::Result<()> { // add keep-alive stuff ?
-                    let websocket = websocket_clone;
-                    
-                    // let mut web_clone = websocket.clone();
-                    // thread::spawn(move || -> std::io::Result<()> {
-                    //     loop {
-                    //         thread::sleep(time::Duration::from_millis(1000));
-                    //         web_clone.lock().unwrap().write_message(tungstenite::Message::Text("21020311".to_string())).unwrap();
-                    //     }
 
-                    //     Ok(())
-                    // });
-
-                    loop {
-                        match websocket.lock().unwrap().read_message() {
-                            Ok(msg) => {
-                                if msg.is_binary() || msg.is_text() {
-                                    println!("received message from client: {:?}", msg);
-                                }
-                                break;
-                            },
-                            // correct error handling
-                            Err(ref _e) => { //if e.kind == io::ErrorKind::WouldBlock => {
-                                break;
-                            }
-                            // Err(e) => panic!("encountered IO error: {}", e),
-                        };
-                    }
-
-                    Ok(())
-                });
-
-                let client = client::Client::new(client_handle, websocket);
+                let client: &'a Box<client::Client> = &Box::new(client::Client::new(websocket));
                 (self.callback)(client);
+                // (self.callback)(Box::new(client::Client::new(websocket)));
+
+                // let client_handle = thread::spawn (move || -> std::io::Result<()> { // add keep-alive stuff ?
+                //     let websocket = websocket_clone;
+                    
+                //     // let mut web_clone = websocket.clone();
+                //     // thread::spawn(move || -> std::io::Result<()> {
+                //     //     loop {
+                //     //         thread::sleep(time::Duration::from_millis(1000));
+                //     //         web_clone.lock().unwrap().write_message(tungstenite::Message::Text("21020311".to_string())).unwrap();
+                //     //     }
+
+                //     //     Ok(())
+                //     // });
+
+                //     loop {
+                //         match websocket.lock().unwrap().read_message() {
+                //             Ok(msg) => {
+                //                 if msg.is_binary() || msg.is_text() {
+                //                     println!("received message from client: {:?}", msg);
+                //                 }
+                //                 break;
+                //             },
+                //             // correct error handling
+                //             Err(ref _e) => { //if e.kind == io::ErrorKind::WouldBlock => {
+                //                 break;
+                //             }
+                //             // Err(e) => panic!("encountered IO error: {}", e),
+                //         };
+                //     }
+
+                //     Ok(())
+                // });
+
+                // let client = client::Client::new(client_handle, websocket);
+                // (self.callback)(client);
                 // clients.lock().unwrap().push(client);
             }
 

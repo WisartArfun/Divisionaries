@@ -3,7 +3,9 @@ mod web_socket;
 
 use web_socket::client;
 
-fn callback(client: client::Client) {
+use std::boxed::Box;
+
+fn callback(client: &Box<client::Client>) {
     println!("client connected");
 }
 
