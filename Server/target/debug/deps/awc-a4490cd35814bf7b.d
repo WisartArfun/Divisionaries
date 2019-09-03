@@ -1,0 +1,14 @@
+/home/david/Documents/Divisionaries/Server/target/debug/deps/awc-a4490cd35814bf7b.rmeta: /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/lib.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/builder.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/connect.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/error.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/request.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/response.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/test.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/ws.rs
+
+/home/david/Documents/Divisionaries/Server/target/debug/deps/libawc-a4490cd35814bf7b.rlib: /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/lib.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/builder.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/connect.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/error.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/request.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/response.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/test.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/ws.rs
+
+/home/david/Documents/Divisionaries/Server/target/debug/deps/awc-a4490cd35814bf7b.d: /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/lib.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/builder.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/connect.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/error.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/request.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/response.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/test.rs /home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/ws.rs
+
+/home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/lib.rs:
+/home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/builder.rs:
+/home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/connect.rs:
+/home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/error.rs:
+/home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/request.rs:
+/home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/response.rs:
+/home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/test.rs:
+/home/david/.cargo/registry/src/github.com-1ecc6299db9ec823/awc-0.2.4/src/ws.rs:

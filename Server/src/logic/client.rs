@@ -6,20 +6,15 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 
 pub struct Client {
-    // handle: thread::JoinHandle<std::io::Result<()>>, 
-    websocket: Arc<Mutex<tungstenite::protocol::WebSocket<TcpStream>>>, // make private again
+    websocket: Arc<Mutex<tungstenite::protocol::WebSocket<TcpStream>>>,
 }
 
 impl Client {
-    // pub fn new(handle: thread::JoinHandle<std::io::Result<()>>, websocket: Arc<Mutex<tungstenite::protocol::WebSocket<TcpStream>>>) -> Client {
-    //     Client{handle, websocket}
-    // }
-
     pub fn new(websocket: Arc<Mutex<tungstenite::protocol::WebSocket<TcpStream>>>) -> Client {
         Client{websocket}
     }
 
-    pub fn send(&self, message: &str) { // 21020311
+    pub fn send(&self, message: &str) {
         self.websocket.lock().unwrap().write_message(tungstenite::Message::Text(message.to_string())).unwrap();
     }
 

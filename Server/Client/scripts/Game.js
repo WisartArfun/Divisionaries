@@ -25,4 +25,4 @@ class Game {
 }
 
 let canvas = document.getElementById('game-canvas');
-let game = new Game(canvas, 10, 10, 'localhost', '9001');
+let game = new Game(canvas, 10, 10, 'localhost', '8008');

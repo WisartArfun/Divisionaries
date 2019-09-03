@@ -13,7 +13,7 @@ fn main() -> std::io::Result<()> {
 
     let mut game = game::Game::new();
     // game.start();
-    let mut web_socket = web_socket::WebSocket::new("127.0.0.1", "9001");
+    let mut web_socket = web_socket::WebSocket::new("127.0.0.1", "8008");
     web_socket.start(game.clients.clone());
 
     thread::sleep(std::time::Duration::from_secs(10));
