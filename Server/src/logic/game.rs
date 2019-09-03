@@ -60,34 +60,35 @@ impl Game {
 
     pub fn start(&mut self) {
         let clients = self.clients.clone();
-        let game = Arc::new(Mutex::new(self));
-        let _game_handle = thread::spawn(move || -> std::io::Result<()> {
-            let mut rng = rand::thread_rng();
+        // let game = Arc::new(Mutex::new(self));
+        // let _game_handle = thread::spawn(move || -> std::io::Result<()> {
+        let mut rng = rand::thread_rng();
 
-            {
-                let clients = clients.lock().unwrap();
-                for client in &clients.clients {
-                    let x = rng.gen_range(0,10);
-                    let y = rng.gen_range(0,10);
+        {
+            let clients = clients.lock().unwrap();
+            for client in &clients.clients {
+                let x = rng.gen_range(0,10);
+                let y = rng.gen_range(0,10);
 
-                    let field = Field::new(FieldType::King);
-                    game.lock().unwrap().update_single_state(x, y, field);
-                    
-                    // let message = format!("{}{}020311", x, y);
-                    // client.send(&message);
-                }
+                let field = Field::new(FieldType::King);
+                // game.lock().unwrap().update_single_state(x, y, field);
+                self.update_single_state(x, y, field);
+                
+                // let message = format!("{}{}020311", x, y);
+                // client.send(&message);
             }
+        }
 
-            for y in 0..10 {
-                for x in 0..10 {
-                    println!("sending");
-                    self.send_single_state(x, y);
-                    println!("sent");
-                }
+        for y in 0..10 {
+            for x in 0..10 {
+                println!("sending");
+                self.send_single_state(x, y);
+                println!("sent");
             }
+        }
 
-            Ok(())
-        });
+            // Ok(())
+        // });
     }
 
     pub fn update_single_state(&mut self, x: i64, y:i64, field: Field) {
