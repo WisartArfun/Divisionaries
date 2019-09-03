@@ -11,7 +11,9 @@ use std::boxed::Box;
 
 pub mod client;
 
-type Callback = fn(client: &Box<client::Client>);
+// type Callback = fn(client: &Box<client::Client>);
+type Callback = fn(client: Arc<Mutex<client::Client>>);
+
 
 pub struct WebSocket {
     ip: Arc<Mutex<String>>,
@@ -27,7 +29,7 @@ impl WebSocket {
         WebSocket{ip: Arc::new(Mutex::new(ip.into())), port: Arc::new(Mutex::new(port.into())), running: false, handle: None, clients: Arc::new(Mutex::new(Vec::new())), callback}
     }
 
-    pub fn start<'a>(&mut self) {
+    pub fn start(&mut self) {
         if self.running {return;}
         self.running = true;
 
@@ -48,8 +50,11 @@ impl WebSocket {
 
                 let websocket_clone = websocket.clone();
 
-                let client: &'a Box<client::Client> = &Box::new(client::Client::new(websocket));
-                (self.callback)(client);
+                clients.lock().unwrap().push(client::Client::new(websocket));
+                (self.callback)(Arc::new(Mutex::new(clients.lock().unwrap()[0])));
+
+                // let client: &'static Box<client::Client> = &Box::new(client::Client::new(websocket));
+                // (self.callback)(client);
                 // (self.callback)(Box::new(client::Client::new(websocket)));
 
                 // let client_handle = thread::spawn (move || -> std::io::Result<()> { // add keep-alive stuff ?

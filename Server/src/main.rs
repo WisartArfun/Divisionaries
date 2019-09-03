@@ -4,8 +4,13 @@ mod web_socket;
 use web_socket::client;
 
 use std::boxed::Box;
+use std::sync::Arc;
+use std::sync::Mutex;
 
-fn callback(client: &Box<client::Client>) {
+// fn callback(client: &Box<client::Client>) {
+//     println!("client connected");
+// }
+fn callback(client: Arc<Mutex<client::Client>>) {
     println!("client connected");
 }
 
