@@ -1,36 +1,36 @@
 use std::{thread, time};
 use std::net::TcpListener;
-// use std::io::{self, Read};
+
+use crate::logic;
 
 use tungstenite;
 
-use std::sync::Arc;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
-pub mod client;
+// use super::logic;
+// use crate::logic;
 
 pub struct WebSocket {
     ip: Arc<Mutex<String>>,
     port: Arc<Mutex<String>>,
     running: bool,
     pub handle: Option<thread::JoinHandle<std::io::Result<()>>>,
-    clients: Arc<Mutex<Vec<client::Client>>>,
 }
 
 impl WebSocket {
     pub fn new<S>(ip: S, port: S) -> WebSocket where S: Into<String> {
-        WebSocket{ip: Arc::new(Mutex::new(ip.into())), port: Arc::new(Mutex::new(port.into())), running: false, handle: None, clients: Arc::new(Mutex::new(Vec::new()))}
+        WebSocket{ip: Arc::new(Mutex::new(ip.into())), port: Arc::new(Mutex::new(port.into())), running: false, handle: None}
     }
 
-    pub fn start(&mut self) {
+    pub fn start(&mut self, game: Arc<Mutex<SecureList>>) {
         if self.running {return;}
         self.running = true;
 
         let ip = self.ip.clone();
         let port = self.port.clone();
 
-        // let clients = self.clients.clone();
         let web_socket_handle = thread::spawn(move || -> std::io::Result<()> {
+
             let server = TcpListener::bind(format!("{}:{}", ip.lock().unwrap(), port.lock().unwrap())).unwrap();
             for stream in server.incoming() { // handle connection closed
                 let stream = stream?;
@@ -74,9 +74,9 @@ impl WebSocket {
                     Ok(())
                 });
 
-                // let client = client::Client::new(client_handle, websocket);
-                // (self.callback)(client);
-                // clients.lock().unwrap().push(client);
+                let client = client::Client::new(client_handle, websocket);
+                // let client = client::Client::new(websocket);
+                game.lock().unwrap().add(client);
             }
 
             Ok(())
