@@ -7,7 +7,7 @@ use std::thread;
 
 pub struct Client {
     handle: thread::JoinHandle<std::io::Result<()>>, 
-    websocket: Arc<Mutex<tungstenite::protocol::WebSocket<TcpStream>>>,
+    pub websocket: Arc<Mutex<tungstenite::protocol::WebSocket<TcpStream>>>, // make private again
 }
 
 impl Client {

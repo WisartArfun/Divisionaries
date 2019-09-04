@@ -1,3 +1,5 @@
+use std::io::{self, Read};
+
 mod http_server;
 mod web_socket;
 mod logic;
@@ -10,7 +12,19 @@ fn main() -> std::io::Result<()> {
 
     let game = game::Game::new();
     let mut web_socket = web_socket::WebSocket::new("127.0.0.1", "9001");
-    web_socket.start(game.clients);
+    web_socket.start(game.clients.clone());
+
+    loop {
+        println!("loop");
+        let mut input = String::new();
+        io::stdin().read_line(&mut input)?;
+        
+        let clients = game.clients.clone();
+        let clients = clients.lock().unwrap();
+        for client in &clients.clients {
+            client.websocket.lock().unwrap().write_message(tungstenite::Message::Text((&input).to_string())).unwrap();
+        }
+    }
 
     if let Some(handle) = web_socket.handle {
         let _ = handle.join().unwrap();
