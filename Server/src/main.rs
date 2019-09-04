@@ -1,4 +1,5 @@
 use std::io::{self, Read};
+use std::thread;
 
 mod http_server;
 mod web_socket;
@@ -14,6 +15,21 @@ fn main() -> std::io::Result<()> {
     let mut web_socket = web_socket::WebSocket::new("127.0.0.1", "9001");
     web_socket.start(game.clients.clone());
 
+    let clients = game.clients.clone();
+    thread::spawn(move || -> std::io::Result<()> {
+        loop {
+            let clients = clients.lock().unwrap();
+            for client in &clients.clients {
+                let input = client.try_recv();
+                if let Some(message) = input {
+                    println!("message: {}", message);
+                }
+            } 
+        }
+
+        Ok(())
+    });
+
     loop {
         println!("loop");
         let mut input = String::new();
@@ -22,7 +38,7 @@ fn main() -> std::io::Result<()> {
         let clients = game.clients.clone();
         let clients = clients.lock().unwrap();
         for client in &clients.clients {
-            client.websocket.lock().unwrap().write_message(tungstenite::Message::Text((&input).to_string())).unwrap();
+            client.send(&input);
         }
     }
 

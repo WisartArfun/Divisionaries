@@ -39,40 +39,31 @@ impl WebSocket {
 
                 let websocket = Arc::new(Mutex::new(tungstenite::server::accept(stream).unwrap()));
 
-                let websocket_clone = websocket.clone();
-                let client_handle = thread::spawn (move || -> std::io::Result<()> { // add keep-alive stuff ?
-                    let websocket = websocket_clone;
-                    
-                    // let mut web_clone = websocket.clone();
-                    // thread::spawn(move || -> std::io::Result<()> {
-                    //     loop {
-                    //         thread::sleep(time::Duration::from_millis(1000));
-                    //         web_clone.lock().unwrap().write_message(tungstenite::Message::Text("21020311".to_string())).unwrap();
-                    //     }
+                // let websocket_clone = websocket.clone();
+                // let client_handle = thread::spawn (move || -> std::io::Result<()> { // add keep-alive stuff ?
+                //     let websocket = websocket_clone;
 
-                    //     Ok(())
-                    // });
+                //     loop {
+                //         match websocket.lock().unwrap().read_message() {
+                //             Ok(msg) => {
+                //                 if msg.is_binary() || msg.is_text() {
+                //                     println!("received message from client: {:?}", msg);
+                //                 }
+                //                 break;
+                //             },
+                //             // correct error handling
+                //             Err(ref _e) => { //if e.kind == io::ErrorKind::WouldBlock => {
+                //                 break;
+                //             }
+                //             // Err(e) => panic!("encountered IO error: {}", e),
+                //         };
+                //     }
 
-                    loop {
-                        match websocket.lock().unwrap().read_message() {
-                            Ok(msg) => {
-                                if msg.is_binary() || msg.is_text() {
-                                    println!("received message from client: {:?}", msg);
-                                }
-                                break;
-                            },
-                            // correct error handling
-                            Err(ref _e) => { //if e.kind == io::ErrorKind::WouldBlock => {
-                                break;
-                            }
-                            // Err(e) => panic!("encountered IO error: {}", e),
-                        };
-                    }
+                //     Ok(())
+                // });
 
-                    Ok(())
-                });
-
-                let client = logic::client::Client::new(client_handle, websocket);
+                // let client = logic::client::Client::new(client_handle, websocket);
+                let client = logic::client::Client::new(websocket);
                 (*game.lock().unwrap()).add(client);
             }
 
