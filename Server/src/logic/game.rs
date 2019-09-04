@@ -1,4 +1,4 @@
-use crate::logic::game;
+use crate::logic::client;
 
 use std::sync::{Arc, Mutex};
 

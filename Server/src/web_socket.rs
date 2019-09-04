@@ -2,13 +2,11 @@ use std::{thread, time};
 use std::net::TcpListener;
 
 use crate::logic;
+use crate::logic::game::SecureAdd;
 
 use tungstenite;
 
 use std::sync::{Arc, Mutex};
-
-// use super::logic;
-// use crate::logic;
 
 pub struct WebSocket {
     ip: Arc<Mutex<String>>,
@@ -22,7 +20,7 @@ impl WebSocket {
         WebSocket{ip: Arc::new(Mutex::new(ip.into())), port: Arc::new(Mutex::new(port.into())), running: false, handle: None}
     }
 
-    pub fn start(&mut self, game: Arc<Mutex<SecureList>>) {
+    pub fn start(&mut self, game: Arc<Mutex<logic::game::SecureList>>) {
         if self.running {return;}
         self.running = true;
 
@@ -74,9 +72,8 @@ impl WebSocket {
                     Ok(())
                 });
 
-                let client = client::Client::new(client_handle, websocket);
-                // let client = client::Client::new(websocket);
-                game.lock().unwrap().add(client);
+                let client = logic::client::Client::new(client_handle, websocket);
+                (*game.lock().unwrap()).add(client);
             }
 
             Ok(())
