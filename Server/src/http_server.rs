@@ -106,7 +106,7 @@ impl GameHttpServer {
                     // GRAPHICS
                     .route("/Client/graphics/crown.jpg", web::get().to(get_crown))
                     .route("/Client/graphics/fog.jpg", web::get().to(get_fog))
-                    .route("/Client/graphics/king.jpg", web::get().to(get_empty))
+                    .route("/Client/graphics/empty.jpg", web::get().to(get_empty))
             })
             .bind(format!("{}:{}", ip.lock().unwrap(), port.lock().unwrap()))
             .unwrap()

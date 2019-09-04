@@ -33,36 +33,12 @@ impl WebSocket {
             for stream in server.incoming() { // handle connection closed
                 let stream = stream?;
                 stream.set_nonblocking(true).expect("set_nonblocking call failed");
-                
                 println!("A new client connected.");
+                
                 thread::sleep(time::Duration::from_millis(5)); // somehow set_nonblocking needs time => error
 
                 let websocket = Arc::new(Mutex::new(tungstenite::server::accept(stream).unwrap()));
 
-                // let websocket_clone = websocket.clone();
-                // let client_handle = thread::spawn (move || -> std::io::Result<()> { // add keep-alive stuff ?
-                //     let websocket = websocket_clone;
-
-                //     loop {
-                //         match websocket.lock().unwrap().read_message() {
-                //             Ok(msg) => {
-                //                 if msg.is_binary() || msg.is_text() {
-                //                     println!("received message from client: {:?}", msg);
-                //                 }
-                //                 break;
-                //             },
-                //             // correct error handling
-                //             Err(ref _e) => { //if e.kind == io::ErrorKind::WouldBlock => {
-                //                 break;
-                //             }
-                //             // Err(e) => panic!("encountered IO error: {}", e),
-                //         };
-                //     }
-
-                //     Ok(())
-                // });
-
-                // let client = logic::client::Client::new(client_handle, websocket);
                 let client = logic::client::Client::new(websocket);
                 (*game.lock().unwrap()).add(client);
             }
