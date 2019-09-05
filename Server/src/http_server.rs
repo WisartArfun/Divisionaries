@@ -51,13 +51,37 @@ fn get_new_lobby(src: &str, game_id: &str, mime: &str) -> impl Responder {
     }
 }
 
+fn get_new_game(src: &str, game_id: &str, mime: &str) -> impl Responder {
+    match File::open(src) { // add path management // check if vec is slower than string => seperate depending on mime
+        Ok(mut file) => {
+            let mut buf = String::new();
+            file.read_to_string(&mut buf).unwrap();
+
+            let buf = buf.replace("#NUM#", game_id);
+
+            Response::Ok()
+            .header(http::header::CONTENT_TYPE, mime)
+            // .body(file_content)
+            .body(buf) // okay that string and not utf 8?
+        },
+        Err(err) => {
+            println!("Error: {:?}", err);
+            Response::Ok().body("Hello world!")
+        }
+    }
+}
+
 // HTML
 fn get_index_html() -> impl Responder {
     get_file("Client/index.html", "text/html")
 }
 
-fn get_new_lobby_html(game_id: web::Path<(String)>) -> impl Responder {
-    get_new_lobby("Client/files/lobby.html", &game_id, "text/html")
+fn get_new_lobby_html(lobby_id: web::Path<(String)>) -> impl Responder {
+    get_new_lobby("Client/files/lobby.html", &lobby_id, "text/html")
+}
+
+fn get_new_game_html(game_id: web::Path<(String)>) -> impl Responder {
+    get_new_game("Client/files/game.html", &game_id, "text/html")
 }
 
 fn get_html(file_name: web::Path<(String)>) -> impl Responder {
@@ -99,13 +123,13 @@ impl GameHttpServer {
                     // INDEX
                     .route("/", web::get().to(get_index_html))
                     .route("/index.html", web::get().to(get_index_html))
-                    .service(web::resource("/Client/files/{file_name}").to(get_html))
-                    .service(web::resource("/Client/files/lobby/{game_id}").to(get_new_lobby_html))
-                    .service(web::resource("/games/{game_id}").to(get_new_lobby_html))
+                    .service(web::resource("/files/{file_name}").to(get_html))
+                    .service(web::resource("/lobby/{lobby_id}").to(get_new_lobby_html))
+                    .service(web::resource("/games/{game_id}").to(get_new_game_html))
                     // JS
-                    .service(web::resource("/Client/scripts/{script_name}").to(get_js))
+                    .service(web::resource("/scripts/{script_name}").to(get_js))
                     // GRAPHICS
-                    .service(web::resource("/Client/graphics/{jpeg_name}").to(get_jpeg))
+                    .service(web::resource("/graphics/{jpeg_name}").to(get_jpeg))
                     // NOT FOUND
                     .default_service(web::route().to(|| Response::NotFound()))
             })
