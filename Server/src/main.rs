@@ -16,9 +16,9 @@ fn main() -> std::io::Result<()> {
     let mut web_socket = web_socket::WebSocket::new("127.0.0.1", "8008");
     web_socket.start(game.clients.clone());
 
-    thread::sleep(std::time::Duration::from_secs(10));
-    println!("game start");
-    game.start();
+    // thread::sleep(std::time::Duration::from_secs(10));
+    // println!("game start");
+    // game.start();
 
     // let clients = game.clients.clone();
     // thread::spawn(move || -> std::io::Result<()> {

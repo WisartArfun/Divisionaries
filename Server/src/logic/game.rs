@@ -113,7 +113,6 @@ impl Game {
 
 impl SecureAdd<client::Client> for SecureList {
     fn add(&mut self, client: client::Client) {
-        println!("hello");
         self.clients.push(client);
     }
 }

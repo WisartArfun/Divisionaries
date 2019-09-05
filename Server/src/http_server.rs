@@ -5,9 +5,7 @@ use std::io::Read;
 use actix_web::{Responder, web, App, HttpServer}; // httpResponse vs Response ?
 use actix_http::{http, Response};
 
-use std::sync::Arc;
-use std::sync::Mutex;
-
+use std::sync::{Arc, Mutex};
 
 // GET FILE AND SET MIME
 fn get_file(src: &str, mime: &str) -> impl Responder {
@@ -29,47 +27,51 @@ fn get_file(src: &str, mime: &str) -> impl Responder {
     }
 }
 
+fn get_new_lobby(src: &str, game_id: &str, mime: &str) -> impl Responder {
+    match File::open(src) { // add path management // check if vec is slower than string => seperate depending on mime
+        Ok(mut file) => {
+            // let path = Path::new(&file_name); // if !path.exists() { //     return String::from("Not Found!").into(); // }
+            // let mut file_content = Vec::new();
+            // file.read_to_end(&mut file_content).expect("Unable to read");
+            let mut buf = String::new();
+            file.read_to_string(&mut buf).unwrap();
+
+            let buf = buf.replace("#NUM#", game_id);
+            // let file_content = buf.as_mut_vec();
+
+            Response::Ok()
+            .header(http::header::CONTENT_TYPE, mime)
+            // .body(file_content)
+            .body(buf) // okay that string and not utf 8?
+        },
+        Err(err) => {
+            println!("Error: {:?}", err);
+            Response::Ok().body("Hello world!")
+        }
+    }
+}
+
 // HTML
-fn get_index() -> impl Responder {
-    get_file("Client/index.html", "text/html") // correct?
+fn get_index_html() -> impl Responder {
+    get_file("Client/index.html", "text/html")
+}
+
+fn get_new_lobby_html(game_id: web::Path<(String)>) -> impl Responder {
+    get_new_lobby("Client/files/lobby.html", &game_id, "text/html")
+}
+
+fn get_html(file_name: web::Path<(String)>) -> impl Responder {
+    get_file(&format!("Client/files/{}", &file_name), "text/html")
 }
 
 // JAVASCRIPT
-fn get_protocol_interpreter() -> impl Responder {
-    get_file("Client/scripts/ProtocolInterpreter.js", "application/javascript")
-}
-
-fn get_state() -> impl Responder {
-    get_file("Client/scripts/State.js", "application/javascript")
-}
-
-fn get_renderer() -> impl Responder {
-    get_file("Client/scripts/Renderer.js", "application/javascript")
-}
-
-fn get_graphic_mapping() -> impl Responder {
-    get_file("Client/scripts/GraphicMapping.js", "application/javascript")
-}
-
-fn get_game_connection() -> impl Responder {
-    get_file("Client/scripts/GameConnection.js", "application/javascript")
-}
-
-fn get_game() -> impl Responder {
-    get_file("Client/scripts/Game.js", "application/javascript")
+fn get_js(script_name: web::Path<(String)>) -> impl Responder {
+    get_file(&format!("Client/scripts/{}", &script_name), "application/javascript")
 }
 
 // GRAPHICS
-fn get_crown() -> impl Responder {
-    get_file("Client/graphics/crown.jpg", "image/jpeg")
-}
-
-fn get_fog() -> impl Responder {
-    get_file("Client/graphics/fog.jpg", "image/jpeg")
-}
-
-fn get_empty() -> impl Responder {
-    get_file("Client/graphics/empty.jpg", "image/jpeg")
+fn get_jpeg(jpeg_name: web::Path<(String)>) -> impl Responder {
+    get_file(&format!("Client/graphics/{}", &jpeg_name), "image/jpeg")
 }
 
 pub struct GameHttpServer {
@@ -93,20 +95,19 @@ impl GameHttpServer {
 
         let handle = thread::spawn(move || -> std::io::Result<()> {
             HttpServer::new(|| {
-                App::new() // only one handler for scripts, html, graphics?
+                App::new()
                     // INDEX
-                    .route("/", web::get().to(get_index))
+                    .route("/", web::get().to(get_index_html))
+                    .route("/index.html", web::get().to(get_index_html))
+                    .service(web::resource("/Client/files/{file_name}").to(get_html))
+                    .service(web::resource("/Client/files/lobby/{game_id}").to(get_new_lobby_html))
+                    .service(web::resource("/games/{game_id}").to(get_new_lobby_html))
                     // JS
-                    .route("/Client/scripts/ProtocolInterpreter.js", web::get().to(get_protocol_interpreter))
-                    .route("/Client/scripts/State.js", web::get().to(get_state))
-                    .route("/Client/scripts/Renderer.js", web::get().to(get_renderer))
-                    .route("/Client/scripts/GraphicMapping.js", web::get().to(get_graphic_mapping))
-                    .route("/Client/scripts/GameConnection.js", web::get().to(get_game_connection))
-                    .route("/Client/scripts/Game.js", web::get().to(get_game))
+                    .service(web::resource("/Client/scripts/{script_name}").to(get_js))
                     // GRAPHICS
-                    .route("/Client/graphics/crown.jpg", web::get().to(get_crown))
-                    .route("/Client/graphics/fog.jpg", web::get().to(get_fog))
-                    .route("/Client/graphics/empty.jpg", web::get().to(get_empty))
+                    .service(web::resource("/Client/graphics/{jpeg_name}").to(get_jpeg))
+                    // NOT FOUND
+                    .default_service(web::route().to(|| Response::NotFound()))
             })
             .bind(format!("{}:{}", ip.lock().unwrap(), port.lock().unwrap()))
             .unwrap()
