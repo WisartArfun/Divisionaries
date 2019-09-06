@@ -5,7 +5,7 @@
 
     <h1>Welcome to Divisionaries</h1>
 
-    Please enter a lobby name: <input id="lobby_id_input" type="text" name="lobby_id" value="123"><br>
+    Please enter a lobby name: <input id="lobby_id_input" type="text" name="lobby_id" value="random"><br>
 
     <button onclick="start_game()">Start Game</button>
 
@@ -13,10 +13,7 @@
         function start_game() {
             let lobby_id_input = document.getElementById("lobby_id_input");
             let input = lobby_id_input.value;
-            console.log("hello");
-            // window.open("/lobby/" + input, "_self");
-            // window.location.replace("/lobby/" + input);
-            window.location.href = "/lobby/" + input;
+            window.location.href = "/games/" + input;
         }
     </script>
 

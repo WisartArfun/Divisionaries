@@ -2,12 +2,26 @@
 <html>
 
 <body>
-    <h1>Have fun playing game ##NUM#</h1>
 
-    <canvas id="game-canvas" width="200" height="100" style="border:1px solid #000000;"></canvas>
+    <h1>Divisionaries Lobby #ID# </h1>
 
-</body>
+    <button onclick="start_game()">Start Game</button>
+    <!-- <a href="javascript:Hi() ">Start Game</a> -->
 
-<script type="module" src="/scripts/Game.js"></script>
+    <script>
+        var newContent = '<html><body>New Content</body></html>';
+
+        function replace_content(NC) {
+            document.open();
+            document.write(NC);
+            document.close();
+        }
+
+        function start_game() {
+            fetch('/game_template/#ID#')
+                .then(response => response.text())
+                .then(text => replace_content(text))
+        }
+    </script>
 
 </html>
