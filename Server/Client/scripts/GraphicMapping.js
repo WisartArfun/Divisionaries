@@ -21,8 +21,6 @@ class GraphicMapper {
             }
         }
 
-        console.log(colors[mapping][color]);
-
         return colors[mapping][color];
     }
 }

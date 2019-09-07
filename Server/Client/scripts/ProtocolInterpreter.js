@@ -6,15 +6,15 @@ class ProtocolInterpreter {
         return types[type_encoding];
     }
 
-    static get_colors(color_encoding) {
-        let colors = { 0: 'red', 1: 'blue', 2: 'green', 3: 'yellow', 4: 'purple', 5: 'cyan' };
+    static get_color(color_encoding) {
+        let colors = { 0: 'red', 1: 'green', 2: 'blue', 3: 'yellow', 4: 'purple', 5: 'cyan' };
         return colors[color_encoding];
     }
 
     static translate_packet(packet) { // packet = list of u8 (unsigned 8 bit integers)
         let x = packet[0];
         let y = packet[1];
-        let color = packet[2];
+        let color = ProtocolInterpreter.get_color(packet[2]);
         let type = ProtocolInterpreter.get_type(packet[3]);
         let type_specific = (packet[4] << 16) + (packet[5] << 8) + (packet[6]); // 24 bit number // for example amount of troops // check somewhere when overflow
         console.log(x + " " + y + "\t" + color + "\t" + type + " " + type_specific);
