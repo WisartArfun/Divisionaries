@@ -8,9 +8,11 @@ class State {
         this.maps = [];
 
         let col = new Array(this.state.x_fields);
-        col.fill({ type: 'fog' });
+        col.fill({ type: 'fog', color: 'empty' });
         this.state.fields = new Array(this.state.y_fields);
         this.state.fields.fill(col);
+
+        this.state.fields[2][3] = { type: 'king', color: 'blue' };
     }
 
     add_map(canvas) {

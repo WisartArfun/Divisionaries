@@ -19,7 +19,7 @@ class ProtocolInterpreter {
         let type_specific = (packet[4] << 16) + (packet[5] << 8) + (packet[6]); // 24 bit number // for example amount of troops // check somewhere when overflow
         console.log(x + " " + y + "\t" + color + "\t" + type + " " + type_specific);
 
-        let state = { type: type };
+        let state = { type: type, color: color };
         return ({ x: x, y: y, state: state });
     }
 }

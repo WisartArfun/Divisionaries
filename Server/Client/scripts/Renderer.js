@@ -18,12 +18,17 @@ class Sprite {
 
         // content
         this.set_src(src);
+        this.set_color('');
     }
 
     // CONTENT  - image src
     set_src(src) {
         this.src = src;
         this.image.src = this.src;
+    }
+
+    set_color(color) {
+        this.color = color;
     }
 
     // TRANSFORM    - position and size
@@ -45,7 +50,9 @@ class Sprite {
     }
 
     render() {
-        this.ctx.drawImage(this.image, this.x_pos, this.y_pos, this.width, this.height);
+        this.ctx.drawImage(this.image, this.x_pos, this.y_pos, this.width, this.height)
+        this.ctx.fillStyle = this.color;
+        this.ctx.fillRect(this.x_pos, this.y_pos, this.width, this.height);
     }
 }
 
@@ -72,6 +79,7 @@ class Field {
     update_state(state) { // [WARNING] better division of update and set?
         this.set_state(state);
         this.set_type(this.state.type);
+        this.set_color(this.state.color); // state.player.color???
     }
 
     // TRANSFORM - position in map (logical), size of a field (for sprite :( => initialize sprites in map???)
@@ -87,6 +95,10 @@ class Field {
     // FUNCTION - communication with sprite
     set_type(type) {
         this.sprite.set_src(GraphicMapper.get_src(type));
+    }
+
+    set_color(color) {
+        this.sprite.set_color(GraphicMapper.get_color(color));
     }
 
     update_transform(field_size) {
