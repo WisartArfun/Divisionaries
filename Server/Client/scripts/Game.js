@@ -24,5 +24,10 @@ class Game {
     }
 }
 
-let canvas = document.getElementById('game-canvas');
-let game = new Game(canvas, 10, 10, 'localhost', '8008');
+let start_game_instance = function(x_size, y_size, canvas_name) {
+    let canvas = document.getElementById(canvas_name);
+    let game = new Game(canvas, x_size, y_size, 'localhost', '8008');
+}
+
+const _start_game_instance = start_game_instance
+export { _start_game_instance as start_game_instance };

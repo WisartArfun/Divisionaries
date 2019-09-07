@@ -99,7 +99,7 @@ impl GameHttpServer {
         let handle = thread::spawn(move || -> std::io::Result<()> {
             HttpServer::new(|| {
                 App::new()
-                    // INDEX
+                    // HTML
                     .route("/", web::get().to(get_index_html))
                     .route("/index.html", web::get().to(get_index_html))
                     .service(web::resource("/files/{file_name}").to(get_html))

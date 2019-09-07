@@ -9,18 +9,25 @@
     <!-- <a href="javascript:Hi() ">Start Game</a> -->
 
     <script>
-        var newContent = '<html><body>New Content</body></html>';
+        // let replace_content = function(NC) {
+        //     document.open();
+        //     document.write(NC);
+        //     document.close();
+        // }
 
-        function replace_content(NC) {
+        let start_game = function() {
             document.open();
-            document.write(NC);
-            document.close();
-        }
-
-        function start_game() {
             fetch('/game_template/#ID#')
                 .then(response => response.text())
-                .then(text => replace_content(text))
+                .then(text => document.write(text))
+            document.close();
+
+            let script = document.createElement('script');
+            script.type = 'module';
+            fetch('/scripts/game_template.js')
+                .then(response => response.text())
+                .then(text => script.innerText = text)
+                .then(document.body.append(script));
         }
     </script>
 
