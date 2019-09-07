@@ -24,9 +24,9 @@ class Game {
     }
 }
 
-let start_game_instance = function(x_size, y_size, canvas_name) {
+let start_game_instance = function(x_size, y_size, canvas_name, ip, port) {
     let canvas = document.getElementById(canvas_name);
-    let game = new Game(canvas, x_size, y_size, 'localhost', '8008');
+    let game = new Game(canvas, x_size, y_size, ip, port);
 }
 
 const _start_game_instance = start_game_instance

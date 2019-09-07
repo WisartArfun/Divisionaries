@@ -2,7 +2,6 @@
 <html>
 
 <body>
-
     <h1>Divisionaries Lobby #ID# </h1>
 
     <button onclick="start_game()">Start Game</button>
@@ -24,11 +23,13 @@
                 .then(text => {
                     fetch('/scripts/game_template.js')
                         .then(response => response.text())
-                        .then(script_text => script.innerText = script_text);
-                    replace_content(text);
-                    document.body.append(script);
+                        .then(script_text => script.innerText = script_text)
+                        .then(replace_content(text))
+                        .then(document.body.append(script));
                 });
         }
     </script>
+
+</body>
 
 </html>

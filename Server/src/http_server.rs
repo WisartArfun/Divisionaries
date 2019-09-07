@@ -7,6 +7,9 @@ use actix_http::{http, Response};
 
 use std::sync::{Arc, Mutex};
 
+mod ports;
+use ports::get_available_port;
+
 // UTIL
 fn read_file<T: Into<String>>(src: T, mime: T) -> Option<Vec<u8>> {
     let src = src.into();
@@ -41,9 +44,17 @@ fn get_file(src: &str, mime: &str) -> impl Responder {
     Response::Ok().body("404 - NOT FOUND!!!") // return a real 404
 }
 
-fn get_set_id(src: &str, id: &str, mime: &str) -> impl Responder {
+fn get_replace(src: &str, replacers: &[(&str, &str)], mime: &str) -> Response { // change to impl Responder ??
+    println!("src: {}", src);
     if let Some(file_content) = read_file(src, mime) {
-        let file_content = str::from_utf8(&file_content).unwrap().replace("#ID#", id);
+        let mut file_content = str::from_utf8(&file_content).unwrap().to_string();
+        
+        for replacer in replacers {
+            let (old, new) = replacer;
+            file_content = file_content.replace(old, new);
+        }
+
+        println!("file_content:\n\n{}", file_content);
 
         return get_utf8(file_content, mime);
     }
@@ -56,11 +67,13 @@ fn get_index_html() -> impl Responder {
 }
 
 fn get_new_game_lobby_html(lobby_id: web::Path<(String)>) -> impl Responder {
-    get_set_id("Client/files/game.html", &lobby_id, "text/html")
+    // get_set_id("Client/files/game.html", &lobby_id, "text/html")
+    get_replace("Client/files/game.html", &[("#ID#", &lobby_id)], "text/html")
 }
 
 fn get_new_game_html(game_id: web::Path<(String)>) -> impl Responder {
-    get_set_id("Client/files/game_template.html", &game_id, "text/html")
+    // get_set_id("Client/files/game_template.html", &game_id, "text/html")
+    get_replace("Client/files/game_template.html", &[("#ID#", &game_id)], "text/html")
 }
 
 fn get_html(file_name: web::Path<(String)>) -> impl Responder {
@@ -68,6 +81,13 @@ fn get_html(file_name: web::Path<(String)>) -> impl Responder {
 }
 
 // JAVASCRIPT
+fn get_game_template_js() -> Response { // return impl responder
+    if let Some(available_port) = get_available_port("localhost") {
+        return get_replace("Client/scripts/game_template.js", &[("#IP#", "localhost"), ("#PORT#", &available_port.to_string())], "text/html");
+    }
+    Response::Ok().body("No available port")
+}
+
 fn get_js(script_name: web::Path<(String)>) -> impl Responder {
     get_file(&format!("Client/scripts/{}", &script_name), "application/javascript")
 }
@@ -106,6 +126,7 @@ impl GameHttpServer {
                     .service(web::resource("/games/{game_id}").to(get_new_game_lobby_html))
                     .service(web::resource("/game_template/{game_id}").to(get_new_game_html))
                     // JS
+                    .route("/scripts/game_template.js", web::get().to(get_game_template_js))
                     .service(web::resource("/scripts/{script_name}").to(get_js))
                     // GRAPHICS
                     .service(web::resource("/graphics/{jpeg_name}").to(get_jpeg))
