@@ -5,6 +5,9 @@ use rand::{self, Rng};
 use crate::logic::client;
 use crate::web_socket;
 
+use std::thread;
+use std::time::Duration;
+
 enum FieldType {
     Ground,
     King,
@@ -63,13 +66,14 @@ pub struct Game {
     pub ip: String,
     pub port: String,
     connected: u16,
-    wanna_start: u16,
+    ready: Arc<Mutex<u16>>, // atomic vs arc mutex
     running: bool,
+    started: bool,
 }
 
 impl Game {
     pub fn new(ip: String, port: String) -> Game {
-        Game{clients: Arc::new(Mutex::new(SecureList{clients: Vec::new()})), state: State::new(10, 10), websocket: None, ip, port, connected: 2, wanna_start: 0, running: false}
+        Game{clients: Arc::new(Mutex::new(SecureList{clients: Vec::new()})), state: State::new(10, 10), websocket: None, ip, port, connected: 0, ready: Arc::new(Mutex::new(0)), running: false, started: false}
     }
 
     pub fn start(&mut self) { //&mut self, ip: String, port: String) { // put in two functinos, one to start the game and one for the player
@@ -80,12 +84,40 @@ impl Game {
             let mut websocket = web_socket::WebSocket::new(&self.ip, &self.port);
             websocket.start(self.clients.clone());
             self.websocket = Some(websocket);
+
+            let clients = self.clients.clone();
+
+            let ready = self.ready.clone();
+            thread::spawn(move || {
+                loop {
+                    thread::sleep(Duration::from_millis(1));
+                    let clients_copy = clients.clone();
+                    let clients_copy = clients_copy.lock().unwrap();
+
+                    for client in &clients_copy.clients {
+                        if let Some(message) = client.try_recv() {
+                            if message == "ready" {
+                                *ready.lock().unwrap() += 1; // at the moment one client can set all => change this to client
+                            }
+                        }
+                    }
+                }
+            });
         }
-        if self.connected > 0 {
-            self.connected -= 1;
+
+        self.connected += 1;
+        if self.started {
             return;
         }
 
+        println!("\nconnected: {}\nready: {}", self.connected, self.ready.lock().unwrap());
+        if self.connected / 2 + 1 > *self.ready.lock().unwrap() {
+            return;
+        }
+        self.started = true;
+
+        self.broadcast("game_started");
+        
         let clients = self.clients.clone();
         let mut rng = rand::thread_rng();
 
@@ -132,6 +164,10 @@ impl Game {
 
         let message = format!("{}{}{}{}0311", x, y, player_color, field_type);
 
+        self.broadcast(&message);        
+    }
+
+    pub fn broadcast(&mut self, message: &str) { // Vec<u8>
         let clients = self.clients.lock().unwrap();
         for client in &clients.clients {
             client.send(&message);

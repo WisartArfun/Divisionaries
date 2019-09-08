@@ -4,7 +4,8 @@
 <body>
     <h1>Divisionaries Lobby #ID# </h1>
 
-    <button onclick="start_game()">Start Game</button>
+    <button onclick="ready()" id="ready_button">Ready</button>
+    <!-- <button onclick="start_game()">Start Game</button> -->
     <!-- <a href="javascript:Hi() ">Start Game</a> -->
 
     <script>
@@ -14,21 +15,42 @@
             document.close();
         }
 
-        let start_game = function() {
-            let script = document.createElement('script');
-            script.type = 'module';
+        let document_content = "";
 
-            fetch('/game_template/#ID#')
-                .then(response => response.text())
-                .then(text => {
-                    fetch('/scripts/game_template/#ID#')
-                        .then(response => response.text())
-                        .then(script_text => script.innerText = script_text)
-                        .then(replace_content(text))
-                        .then(document.body.append(script));
-                });
+        fetch('/game_template/#ID#')
+            .then(response => response.text())
+            .then(text => document_content = text);
+
+        let start_game = async function() {
+            replace_content(document_content); // if fetch not finished dangerous
+
+            // let script = document.createElement('script');
+            // script.type = 'module';
+
+            // fetch('/game_template/#ID#')
+            //     .then(response => response.text())
+            //     .then(text => {
+            //         fetch('/scripts/game_template/#ID#')
+            //             .then(response => response.text())
+            //             .then(script_text => script.innerText = script_text)
+            //             .then(replace_content(text))
+            //             .then(document.body.append(script));
+            //     });
         }
     </script>
+
+    <!-- // automatic setting of ip and port  -->
+    <script type="module">
+        import { start_connection } from "/scripts/Game.js"; let game = start_connection("#IP#", "#PORT#", 'game-canvas', start_game); let ready_button = document.getElementById("ready_button"); ready_button.onclick = function() {game.ready();}
+    </script>
+
+
+
+    <!-- <script>
+        function ready() {
+            start_connection("#IP#", "#PORT#", 'game-canvas', start_game);
+        }
+    </script> -->
 
 </body>
 

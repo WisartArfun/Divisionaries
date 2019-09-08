@@ -19,9 +19,7 @@ impl Client {
     pub fn try_recv(&self) -> Option<String> {
         match self.websocket.lock().unwrap().read_message() {
             Ok(msg) => {
-                println!("hello there");
                 if msg.is_binary() || msg.is_text() {
-                    println!("received message from client: {:?}", msg);
                     return Some(msg.to_string());
                 }
             },

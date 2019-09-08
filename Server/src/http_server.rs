@@ -65,12 +65,19 @@ fn get_index_html() -> impl Responder {
 }
 
 fn get_new_game_lobby_html(lobby_id: web::Path<(String)>) -> impl Responder {
-    // get_set_id("Client/files/game.html", &lobby_id, "text/html")
-    get_replace("Client/files/game.html", &[("#ID#", &lobby_id)], "text/html")
+    if let Some(game) = GAMEMANAGER.lock().unwrap().get_game_instance(&lobby_id) {
+        game.lock().unwrap().start();
+        let ip = game.lock().unwrap().ip.clone();
+        let port = game.lock().unwrap().port.clone();
+        return get_replace("Client/files/game.html", &[("#ID#", &lobby_id), ("#IP#", &ip), ("#PORT#", &port)], "text/html");
+    }
+    
+    Response::Ok().body("No available port") // panic! ???
+
+    // get_replace("Client/files/game.html", &[("#ID#", &lobby_id)], "text/html")
 }
 
 fn get_new_game_html(game_id: web::Path<(String)>) -> impl Responder {
-    // get_set_id("Client/files/game_template.html", &game_id, "text/html")
     get_replace("Client/files/game_template.html", &[("#ID#", &game_id)], "text/html")
 }
 
@@ -80,14 +87,15 @@ fn get_html(file_name: web::Path<(String)>) -> impl Responder {
 
 // JAVASCRIPT
 fn get_game_template_js(game_id: web::Path<(String)>) -> Response { // return impl responder
-    if let Some(game) = GAMEMANAGER.lock().unwrap().get_game_instance(&game_id) {
-        game.lock().unwrap().start();
-        let ip = game.lock().unwrap().ip.clone();
-        let port = game.lock().unwrap().port.clone();
-        return get_replace("Client/scripts/game_template.js", &[("#IP#", &ip), ("#PORT#", &port)], "text/html");
-    }
+    // if let Some(game) = GAMEMANAGER.lock().unwrap().get_game_instance(&game_id) {
+    //     game.lock().unwrap().start();
+    //     let ip = game.lock().unwrap().ip.clone();
+    //     let port = game.lock().unwrap().port.clone();
+    //     return get_replace("Client/scripts/game_template.js", &[("#IP#", &ip), ("#PORT#", &port)], "text/html");
+    // }
     
-    Response::Ok().body("No available port") // panic! ???
+    // Response::Ok().body("No available port") // panic! ???
+    Response::Ok().body("Fail")
 }
 
 fn get_js(script_name: web::Path<(String)>) -> impl Responder {

@@ -1,21 +1,64 @@
 import { ProtocolInterpreter } from './ProtocolInterpreter.js';
 import { State } from './State.js';
-import { Map } from './Renderer.js';
 import { GameConnection } from './GameConnection.js';
 
 class Game {
-    constructor(canvas, size_x, size_y, ip, port) {
-        this.size_x = size_x;
-        this.size_y = size_y;
+    // constructor(canvas, size_x, size_y, ip, port) {
+    //     this.size_x = size_x;
+    //     this.size_y = size_y;
 
+    //     this.ip = ip;
+    //     this.port = port;
+
+    //     this.started = false;
+
+    //     this.game_connection = new GameConnection(ip, port);
+    //     this.game_connection.start(this.update_state.bind(this));
+
+    //     this.state = new State(this.size_x, this.size_y);
+    //     this.state.add_map(canvas);
+    // }
+
+    constructor(ip, port, canvas_name, load_game_callback) { // change this
         this.ip = ip;
         this.port = port;
 
+        this.canvas_name = canvas_name;
+        this.load_game_callback = load_game_callback;
+
+        this.started = false;
+
         this.game_connection = new GameConnection(ip, port);
-        this.game_connection.start(this.update_state.bind(this));
+        // this.game_connection.start(this.update_state.bind(this));
+        this.game_connection.start(this.receive_message.bind(this));
+    }
+
+    start_game() {
+        this.size_x = 10;
+        this.size_y = 10;
+
+        this.load_game_callback();
+
+        this.canvas = document.getElementById(this.canvas_name);
 
         this.state = new State(this.size_x, this.size_y);
-        this.state.add_map(canvas);
+        this.state.add_map(this.canvas);
+    }
+
+    ready() {
+        this.game_connection.socket.send("ready");
+    }
+
+    receive_message(message) {
+        if (!this.started) {
+            if (message == "game_started") {
+                this.started = true;
+                this.start_game();
+            }
+        } else {
+            console.log(message);
+            this.update_state(message);
+        }
     }
 
     update_state(message) {
@@ -24,10 +67,19 @@ class Game {
     }
 }
 
-let start_game_instance = function(x_size, y_size, canvas_name, ip, port) {
-    let canvas = document.getElementById(canvas_name);
-    let game = new Game(canvas, x_size, y_size, ip, port);
+let start_connection = function(ip, port, canvas_name, callback) {
+    let game = new Game(ip, port, canvas_name, callback);
+
+    return game;
 }
 
-const _start_game_instance = start_game_instance
-export { _start_game_instance as start_game_instance };
+// let start_game_instance = function(x_size, y_size, canvas_name, ip, port) {
+//     let canvas = document.getElementById(canvas_name);
+//     let game = new Game(canvas, x_size, y_size, ip, port);
+// }
+
+// const _start_game_instance = start_game_instance
+// export { _start_game_instance as start_game_instance };
+
+const _start_connection = start_connection;
+export { _start_connection as start_connection };
