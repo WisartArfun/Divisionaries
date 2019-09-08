@@ -16,7 +16,7 @@ pub struct WebSocket {
 }
 
 impl WebSocket {
-    pub fn new<S>(ip: S, port: S) -> WebSocket where S: Into<String> {
+    pub fn new<S: Into<String>>(ip: S, port: S) -> WebSocket {
         WebSocket{ip: Arc::new(Mutex::new(ip.into())), port: Arc::new(Mutex::new(port.into())), running: false, handle: None}
     }
 
@@ -28,7 +28,6 @@ impl WebSocket {
         let port = self.port.clone();
 
         let web_socket_handle = thread::spawn(move || -> std::io::Result<()> {
-
             let server = TcpListener::bind(format!("{}:{}", ip.lock().unwrap(), port.lock().unwrap())).unwrap();
             for stream in server.incoming() { // handle connection closed
                 let stream = stream?;

@@ -1,20 +1,15 @@
-use std::io::{self, Read};
-use std::thread;
-
 mod http_server;
-mod web_socket;
 mod logic;
-
-use logic::game;
+mod web_socket;
 
 fn main() -> std::io::Result<()> {
     let mut http_game_server = http_server::GameHttpServer::new("127.0.0.1", "8000");
     http_game_server.start();
 
-    let mut game = game::Game::new();
-    // game.start();
-    let mut web_socket = web_socket::WebSocket::new("127.0.0.1", "8001");
-    web_socket.start(game.clients.clone());
+    // let mut game = game::Game::new();
+    // // game.start();
+    // let mut web_socket = web_socket::WebSocket::new("127.0.0.1", "8001");
+    // web_socket.start(game.clients.clone());
 
     // thread::sleep(std::time::Duration::from_secs(10));
     // println!("game start");
@@ -47,9 +42,9 @@ fn main() -> std::io::Result<()> {
     //     }
     // }
 
-    if let Some(handle) = web_socket.handle {
-        let _ = handle.join().unwrap();
-    };
+    // if let Some(handle) = web_socket.handle {
+    //     let _ = handle.join().unwrap();
+    // };
     if let Some(handle) = http_game_server.handle {
         let _ = handle.join().unwrap();
     }

@@ -21,7 +21,7 @@
             fetch('/game_template/#ID#')
                 .then(response => response.text())
                 .then(text => {
-                    fetch('/scripts/game_template.js')
+                    fetch('/scripts/game_template/#ID#')
                         .then(response => response.text())
                         .then(script_text => script.innerText = script_text)
                         .then(replace_content(text))

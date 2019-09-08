@@ -8,3 +8,7 @@
 - Protocol
 - Licence
 - Review Render and GraphicMapping code
+
+- mod http_server::ports => better port management!!!
+- games and web_socket => clean up
+- better use of generics and traits/(interfaces)

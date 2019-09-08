@@ -1,9 +1,7 @@
-use tungstenite;
 use std::net::TcpStream;
-
 use std::sync::{Arc, Mutex};
 
-use std::thread;
+use tungstenite;
 
 pub struct Client {
     websocket: Arc<Mutex<tungstenite::protocol::WebSocket<TcpStream>>>,

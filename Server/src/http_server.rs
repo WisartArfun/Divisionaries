@@ -1,17 +1,18 @@
-use std::{thread, str};
+pub mod ports;
+pub mod game_manager;
 
+use std::{thread, str};
 use std::fs::File;
 use std::io::Read;
+use std::sync::{Arc, Mutex};
+
 use actix_web::{Responder, web, App, HttpServer}; // httpResponse vs Response ?
 use actix_http::{http, Response};
 
-use std::sync::{Arc, Mutex};
-
-mod ports;
-use ports::get_available_port;
+use game_manager::GAMEMANAGER;
 
 // UTIL
-fn read_file<T: Into<String>>(src: T, mime: T) -> Option<Vec<u8>> {
+fn read_file<T: Into<String>>(src: T) -> Option<Vec<u8>> {
     let src = src.into();
     match File::open(&src) { // add path management // check if vec is slower than string => seperate depending on mime
         Ok(mut file) => {
@@ -38,23 +39,20 @@ fn get_utf8<S>(content: S, mime: &str) -> Response where S: Into<Vec<u8>> { // c
 
 // GET FILE AND SET MIME
 fn get_file(src: &str, mime: &str) -> impl Responder {
-    if let Some(file_content) = read_file(src, mime) {
+    if let Some(file_content) = read_file(src) {
         return get_utf8(file_content, mime);
     }
     Response::Ok().body("404 - NOT FOUND!!!") // return a real 404
 }
 
 fn get_replace(src: &str, replacers: &[(&str, &str)], mime: &str) -> Response { // change to impl Responder ??
-    println!("src: {}", src);
-    if let Some(file_content) = read_file(src, mime) {
+    if let Some(file_content) = read_file(src) {
         let mut file_content = str::from_utf8(&file_content).unwrap().to_string();
         
         for replacer in replacers {
             let (old, new) = replacer;
             file_content = file_content.replace(old, new);
         }
-
-        println!("file_content:\n\n{}", file_content);
 
         return get_utf8(file_content, mime);
     }
@@ -81,11 +79,15 @@ fn get_html(file_name: web::Path<(String)>) -> impl Responder {
 }
 
 // JAVASCRIPT
-fn get_game_template_js() -> Response { // return impl responder
-    if let Some(available_port) = get_available_port("localhost") {
-        return get_replace("Client/scripts/game_template.js", &[("#IP#", "localhost"), ("#PORT#", &available_port.to_string())], "text/html");
+fn get_game_template_js(game_id: web::Path<(String)>) -> Response { // return impl responder
+    if let Some(game) = GAMEMANAGER.lock().unwrap().get_game_instance(&game_id) {
+        game.lock().unwrap().start();
+        let ip = game.lock().unwrap().ip.clone();
+        let port = game.lock().unwrap().port.clone();
+        return get_replace("Client/scripts/game_template.js", &[("#IP#", &ip), ("#PORT#", &port)], "text/html");
     }
-    Response::Ok().body("No available port")
+    
+    Response::Ok().body("No available port") // panic! ???
 }
 
 fn get_js(script_name: web::Path<(String)>) -> impl Responder {
@@ -126,7 +128,7 @@ impl GameHttpServer {
                     .service(web::resource("/games/{game_id}").to(get_new_game_lobby_html))
                     .service(web::resource("/game_template/{game_id}").to(get_new_game_html))
                     // JS
-                    .route("/scripts/game_template.js", web::get().to(get_game_template_js))
+                    .service(web::resource("/scripts/game_template/{game_id}").to(get_game_template_js))
                     .service(web::resource("/scripts/{script_name}").to(get_js))
                     // GRAPHICS
                     .service(web::resource("/graphics/{jpeg_name}").to(get_jpeg))
