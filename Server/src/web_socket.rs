@@ -15,7 +15,7 @@ pub struct WebSocket {
     pub handle: Option<thread::JoinHandle<std::io::Result<()>>>,
 }
 
-impl WebSocket {
+impl WebSocket { // register callbacks for receive???
     pub fn new<S: Into<String>>(ip: S, port: S) -> WebSocket {
         WebSocket{ip: Arc::new(Mutex::new(ip.into())), port: Arc::new(Mutex::new(port.into())), running: false, handle: None}
     }
