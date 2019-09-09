@@ -39,7 +39,7 @@ impl WebSocket { // register callbacks for receive???
                 let websocket = Arc::new(Mutex::new(tungstenite::server::accept(stream).unwrap()));
 
                 let client = logic::client::Client::new(websocket);
-                (*game.lock().unwrap()).add(client);
+                (*game.lock().unwrap()).add(client); // return instead of add
             }
 
             Ok(())

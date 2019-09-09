@@ -60,11 +60,11 @@ pub struct SecureList {
 }
 
 pub struct GameData {
-    pub clients: Arc<Mutex<SecureList>>, // get rid of pub, securelist needed?
-    pub state: State,
+    clients: Arc<Mutex<SecureList>>,
+    state: State,
     websocket: Option<web_socket::WebSocket>,
-    pub ip: String,
-    pub port: String,
+    ip: String,
+    port: String,
     connected: u16,
     ready: u16,
     running: bool,
@@ -74,6 +74,46 @@ pub struct GameData {
 impl GameData {
     pub fn new(ip: String, port: String) -> GameData {
         GameData{clients: Arc::new(Mutex::new(SecureList{clients: Vec::new()})), state: State::new(10, 10), websocket: None, ip, port, connected: 0, ready: 0, running: false, started: false}
+    }
+
+    pub fn get_ip(&mut self) -> String {
+        self.ip.clone()
+    }
+
+    pub fn get_port(&mut self) -> String {
+        self.port.clone()
+    }
+
+    pub fn get_clients(&mut self) -> Arc<Mutex<SecureList>> {
+        self.clients.clone()
+    }
+
+    pub fn get_ready(&mut self) -> u16 {
+        self.ready.clone()
+    }
+
+    pub fn set_ready(&mut self, ready: u16) {
+        self.ready = ready;
+    }
+
+    pub fn set_websocket(&mut self, websocket: Option<web_socket::WebSocket>) {
+        self.websocket = websocket;
+    }
+
+    pub fn get_connected(&mut self) -> u16 {
+        self.connected.clone()
+    }
+
+    pub fn set_connected(&mut self, connected: u16) {
+        self.connected = connected;
+    }
+
+    pub fn get_started(&mut self) -> bool {
+        self.started
+    }
+
+    pub fn set_started(&mut self, started: bool) {
+        self.started = started;
     }
 
     pub fn update_single_state(&mut self, x: i64, y:i64, field: Field) {
@@ -131,15 +171,17 @@ impl Game {
         // self.ip = ip;
         // self.port = port;
         let game_data = self.game_data.clone();
+        let connected = game_data.lock().unwrap().connected;
+        game_data.lock().unwrap().set_connected(connected + 1);
+
         if game_data.lock().unwrap().running == false {
             game_data.lock().unwrap().running = true;
-            let mut websocket = web_socket::WebSocket::new(&self.ip, &self.port);
-            websocket.start(self.clients.clone());
-            self.websocket = Some(websocket);
+            let mut websocket = web_socket::WebSocket::new(self.get_ip(), self.get_port());
+            websocket.start(self.get_clients());
+            game_data.lock().unwrap().set_websocket(Some(websocket));
 
-            let clients = game_data.lock().unwrap().clients.clone();
+            let clients = game_data.lock().unwrap().get_clients();
 
-            let ready = game_data.lock().unwrap().ready.clone();
             thread::spawn(move || {
                 loop {
                     thread::sleep(Duration::from_millis(1));
@@ -149,7 +191,50 @@ impl Game {
                     for client in &clients_copy.clients {
                         if let Some(message) = client.try_recv() {
                             if message == "ready" {
-                                *ready.lock().unwrap() += 1; // at the moment one client can set all => change this to client
+                                let ready = game_data.lock().unwrap().get_ready();
+                                let connected = game_data.lock().unwrap().get_connected();
+                                game_data.lock().unwrap().set_ready(ready + 1); // at the moment one client can set all => change this to client
+
+                                if game_data.lock().unwrap().get_started() {
+                                    return;
+                                }
+
+                                println!("\nconnected: {}\nready: {}", connected, ready); // up to match message
+                                if connected / 2 + 1 > ready {
+                                    return;
+                                }
+
+                                game_data.lock().unwrap().set_started(true);
+                                game_data.lock().unwrap().broadcast("game_started");
+                                
+                                let clients = game_data.lock().unwrap().get_clients();
+                                let mut rng = rand::thread_rng();
+
+                                {
+                                    let clients = clients.lock().unwrap();
+                                    for i in 0..clients.clients.len() {
+                                        let x = rng.gen_range(0,10);
+                                        let y = rng.gen_range(0,10);
+
+                                        let player_color = match i {
+                                            0 => PlayerColor::Red,
+                                            1 => PlayerColor::Green,
+                                            2 => PlayerColor::Blue,
+                                            _ => PlayerColor::Empty,
+                                        };
+
+                                        let field = Field::new(FieldType::King, player_color);
+                                        // self.update_single_state(x, y, field);
+                                        game_data.lock().unwrap().update_single_state(x, y, field);
+                                    }
+                                }
+
+                                for y in 0..10 {
+                                    for x in 0..10 {
+                                        // self.send_single_state(x, y);
+                                        game_data.lock().unwrap().send_single_state(x, y);
+                                    }
+                                }
                             }
                         }
                     }
@@ -227,15 +312,15 @@ impl Game {
     }
 
     pub fn get_ip(&mut self) -> String {
-        let ip = self.game_data.lock().unwrap().ip.clone();
-
-        ip
+        self.game_data.lock().unwrap().get_ip()
     }
 
     pub fn get_port(&mut self) -> String {
-        let port = self.game_data.lock().unwrap().port.clone();
+        self.game_data.lock().unwrap().get_port()
+    }
 
-        port
+    pub fn get_clients(&mut self) -> Arc<Mutex<SecureList>> {
+        self.game_data.lock().unwrap().get_clients()
     }
 
     // pub fn update_single_state(&mut self, x: i64, y:i64, field: Field) {
