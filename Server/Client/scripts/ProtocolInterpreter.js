@@ -7,7 +7,7 @@ class ProtocolInterpreter {
     }
 
     static get_color(color_encoding) {
-        let colors = { 0: 'red', 1: 'green', 2: 'blue', 3: 'yellow', 4: 'purple', 5: 'cyan' };
+        let colors = { 0: 'emtpy', 1: 'red', 2: 'green', 3: 'blue' };
         return colors[color_encoding];
     }
 

@@ -31,7 +31,7 @@ impl GameManager {
     pub fn get_game_lobby(&mut self, lobby_id: &str) -> Option<Arc<Mutex<game::Game>>> {
         if !self.lobbies.contains_key(lobby_id) {
             if let Some(available_port) = get_available_port(&self.ip) {
-                let game_instance = game::Game::new(self.ip.clone(), available_port.to_string());
+                let game_instance = game::Game::new(self.ip.clone(), available_port.to_string(), lobby_id.to_string());
                 self.lobbies.insert(lobby_id.to_string(), Arc::new(Mutex::new(game_instance)));
             }
             else {
@@ -41,7 +41,7 @@ impl GameManager {
         Some(self.lobbies.get(lobby_id).unwrap().clone())
     }
 
-    pub fn get_running_game (&mut self, game_id: &str) -> Option<Arc<Mutex<game::Game>>> {
+    pub fn get_running_game(&mut self, game_id: &str) -> Option<Arc<Mutex<game::Game>>> {
         if !self.running_games.contains_key(game_id) {
             return None;
         }

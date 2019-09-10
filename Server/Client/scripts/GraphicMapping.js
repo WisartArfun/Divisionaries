@@ -21,7 +21,11 @@ class GraphicMapper {
             }
         }
 
-        return colors[mapping][color];
+        let res = colors[mapping][color];
+        if (res == undefined) {
+            return colors[mapping]['empty'];
+        }
+        return res;
     }
 }
 

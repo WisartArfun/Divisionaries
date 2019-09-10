@@ -8,8 +8,11 @@ use crate::web_socket;
 use std::thread;
 use std::time::Duration;
 
+use crate::http_server::game_manager;
+
 enum FieldType {
     Ground,
+    Fog,
     King,
 }
 
@@ -51,12 +54,27 @@ impl State {
     }
 }
 
+pub struct Player {
+    id: String, // hex/base64
+    name: String,
+    client: client::Client,
+    ready: bool,
+    color: PlayerColor,
+}
+
+impl Player {
+    fn new<S: Into<String>(id: S, name: S, client: client::Client, color) -> Player {
+        Player{id: id.into(), name: name:into(), client, false, color}
+    }
+}
+
 pub struct GameData {
     clients: Arc<Mutex<Vec<client::Client>>>,
     state: State,
     websocket: Option<web_socket::WebSocket>,
     ip: String,
     port: String,
+    game_id: String,
     connected: u16,
     ready: u16,
     running: bool,
@@ -64,8 +82,8 @@ pub struct GameData {
 }
 
 impl GameData {
-    pub fn new(ip: String, port: String) -> GameData {
-        GameData{clients: Arc::new(Mutex::new(Vec::new())), state: State::new(10, 10), websocket: None, ip, port, connected: 0, ready: 0, running: false, started: false}
+    pub fn new(ip: String, port: String, game_id: String) -> GameData {
+        GameData{clients: Arc::new(Mutex::new(Vec::new())), state: State::new(10, 10), websocket: None, ip, port, game_id, connected: 0, ready: 0, running: false, started: false}
     }
 
     pub fn connect(&mut self, client: client::Client) {
@@ -94,6 +112,10 @@ impl GameData {
         self.ready = ready;
     }
 
+    pub fn get_game_id(&mut self) -> String {
+        self.game_id.clone()
+    }
+
     pub fn set_websocket(&mut self, websocket: Option<web_socket::WebSocket>) {
         self.websocket = websocket;
     }
@@ -101,10 +123,6 @@ impl GameData {
     pub fn get_connected(&mut self) -> u16 {
         self.connected.clone()
     }
-
-    // pub fn set_connected(&mut self, connected: u16) {
-    //     self.connected = connected;
-    // }
 
     pub fn get_started(&mut self) -> bool {
         self.started
@@ -146,7 +164,7 @@ impl GameData {
     }
 
     pub fn broadcast(&mut self, message: &str) { // Vec<u8>
-        for client in self.clients.lock().unwrap().iter() {
+        for client in self.clients.lock().unwrap().iter() { // why iter
             client.send(&message);
         }
     }
@@ -159,37 +177,33 @@ impl GameData {
                 return;
             }
 
+            game_manager::GAMEMANAGER.lock().unwrap().start_lobby(&self.game_id);
+
             self.started = true;
             self.broadcast("game_started");
             
-            // let clients = game_data.lock().unwrap().get_clients();
-            // let mut rng = rand::thread_rng();
+            let mut rng = rand::thread_rng();
+            for i in 0..self.get_clients().lock().unwrap().len() { // what exactly will this do???
+                let x = rng.gen_range(0, 10);
+                let y = rng.gen_range(0, 10);
 
-            // {
-            //     let clients = clients.lock().unwrap();
-            //     for i in 0..clients.clients.len() {
-            //         let x = rng.gen_range(0,10);
-            //         let y = rng.gen_range(0,10);
+                let player_color = match (i + 1) {
+                    0 => PlayerColor::Empty,
+                    1 => PlayerColor::Red,
+                    2 => PlayerColor::Green,
+                    3 => PlayerColor::Blue,
+                    _ => PlayerColor::Empty,
+                };
 
-            //         let player_color = match i {
-            //             0 => PlayerColor::Red,
-            //             1 => PlayerColor::Green,
-            //             2 => PlayerColor::Blue,
-            //             _ => PlayerColor::Empty,
-            //         };
+                let field = Field::new(FieldType::King, player_color);
+                self.update_single_state(x, y, field);
+            }
 
-            //         let field = Field::new(FieldType::King, player_color);
-            //         // self.update_single_state(x, y, field);
-            //         game_data.lock().unwrap().update_single_state(x, y, field);
-            //     }
-            // }
-
-            // for y in 0..10 {
-            //     for x in 0..10 {
-            //         // self.send_single_state(x, y);
-            //         game_data.lock().unwrap().send_single_state(x, y);
-            //     }
-            // }
+            for y in 0..10 {
+                for x in 0..10 {
+                    self.send_single_state(x, y);
+                }
+            }
         }
     }
 }
@@ -199,8 +213,8 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn new(ip: String, port: String) -> Game {
-        Game{game_data: Arc::new(Mutex::new(GameData::new(ip, port)))}
+    pub fn new(ip: String, port: String, game_id: String) -> Game {
+        Game{game_data: Arc::new(Mutex::new(GameData::new(ip, port, game_id)))}
     }
 
     pub fn start(&mut self) { //&mut self, ip: String, port: String) { // put in two functinos, one to start the game and one for the player
