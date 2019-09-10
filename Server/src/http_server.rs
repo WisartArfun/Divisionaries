@@ -65,18 +65,14 @@ fn get_index_html() -> impl Responder {
 }
 
 fn get_new_game_lobby_html(lobby_id: web::Path<(String)>) -> impl Responder {
-    if let Some(game) = GAMEMANAGER.lock().unwrap().get_game_instance(&lobby_id) {
+    if let Some(game) = GAMEMANAGER.lock().unwrap().get_game_lobby(&lobby_id) {
         game.lock().unwrap().start();
-        // let ip = game.lock().unwrap().ip.clone();
-        // let port = game.lock().unwrap().port.clone();
         let ip = game.lock().unwrap().get_ip();
         let port = game.lock().unwrap().get_port();
         return get_replace("Client/files/game.html", &[("#ID#", &lobby_id), ("#IP#", &ip), ("#PORT#", &port)], "text/html");
     }
     
     Response::Ok().body("No available port") // panic! ???
-
-    // get_replace("Client/files/game.html", &[("#ID#", &lobby_id)], "text/html")
 }
 
 fn get_new_game_html(game_id: web::Path<(String)>) -> impl Responder {

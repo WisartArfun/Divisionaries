@@ -2,7 +2,7 @@ use std::{thread, time};
 use std::net::TcpListener;
 
 use crate::logic;
-use crate::logic::game::SecureAdd;
+use crate::logic::game;
 
 use tungstenite;
 
@@ -17,10 +17,14 @@ pub struct WebSocket {
 
 impl WebSocket { // register callbacks for receive???
     pub fn new<S: Into<String>>(ip: S, port: S) -> WebSocket {
-        WebSocket{ip: Arc::new(Mutex::new(ip.into())), port: Arc::new(Mutex::new(port.into())), running: false, handle: None}
+        let ip = ip.into();
+        let port = port.into();
+        println!("new websocket, ip: {}, port: {}", &ip, &port);
+        WebSocket{ip: Arc::new(Mutex::new(ip)), port: Arc::new(Mutex::new(port)), running: false, handle: None}
     }
 
-    pub fn start(&mut self, game: Arc<Mutex<logic::game::SecureList>>) {
+    pub fn start(&mut self, game: Arc<Mutex<game::GameData>>) {
+        println!("socket started");
         if self.running {return;}
         self.running = true;
 
@@ -39,7 +43,7 @@ impl WebSocket { // register callbacks for receive???
                 let websocket = Arc::new(Mutex::new(tungstenite::server::accept(stream).unwrap()));
 
                 let client = logic::client::Client::new(websocket);
-                (*game.lock().unwrap()).add(client); // return instead of add
+                game.lock().unwrap().connect(client); // return instead of add
             }
 
             Ok(())
