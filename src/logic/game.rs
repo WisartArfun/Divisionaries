@@ -63,8 +63,8 @@ pub struct Player {
 }
 
 impl Player {
-    fn new<S: Into<String>(id: S, name: S, client: client::Client, color) -> Player {
-        Player{id: id.into(), name: name:into(), client, false, color}
+    fn new<S: Into<String>>(id: S, name: S, client: client::Client, color: PlayerColor) -> Player {
+        Player{id: id.into(), name: name.into(), client, ready: false, color}
     }
 }
 
@@ -148,8 +148,10 @@ impl GameData {
 
     pub fn send_single_state(&mut self, x: i64, y: i64) {
         let field_type = match self.state.map[y as usize][x as usize].field_type {
-            FieldType::Ground => 0,
+            FieldType::Ground => 0, // nothing field / ground??
+            FieldType::Fog => 1,
             FieldType::King => 2,
+            _ => 0,
         };
         let player_color = match self.state.map[y as usize][x as usize].player_color {
             PlayerColor::Empty => 0,
