@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="divisionaries" version="4">
+  <OBJECT>
+    <ID name="divisionaries" mc="Standard.Package" uid="4747a03f-b825-4b94-97db-26fa84e51086"/>
+    <PID name="Divisionaries" mc="Standard.Project" uid="e2f67d91-dfdc-470a-b7e7-ab24b25a8e70"/>
+    <ATTRIBUTES>
+      <ATT name="IsInstantiable">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[divisionaries]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="OwnedElement">
+        <COMPID name="Http Server" mc="Standard.Class" uid="8510cd92-300d-48d5-b817-cb100d83298c"/>
+        <COMPID name="Game Manager" mc="Standard.Class" uid="de2ae7e5-d08c-43e4-ba98-87140ce9c3b9"/>
+        <COMPID name="User Manager" mc="Standard.Class" uid="c9ea7f93-054d-4865-a692-09f2eea901b7"/>
+        <COMPID name="Data Manager" mc="Standard.Class" uid="4a793af5-8604-425e-9660-368d426ddb85"/>
+        <COMPID name="&lt;&lt;interface&gt;&gt; Game" mc="Standard.Class" uid="1c9a8775-be27-42fe-9977-5d5107736447"/>
+        <COMPID name="Example Game" mc="Standard.Class" uid="63efe7af-f2e6-4bad-835a-7ed05db13cd3"/>
+        <COMPID name="File Handler" mc="Standard.Class" uid="60d0e53a-8d44-4071-8f54-9193073a5448"/>
+        <COMPID name="SQL Handler" mc="Standard.Class" uid="6d8889d5-ff4d-4e71-b59c-c0c19c3a60b5"/>
+        <COMPID name="Logger" mc="Standard.Class" uid="e36686d2-ed4d-4ad8-859e-be663a6f7d68"/>
+        <COMPID name="Main" mc="Standard.Class" uid="43b336f1-3e73-4f62-95e5-952d0ecaf4e2"/>
+        <COMPID name="Game Data" mc="Standard.Class" uid="92f8ffc6-9da1-47de-8671-5491e19d355f"/>
+        <COMPID name="&lt;&lt;Interface&gt;&gt; State" mc="Standard.Class" uid="ac255438-fe41-4a4f-a32a-2164f3d2dd39"/>
+        <COMPID name="State" mc="Standard.Class" uid="edb21ea5-4244-4717-976d-6c8ddbd37150"/>
+        <COMPID name="API Server" mc="Standard.Class" uid="a79a62d4-4961-4632-9938-45122616d20d"/>
+        <COMPID name="&lt;&lt;interface&gt;&gt; Connection" mc="Standard.Class" uid="a1f882b4-1c18-4a21-8cf5-8c8ff052ae87"/>
+        <COMPID name="WebSocket" mc="Standard.Class" uid="9d26839c-184d-437e-a5d3-ee9f3acbd9e3"/>
+        <COMPID name="User" mc="Standard.Class" uid="c0045048-e367-4e34-ab29-2da65e8f278d"/>
+      </COMP>
+      <COMP relation="Product">
+        <COMPID name="divisionaries Class diagram" mc="Standard.ClassDiagram" uid="dc5f6047-2394-42b8-b161-8045a6a4e893"/>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>

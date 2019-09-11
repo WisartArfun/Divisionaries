@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="Divisionaries" version="4">
+  <OBJECT>
+    <ID name="Divisionaries" mc="Standard.Project" uid="e2f67d91-dfdc-470a-b7e7-ab24b25a8e70"/>
+    <ATTRIBUTES>
+      <ATT name="ProjectContext"></ATT>
+      <ATT name="ProjectDescr"></ATT>
+      <ATT name="Name"><![CDATA[Divisionaries]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="Model">
+        <COMPID name="divisionaries" mc="Standard.Package" uid="4747a03f-b825-4b94-97db-26fa84e51086"/>
+      </COMP>
+      <COMP relation="DiagramRoot">
+        <COMPID name="Divisionaries" mc="Infrastructure.DiagramSet" uid="595ed000-1689-46a7-a458-c1307ec52522"/>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>
