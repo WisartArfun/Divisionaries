@@ -1,14 +1,49 @@
 mod http_server;
-mod logic;
-mod web_socket;
+mod logger;
+mod data_manager;
+mod connection;
 
-fn main() -> std::io::Result<()> { // use Result everywhere?
-    let mut http_game_server = http_server::GameHttpServer::new("127.0.0.1", "8000");
-    http_game_server.start();
+use log;
 
-    if let Some(handle) = http_game_server.handle {
-        let _ = handle.join().unwrap();
+use http_server::trait_run_http_server::RunHttpServer;
+use logger::simple_logger::SimpleLogger;
+
+
+fn main() -> std::io::Result<()> {
+    let mode = "RUN";
+
+    match mode {
+        "RUN" => {
+            SimpleLogger::init();
+            log::info!("Main thread running");
+
+            let mut server = http_server::server::HttpGameServer::new("localhost", "8000"); // load ip and port from config
+            let handle = server.start();
+
+            if let Err(e) = handle.join().unwrap() {
+                log::error!("An error occured while joining the http_server:\n\t{:?}", e);
+                panic!("");
+            }
+        },
+        "FM" => {
+            // test file manager
+        },
+        "TEST" => {
+            let vec: Vec<u8> = vec!(1, 2, 3);
+            println!("{:?} at {:p}", &vec, &vec);
+            let vec2 = vec;
+            println!("{:?} at {:p}", &vec2, &vec2);
+
+            let mut vec3 = vec2;
+            vec3.push(4);
+            println!("{:?} at {:p}", &vec3, &vec3);
+
+        },
+        _ => {
+            panic!("{} is not a valid mode", mode)
+        },
     }
+    
 
     Ok(())
 }
