@@ -17,6 +17,7 @@
 
 - crate::connection::trait_connection
     - also for file_manager?
+    - ReadWrite needed? combine connection and read write???
 
 - crate::data_manager::file_manager
     - handle wrong paths

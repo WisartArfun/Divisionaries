@@ -2,6 +2,8 @@ mod http_server;
 mod logger;
 mod data_manager;
 mod connection;
+mod websocket_server;
+mod api;
 
 use log;
 
@@ -19,6 +21,9 @@ fn main() -> std::io::Result<()> {
 
             let mut server = http_server::server::HttpGameServer::new("localhost", "8000"); // load ip and port from config
             let handle = server.start();
+
+            let mut api_server = api::server::APIServer::new("localhost", "8001");
+            api_server.start();
 
             if let Err(e) = handle.join().unwrap() {
                 log::error!("An error occured while joining the http_server:\n\t{:?}", e);
