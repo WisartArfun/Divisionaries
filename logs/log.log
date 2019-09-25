@@ -20480,3 +20480,642 @@ tokio_reactor::registration - l: 518
 C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-server-0.6.0\src\builder.rs
 actix_server::builder - l: 325
 2019-09-23 21:23:27 UTC [INFO] - SIGINT received, exiting
+src\logger\simple_logger.rs
+server::logger::simple_logger - l: 10
+2019-09-24 16:05:49 UTC [INFO] - log4rs initialized from config file at src: config/log4rs.yaml
+src\main.rs
+server - l: 21
+2019-09-24 16:05:49 UTC [INFO] - Main thread running
+src\http_server\server.rs
+server::http_server::server - l: 20
+2019-09-24 16:05:49 UTC [INFO] - creating new HttpGameServer with address: localhost:8000
+src\http_server\server.rs
+server::http_server::server - l: 27
+2019-09-24 16:05:49 UTC [INFO] - starting HttpGameServer on address: localhost:8000
+src\api\server.rs
+server::api::server - l: 27
+2019-09-24 16:05:49 UTC [INFO] - new APIServer created on localhost:8001
+src\http_server\server.rs
+server::http_server::server - l: 30
+2019-09-24 16:05:49 UTC [DEBUG] - started new thread for HttpGameServer
+src\api\server.rs
+server::api::server - l: 124
+2019-09-24 16:05:49 UTC [INFO] - new WSConnectionHandler was created
+src\websocket_server\server.rs
+server::websocket_server::server - l: 22
+2019-09-24 16:05:49 UTC [INFO] - new websocket, ip: localhost, port: 8001
+src\api\server.rs
+server::api::server - l: 37
+2019-09-24 16:05:49 UTC [INFO] - starting server on localhost:8001
+src\websocket_server\server.rs
+server::websocket_server::server - l: 27
+2019-09-24 16:05:49 UTC [DEBUG] - checking to start websocket
+src\websocket_server\server.rs
+server::websocket_server::server - l: 33
+2019-09-24 16:05:49 UTC [INFO] - socket started at localhost:8001
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-server-0.6.0\src\builder.rs
+actix_server::builder - l: 264
+2019-09-24 16:05:49 UTC [INFO] - Starting 12 workers
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-server-0.6.0\src\builder.rs
+actix_server::builder - l: 276
+2019-09-24 16:05:49 UTC [INFO] - Starting server on [::1]:8000
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-server-0.6.0\src\builder.rs
+actix_server::builder - l: 276
+2019-09-24 16:05:49 UTC [INFO] - Starting server on 127.0.0.1:8000
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 680
+2019-09-24 16:05:49 UTC [DEBUG] - adding I/O source: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\background.rs
+tokio_reactor::background - l: 189
+2019-09-24 16:05:49 UTC [DEBUG] - starting background reactor
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 680
+2019-09-24 16:05:49 UTC [DEBUG] - adding I/O source: 4194305
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-24 16:05:49 UTC [DEBUG] - scheduling Read for: 0
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-24 16:05:49 UTC [DEBUG] - scheduling Read for: 1
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-24 16:05:49 UTC [INFO] - configuring cfg for a GameServiceProvider
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-24 16:05:52 UTC [DEBUG] - scheduling Read for: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-24 16:05:52 UTC [DEBUG] - scheduling Read for: 1
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-24 16:05:52 UTC [DEBUG] - scheduling Read for: 1
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-server-0.6.0\src\builder.rs
+actix_server::builder - l: 325
+2019-09-24 16:05:52 UTC [INFO] - SIGINT received, exiting
+src\logger\simple_logger.rs
+server::logger::simple_logger - l: 10
+2019-09-25 10:55:55 UTC [INFO] - log4rs initialized from config file at src: config/log4rs.yaml
+src\main.rs
+server - l: 22
+2019-09-25 10:55:55 UTC [INFO] - Main thread running
+src\http_server\server.rs
+server::http_server::server - l: 20
+2019-09-25 10:55:55 UTC [INFO] - creating new HttpGameServer with address: localhost:8000
+src\http_server\server.rs
+server::http_server::server - l: 27
+2019-09-25 10:55:55 UTC [INFO] - starting HttpGameServer on address: localhost:8000
+src\api\server.rs
+server::api::server - l: 27
+2019-09-25 10:55:55 UTC [INFO] - new APIServer created on localhost:8001
+src\http_server\server.rs
+server::http_server::server - l: 30
+2019-09-25 10:55:55 UTC [DEBUG] - started new thread for HttpGameServer
+src\api\server.rs
+server::api::server - l: 124
+2019-09-25 10:55:55 UTC [INFO] - new WSConnectionHandler was created
+src\websocket_server\server.rs
+server::websocket_server::server - l: 22
+2019-09-25 10:55:55 UTC [INFO] - new websocket, ip: localhost, port: 8001
+src\api\server.rs
+server::api::server - l: 37
+2019-09-25 10:55:55 UTC [INFO] - starting server on localhost:8001
+src\websocket_server\server.rs
+server::websocket_server::server - l: 27
+2019-09-25 10:55:55 UTC [DEBUG] - checking to start websocket
+src\websocket_server\server.rs
+server::websocket_server::server - l: 33
+2019-09-25 10:55:55 UTC [INFO] - socket started at localhost:8001
+src\logic\normal_div_game.rs
+server::logic::normal_div_game - l: 30
+2019-09-25 10:55:55 UTC [INFO] - new NormalDivGame created on localhost:8002
+src\logic\normal_div_game.rs
+server::logic::normal_div_game - l: 83
+2019-09-25 10:55:55 UTC [INFO] - new NorDivGameConnectionHandler was created
+src\websocket_server\server.rs
+server::websocket_server::server - l: 22
+2019-09-25 10:55:55 UTC [INFO] - new websocket, ip: localhost, port: 8002
+src\logic\normal_div_game.rs
+server::logic::normal_div_game - l: 42
+2019-09-25 10:55:55 UTC [INFO] - starting NormalDivGame WSServer on localhost:8002
+src\websocket_server\server.rs
+server::websocket_server::server - l: 27
+2019-09-25 10:55:55 UTC [DEBUG] - checking to start websocket
+src\websocket_server\server.rs
+server::websocket_server::server - l: 33
+2019-09-25 10:55:55 UTC [INFO] - socket started at localhost:8002
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-server-0.6.0\src\builder.rs
+actix_server::builder - l: 264
+2019-09-25 10:55:55 UTC [INFO] - Starting 12 workers
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-server-0.6.0\src\builder.rs
+actix_server::builder - l: 276
+2019-09-25 10:55:55 UTC [INFO] - Starting server on [::1]:8000
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-server-0.6.0\src\builder.rs
+actix_server::builder - l: 276
+2019-09-25 10:55:55 UTC [INFO] - Starting server on 127.0.0.1:8000
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\background.rs
+tokio_reactor::background - l: 189
+2019-09-25 10:55:55 UTC [DEBUG] - starting background reactor
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 680
+2019-09-25 10:55:55 UTC [DEBUG] - adding I/O source: 0
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 680
+2019-09-25 10:55:55 UTC [DEBUG] - adding I/O source: 4194305
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:55:55 UTC [DEBUG] - scheduling Read for: 0
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:55:55 UTC [DEBUG] - scheduling Read for: 1
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 13
+2019-09-25 10:55:55 UTC [INFO] - configuring cfg for a GameServiceProvider
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 680
+2019-09-25 10:56:03 UTC [DEBUG] - adding I/O source: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 680
+2019-09-25 10:56:03 UTC [DEBUG] - adding I/O source: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:56:03 UTC [DEBUG] - scheduling Read for: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:56:03 UTC [DEBUG] - scheduling Read for: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:56:03 UTC [DEBUG] - scheduling Read for: 0
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 51
+2019-09-25 10:56:03 UTC [DEBUG] - get html game from GameServiceProbvider
+src\http_server\http_utils.rs
+server::http_server::http_utils - l: 28
+2019-09-25 10:56:03 UTC [INFO] - get_file from Client/files/game_template.html with mime text/html
+src\data_manager\file_manager\mod.rs
+server::data_manager::file_manager - l: 26
+2019-09-25 10:56:03 UTC [INFO] - getting file content from Client/files/game_template.html
+src\data_manager\file_manager\mod.rs
+server::data_manager::file_manager - l: 13
+2019-09-25 10:56:03 UTC [INFO] - getting file from Client/files/game_template.html
+src\data_manager\file_manager\file.rs
+server::data_manager::file_manager::file - l: 14
+2019-09-25 10:56:03 UTC [INFO] - creating new File object
+src\data_manager\file_manager\file.rs
+server::data_manager::file_manager::file - l: 25
+2019-09-25 10:56:03 UTC [DEBUG] - reading from file
+src\http_server\http_utils.rs
+server::http_server::http_utils - l: 39
+2019-09-25 10:56:03 UTC [INFO] - get_replace
+src\http_server\http_utils.rs
+server::http_server::http_utils - l: 11
+2019-09-25 10:56:03 UTC [DEBUG] - getting utf8 for mime text/html
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 698
+2019-09-25 10:56:08 UTC [DEBUG] - dropping I/O source: 0
+src\websocket_server\server.rs
+server::websocket_server::server - l: 40
+2019-09-25 10:56:09 UTC [INFO] - A new client connected to localhost:8001
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tungstenite-0.9.1\src\handshake\server.rs
+tungstenite::handshake::server - l: 216
+2019-09-25 10:56:09 UTC [DEBUG] - Server handshake done.
+src\websocket_server\ws_connection.rs
+server::websocket_server::ws_connection - l: 38
+2019-09-25 10:56:09 UTC [INFO] - created new WSConnection
+src\api\server.rs
+server::api::server - l: 81
+2019-09-25 10:56:09 UTC [DEBUG] - APIServer is handling a new connection with id: 0
+src\api\server.rs
+server::api::server - l: 158
+2019-09-25 10:56:09 UTC [INFO] - new API client was created
+src\websocket_server\ws_connection.rs
+server::websocket_server::ws_connection - l: 22
+2019-09-25 10:56:09 UTC [DEBUG] - received message from WSConnection.websocket
+src\api\server.rs
+server::api::server - l: 133
+2019-09-25 10:56:09 UTC [INFO] - WSConnectionHandler received a message
+src\api\server.rs
+server::api::server - l: 191
+2019-09-25 10:56:09 UTC [INFO] - new Message was created
+src\api\server.rs
+server::api::server - l: 53
+2019-09-25 10:56:09 UTC [DEBUG] - "GetOpenLobbies"
+src\api\server.rs
+server::api::server - l: 89
+2019-09-25 10:56:09 UTC [DEBUG] - WSConnectionHandler is handling a message
+src\api\server.rs
+server::api::server - l: 103
+2019-09-25 10:56:09 UTC [DEBUG] - client asked for open lobbies
+src\websocket_server\ws_connection.rs
+server::websocket_server::ws_connection - l: 15
+2019-09-25 10:56:09 UTC [DEBUG] - send message over WSConnection
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 698
+2019-09-25 10:56:17 UTC [DEBUG] - dropping I/O source: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 680
+2019-09-25 10:56:20 UTC [DEBUG] - adding I/O source: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 680
+2019-09-25 10:56:20 UTC [DEBUG] - adding I/O source: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:56:20 UTC [DEBUG] - scheduling Read for: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:56:20 UTC [DEBUG] - scheduling Read for: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:56:20 UTC [DEBUG] - scheduling Read for: 0
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 51
+2019-09-25 10:56:20 UTC [DEBUG] - get html game from GameServiceProbvider
+src\http_server\http_utils.rs
+server::http_server::http_utils - l: 28
+2019-09-25 10:56:20 UTC [INFO] - get_file from Client/files/game_template.html with mime text/html
+src\data_manager\file_manager\mod.rs
+server::data_manager::file_manager - l: 26
+2019-09-25 10:56:20 UTC [INFO] - getting file content from Client/files/game_template.html
+src\data_manager\file_manager\mod.rs
+server::data_manager::file_manager - l: 13
+2019-09-25 10:56:20 UTC [INFO] - getting file from Client/files/game_template.html
+src\data_manager\file_manager\file.rs
+server::data_manager::file_manager::file - l: 14
+2019-09-25 10:56:20 UTC [INFO] - creating new File object
+src\data_manager\file_manager\file.rs
+server::data_manager::file_manager::file - l: 25
+2019-09-25 10:56:20 UTC [DEBUG] - reading from file
+src\http_server\http_utils.rs
+server::http_server::http_utils - l: 39
+2019-09-25 10:56:20 UTC [INFO] - get_replace
+src\http_server\http_utils.rs
+server::http_server::http_utils - l: 11
+2019-09-25 10:56:20 UTC [DEBUG] - getting utf8 for mime text/html
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 698
+2019-09-25 10:56:25 UTC [DEBUG] - dropping I/O source: 0
+src\websocket_server\server.rs
+server::websocket_server::server - l: 40
+2019-09-25 10:56:28 UTC [INFO] - A new client connected to localhost:8001
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tungstenite-0.9.1\src\handshake\server.rs
+tungstenite::handshake::server - l: 216
+2019-09-25 10:56:28 UTC [DEBUG] - Server handshake done.
+src\websocket_server\ws_connection.rs
+server::websocket_server::ws_connection - l: 38
+2019-09-25 10:56:28 UTC [INFO] - created new WSConnection
+src\api\server.rs
+server::api::server - l: 81
+2019-09-25 10:56:28 UTC [DEBUG] - APIServer is handling a new connection with id: 1
+src\api\server.rs
+server::api::server - l: 158
+2019-09-25 10:56:28 UTC [INFO] - new API client was created
+src\websocket_server\ws_connection.rs
+server::websocket_server::ws_connection - l: 22
+2019-09-25 10:56:28 UTC [DEBUG] - received message from WSConnection.websocket
+src\api\server.rs
+server::api::server - l: 133
+2019-09-25 10:56:28 UTC [INFO] - WSConnectionHandler received a message
+src\api\server.rs
+server::api::server - l: 191
+2019-09-25 10:56:28 UTC [INFO] - new Message was created
+src\api\server.rs
+server::api::server - l: 53
+2019-09-25 10:56:28 UTC [DEBUG] - "JoinDivGameNormal"
+src\api\server.rs
+server::api::server - l: 89
+2019-09-25 10:56:28 UTC [DEBUG] - WSConnectionHandler is handling a message
+src\api\server.rs
+server::api::server - l: 97
+2019-09-25 10:56:28 UTC [INFO] - client joined a normal div game
+src\websocket_server\ws_connection.rs
+server::websocket_server::ws_connection - l: 15
+2019-09-25 10:56:28 UTC [DEBUG] - send message over WSConnection
+src\api\server.rs
+server::api::server - l: 163
+2019-09-25 10:56:28 UTC [INFO] - close connection from APIClient 1
+src\websocket_server\ws_connection.rs
+server::websocket_server::ws_connection - l: 43
+2019-09-25 10:56:28 UTC [INFO] - closing WSConnection
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 698
+2019-09-25 10:56:34 UTC [DEBUG] - dropping I/O source: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 680
+2019-09-25 10:56:39 UTC [DEBUG] - adding I/O source: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 680
+2019-09-25 10:56:39 UTC [DEBUG] - adding I/O source: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:56:39 UTC [DEBUG] - scheduling Read for: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:56:39 UTC [DEBUG] - scheduling Read for: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:56:39 UTC [DEBUG] - scheduling Read for: 0
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 51
+2019-09-25 10:56:39 UTC [DEBUG] - get html game from GameServiceProbvider
+src\http_server\http_utils.rs
+server::http_server::http_utils - l: 28
+2019-09-25 10:56:39 UTC [INFO] - get_file from Client/files/game_template.html with mime text/html
+src\data_manager\file_manager\mod.rs
+server::data_manager::file_manager - l: 26
+2019-09-25 10:56:39 UTC [INFO] - getting file content from Client/files/game_template.html
+src\data_manager\file_manager\mod.rs
+server::data_manager::file_manager - l: 13
+2019-09-25 10:56:39 UTC [INFO] - getting file from Client/files/game_template.html
+src\data_manager\file_manager\file.rs
+server::data_manager::file_manager::file - l: 14
+2019-09-25 10:56:39 UTC [INFO] - creating new File object
+src\data_manager\file_manager\file.rs
+server::data_manager::file_manager::file - l: 25
+2019-09-25 10:56:39 UTC [DEBUG] - reading from file
+src\http_server\http_utils.rs
+server::http_server::http_utils - l: 39
+2019-09-25 10:56:39 UTC [INFO] - get_replace
+src\http_server\http_utils.rs
+server::http_server::http_utils - l: 11
+2019-09-25 10:56:39 UTC [DEBUG] - getting utf8 for mime text/html
+src\websocket_server\server.rs
+server::websocket_server::server - l: 40
+2019-09-25 10:56:40 UTC [INFO] - A new client connected to localhost:8001
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tungstenite-0.9.1\src\handshake\server.rs
+tungstenite::handshake::server - l: 216
+2019-09-25 10:56:40 UTC [DEBUG] - Server handshake done.
+src\websocket_server\ws_connection.rs
+server::websocket_server::ws_connection - l: 38
+2019-09-25 10:56:40 UTC [INFO] - created new WSConnection
+src\api\server.rs
+server::api::server - l: 81
+2019-09-25 10:56:40 UTC [DEBUG] - APIServer is handling a new connection with id: 1
+src\api\server.rs
+server::api::server - l: 158
+2019-09-25 10:56:40 UTC [INFO] - new API client was created
+src\websocket_server\ws_connection.rs
+server::websocket_server::ws_connection - l: 22
+2019-09-25 10:56:40 UTC [DEBUG] - received message from WSConnection.websocket
+src\api\server.rs
+server::api::server - l: 133
+2019-09-25 10:56:40 UTC [INFO] - WSConnectionHandler received a message
+src\api\server.rs
+server::api::server - l: 191
+2019-09-25 10:56:40 UTC [INFO] - new Message was created
+src\api\server.rs
+server::api::server - l: 53
+2019-09-25 10:56:40 UTC [DEBUG] - "JoinDivGameNormal"
+src\api\server.rs
+server::api::server - l: 89
+2019-09-25 10:56:40 UTC [DEBUG] - WSConnectionHandler is handling a message
+src\api\server.rs
+server::api::server - l: 97
+2019-09-25 10:56:40 UTC [INFO] - client joined a normal div game
+src\websocket_server\ws_connection.rs
+server::websocket_server::ws_connection - l: 15
+2019-09-25 10:56:40 UTC [DEBUG] - send message over WSConnection
+src\api\server.rs
+server::api::server - l: 163
+2019-09-25 10:56:40 UTC [INFO] - close connection from APIClient 1
+src\websocket_server\ws_connection.rs
+server::websocket_server::ws_connection - l: 43
+2019-09-25 10:56:40 UTC [INFO] - closing WSConnection
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 698
+2019-09-25 10:56:44 UTC [DEBUG] - dropping I/O source: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 698
+2019-09-25 10:56:51 UTC [DEBUG] - dropping I/O source: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 680
+2019-09-25 10:58:27 UTC [DEBUG] - adding I/O source: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 680
+2019-09-25 10:58:27 UTC [DEBUG] - adding I/O source: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:58:27 UTC [DEBUG] - scheduling Read for: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:58:27 UTC [DEBUG] - scheduling Read for: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:58:27 UTC [DEBUG] - scheduling Read for: 0
+src\http_server\game_service_provider.rs
+server::http_server::game_service_provider - l: 51
+2019-09-25 10:58:27 UTC [DEBUG] - get html game from GameServiceProbvider
+src\http_server\http_utils.rs
+server::http_server::http_utils - l: 28
+2019-09-25 10:58:27 UTC [INFO] - get_file from Client/files/game_template.html with mime text/html
+src\data_manager\file_manager\mod.rs
+server::data_manager::file_manager - l: 26
+2019-09-25 10:58:27 UTC [INFO] - getting file content from Client/files/game_template.html
+src\data_manager\file_manager\mod.rs
+server::data_manager::file_manager - l: 13
+2019-09-25 10:58:27 UTC [INFO] - getting file from Client/files/game_template.html
+src\data_manager\file_manager\file.rs
+server::data_manager::file_manager::file - l: 14
+2019-09-25 10:58:27 UTC [INFO] - creating new File object
+src\data_manager\file_manager\file.rs
+server::data_manager::file_manager::file - l: 25
+2019-09-25 10:58:27 UTC [DEBUG] - reading from file
+src\http_server\http_utils.rs
+server::http_server::http_utils - l: 39
+2019-09-25 10:58:27 UTC [INFO] - get_replace
+src\http_server\http_utils.rs
+server::http_server::http_utils - l: 11
+2019-09-25 10:58:27 UTC [DEBUG] - getting utf8 for mime text/html
+src\websocket_server\server.rs
+server::websocket_server::server - l: 40
+2019-09-25 10:58:32 UTC [INFO] - A new client connected to localhost:8002
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tungstenite-0.9.1\src\handshake\server.rs
+tungstenite::handshake::server - l: 216
+2019-09-25 10:58:32 UTC [DEBUG] - Server handshake done.
+src\websocket_server\ws_connection.rs
+server::websocket_server::ws_connection - l: 38
+2019-09-25 10:58:32 UTC [INFO] - created new WSConnection
+src\logic\normal_div_game.rs
+server::logic::normal_div_game - l: 119
+2019-09-25 10:58:32 UTC [DEBUG] - APIServer is handling a new connection with id: 0
+src\logic\normal_div_game.rs
+server::logic::normal_div_game - l: 167
+2019-09-25 10:58:32 UTC [INFO] - new API client was created
+src\websocket_server\ws_connection.rs
+server::websocket_server::ws_connection - l: 22
+2019-09-25 10:58:32 UTC [DEBUG] - received message from WSConnection.websocket
+src\logic\normal_div_game.rs
+server::logic::normal_div_game - l: 92
+2019-09-25 10:58:32 UTC [INFO] - NorDivGameConnectionHandler received a message
+src\logic\normal_div_game.rs
+server::logic::normal_div_game - l: 200
+2019-09-25 10:58:32 UTC [INFO] - new Message was created
+src\logic\normal_div_game.rs
+server::logic::normal_div_game - l: 58
+2019-09-25 10:58:32 UTC [DEBUG] - "JoinDivGameNormal"
+src\logic\normal_div_game.rs
+server::logic::normal_div_game - l: 127
+2019-09-25 10:58:32 UTC [DEBUG] - NorDivGameConnectionHandler is handling a message
+src\logic\normal_div_game.rs
+server::logic::normal_div_game - l: 135
+2019-09-25 10:58:32 UTC [INFO] - client joined a normal div game
+src\websocket_server\ws_connection.rs
+server::websocket_server::ws_connection - l: 15
+2019-09-25 10:58:32 UTC [DEBUG] - send message over WSConnection
+src\logic\normal_div_game.rs
+server::logic::normal_div_game - l: 172
+2019-09-25 10:58:32 UTC [INFO] - close connection from NorDivGameClient 0
+src\websocket_server\ws_connection.rs
+server::websocket_server::ws_connection - l: 43
+2019-09-25 10:58:32 UTC [INFO] - closing WSConnection
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\lib.rs
+tokio_reactor - l: 698
+2019-09-25 10:58:32 UTC [DEBUG] - dropping I/O source: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:58:43 UTC [DEBUG] - scheduling Read for: 0
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:58:43 UTC [DEBUG] - scheduling Read for: 1
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\tokio-reactor-0.1.9\src\registration.rs
+tokio_reactor::registration - l: 518
+2019-09-25 10:58:43 UTC [DEBUG] - scheduling Read for: 1
+C:\Users\darod\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-server-0.6.0\src\builder.rs
+actix_server::builder - l: 325
+2019-09-25 10:58:43 UTC [INFO] - SIGINT received, exiting

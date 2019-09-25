@@ -4,11 +4,13 @@ mod data_manager;
 mod connection;
 mod websocket_server;
 mod api;
+mod logic;
 
 use log;
 
 use http_server::trait_run_http_server::RunHttpServer;
 use logger::simple_logger::SimpleLogger;
+use logic::trait_game::Game;
 
 
 fn main() -> std::io::Result<()> {
@@ -24,6 +26,9 @@ fn main() -> std::io::Result<()> {
 
             let mut api_server = api::server::APIServer::new("localhost", "8001");
             api_server.start();
+
+            let mut nor_div_game_server = logic::normal_div_game::NormalDivGame::new("localhost", "8002");
+            nor_div_game_server.start_server();
 
             if let Err(e) = handle.join().unwrap() {
                 log::error!("An error occured while joining the http_server:\n\t{:?}", e);
