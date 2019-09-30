@@ -1,4 +1,5 @@
 - GENERAL
+    - describing errors and fatals in doc
     - making better function and mod descriptions and structure
     - code annotations
     - join WSServer and Game Loop to one thread???

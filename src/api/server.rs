@@ -10,10 +10,13 @@ use serde_json;
 use crate::websocket_server::ws_connection::WSConnection;
 use crate::websocket_server::server::WebSocketServer;
 
-use crate::connection::trait_handle_new_connection::HandleNewConnection;
-use crate::connection::trait_connection::Connection;
-use crate::connection::trait_handle_message::HandleMessage;
+use crate::connection::HandleNewConnection;
+use crate::connection::Connection;
+use crate::connection::HandleMessage;
+use crate::connection::ConnectionServer;
 
+
+// IDEA: external
 pub struct APIServer {
     connections: Arc<Mutex<WSConnectionHandler>>,
     ws_server: WebSocketServer,
@@ -63,6 +66,7 @@ impl APIServer {
     }
 }
 
+// IDEA: external
 struct WSConnectionHandler {
     connections: HashMap<i64, Arc<Mutex<APIClient>>>, // PROB: apiclients hanging around that are no more on the list
     available_ids: Vec<i64>,
@@ -113,6 +117,7 @@ impl HandleNewConnection<WSConnection> for WSConnectionHandler { // QUES: do it 
     }
 }
 
+// WARN: NOT EXTERNAL
 impl HandleMessage<Message> for WSConnectionHandler {
     fn handle_message(&mut self, message: Message) {
         log::debug!("WSConnectionHandler is handling a message");
@@ -181,6 +186,7 @@ enum APIResponse {
     RunningGames(Vec<String>), // TODO: Vec<GameMetaData>
 }
 
+// IDEA: EXTERNAL
 struct Message {
     sender: Arc<Mutex<APIClient>>, // QUES: what exactly does 'static do here?
     content: Vec<u8>,

@@ -1,2 +1,2 @@
-pub mod trait_game;
-pub mod normal_div_game;
+pub mod traits_bucket_server;
+pub mod bucket_server;

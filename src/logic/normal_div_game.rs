@@ -12,9 +12,9 @@ use crate::websocket_server::server::WebSocketServer;
 
 use crate::logic::trait_game::Game;
 
-use crate::connection::trait_handle_message::HandleMessage;
-use crate::connection::trait_handle_new_connection::HandleNewConnection;
-use crate::connection::trait_connection::Connection;
+use crate::connection::HandleMessage;
+use crate::connection::HandleNewConnection;
+use crate::connection::Connection;
 
 
 pub struct NormalDivGame { // QUES: IDEA: common sub type for NormalDivGame & Api Server, a lot of data is the same

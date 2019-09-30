@@ -4,19 +4,19 @@ use std::sync::{Arc, Mutex};
 use tungstenite;
 use log;
 
-use crate::connection::trait_connection::Connection;
+use crate::connection::Connection;
 
-pub struct WSConnection {
+pub struct WSConnection { // PROB: more generics
     ws_conn: Arc<Mutex<tungstenite::protocol::WebSocket<TcpStream>>>, // QUES: more generics???
 }
 
 impl Connection for WSConnection {
-    fn send(&self, message: Vec<u8>) {
+    fn send(&mut self, message: Vec<u8>) {
         log::debug!("send message over WSConnection"); // QUES: also save message?
         self.ws_conn.lock().unwrap().write_message(tungstenite::Message::Binary(message)).unwrap();
     }
 
-    fn try_recv(&self) -> Option<Vec<u8>> {
+    fn try_recv(&mut self) -> Option<Vec<u8>> {
         match self.ws_conn.lock().unwrap().read_message() {
             Ok(msg) => {
                 log::debug!("received message from WSConnection.websocket");

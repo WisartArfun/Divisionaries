@@ -3,6 +3,15 @@ name = "server"
 version = "0.1.0"
 authors = ["WisartArfun <daro.daro15@gmail.com>"]
 edition = "2018"
+readme = "README.md"
+
+[lib]
+name = "bucketer"
+path = "src/lib.rs"
+
+[[bin]]
+name = "mybin"
+path = "src/main.rs"
 
 [dependencies]
 # actix = "0.8.3"
