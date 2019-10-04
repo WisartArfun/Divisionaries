@@ -2,6 +2,8 @@
 
 use std::sync::{Arc, Mutex};
 
+use crate::websocket_server::ws_connection::WSConnection;
+
 /// Trait to make new connections.
 /// 
 /// A `struct` that implements `Connection` can be treated connection.websocket_server.
@@ -41,14 +43,14 @@ pub trait Connection { // QUES: Sized
     /// # Arguments
     /// 
     /// * message: `Vec<u8>` - message to be sent
-    fn send(&mut self, message: Vec<u8>); // QUES: better to use &[u8] ?
+    fn send(&mut self, message: Vec<u8>) where Self: Sized; // QUES: better to use &[u8] ?
 
     /// Returns message as `Vec<u8>` if there is one, otherwise `None`. `try_recv` is therefore non-blocking.
     /// 
     /// # Returns
     /// 
     /// * message: `Option<Vec<u8>>` - `Some(message)` if there is one, else `None`
-    fn try_recv(&mut self) -> Option<Vec<u8>>;
+    fn try_recv(&mut self) -> Option<Vec<u8>> where Self: Sized;
 }
 
 pub trait UserServer { // QUES: stop???
@@ -71,7 +73,10 @@ pub trait HandleNewConnection { // QUES: with Box or lifetime (&'a mut dyn Conne
     /// # Arguments
     /// 
     /// * connection: `impl Connection` - the connection that should be handled
-    fn handle_new_connection(&mut self, connection: impl Connection) where Self: Sized; // QUES: why this sized?
+    // fn handle_new_connection(&mut self, connection: impl Connection) where Self: Sized; // QUES: why this sized?
+    fn handle_new_connection(&mut self, connection: WSConnection);
+
+    fn disconnect_client(&mut self, id: i64);
 }
 
 // QUES: PROB: create a client trait???

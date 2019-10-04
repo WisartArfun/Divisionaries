@@ -43,8 +43,10 @@ impl ConnectionServer for WebSocketServer {
                 thread::sleep(time::Duration::from_millis(5)); // PROB: somehow set_nonblocking needs time => error
 
                 let websocket = tungstenite::server::accept(stream).unwrap(); // do this generic
-
+                
+                log::info!("calling callback");
                 callback.lock().unwrap().handle_new_connection(WSConnection::new(websocket));
+                log::info!("ending callback");
             }
 
             Ok(())

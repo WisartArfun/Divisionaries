@@ -3,12 +3,25 @@
 mod data_manager;
 // mod connection;
 // mod websocket_server;
-// // mod api;
+// mod api;
 // extern crate bucketer;
+
+// use std::fs::File;
+// use std::io::Read;
+// extern crate ruml;
+
+// extern crate syn;
 
 use bucketer::http_server::trait_run_http_server::RunHttpServer;
 use bucketer::logger::SimpleLogger;
 use bucketer::http_server;
+
+use bucketer::logic::bucket_server::{BaseBucketServer, BaseBucket, BaseConnectionHandler};
+use bucketer::logic::traits_bucket_server::{BucketServer};
+
+use bucketer::websocket_server::server::WebSocketServer;
+
+use bucketer::api::ApiBucket;
 
 fn main() -> std::io::Result<()> {
     let mode = "RUN";
@@ -17,6 +30,9 @@ fn main() -> std::io::Result<()> {
         "RUN" => {
             SimpleLogger::init("config/log4rs.yaml");
             log::info!("Main thread running");
+
+            let mut api_bucket = BaseBucketServer::<BaseConnectionHandler, ApiBucket<BaseConnectionHandler>, WebSocketServer>::new("localhost", "8002");
+            let handle = api_bucket.start();
 
             let mut server = http_server::server::HttpGameServer::new("localhost", "8000"); // load ip and port from config
             let handle = server.start();
@@ -34,9 +50,14 @@ fn main() -> std::io::Result<()> {
                 panic!("");
             }
         },
-        "FM" => {
-            // test file manager
-        },
+        // "UML" => {
+        //     let mut file = File::open("src/main.rs").expect("Unable to open file");
+        //     let mut src = String::new();
+        //     file.read_to_string(&mut src).expect("Unable to read file");
+        //     let file = syn::parse_file(&src).expect("Unable to parse file");
+        //     let file = ruml::file_parser(file);
+        //     println!("{}", ruml::render_plantuml(file));
+        // },
         "TEST" => {
             let vec: Vec<u8> = vec!(1, 2, 3);
             println!("{:?} at {:p}", &vec, &vec);
