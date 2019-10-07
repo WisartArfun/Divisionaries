@@ -3,18 +3,20 @@
 
 <body>
 
-    <h1>Welcome to Divisionaries</h1>
+    <h1>Welcome to BucketGames</h1>
 
-    Please enter a lobby name: <input id="lobby_id_input" type="text" name="lobby_id" value="random"><br>
+    <div>
+        <h2>Divisionaries</h2>
 
-    <button onclick="start_game()">Start Game</button>
+        <h3>Play with Friends:</h3>
+        Please enter a lobby name: <input id="lobby_id_input" type="text" name="lobby_id" value="random"><br>
+        <button onclick="join_div_game_direct()">Start Game</button>
 
-    <script>
-        function start_game() {
-            let lobby_id_input = document.getElementById("lobby_id_input");
-            let input = lobby_id_input.value;
-            window.location.href = "/games/" + input;
-        }
-    </script>
+        <h3>Join Queue</h3>
+        <button onclick="join_div_game_normal()">Normal</button>
+    </div>
+
+    <!-- provides: join_div_game_direct(), join_div_game_normal() -->
+    <script src="/scripts/api_index.js"></script>
 
 </html>

@@ -9,13 +9,20 @@ use crate::connection::HandleNewConnection;
 use crate::logic::traits_bucket_server::{ReceiveMessage, Bucket};
 use crate::logic::bucket_server::{BaseBucketMessage};
 
+use crate::logic::bucket_manager::BaseBucketManager;
+
 pub struct ApiBucket<H: HandleNewConnection + ReceiveMessage> {
     connection_handler: Arc<Mutex<H>>,
+    // bucket_manager: Arc<Mutex<BaseBucketManager<'static>>>,
 }
 
 impl<H: HandleNewConnection + ReceiveMessage> Bucket<H> for ApiBucket<H> {
+    // fn new(connection_handler: Arc<Mutex<H>>, bucket_manager: Arc<Mutex<BaseBucketManager<'static>>>) -> Self { // PROB: 'static
     fn new(connection_handler: Arc<Mutex<H>>) -> Self {
-        Self{connection_handler}
+        Self{
+            connection_handler,
+            // bucket_manager,
+        }
     }
 
     fn start(&mut self) {
@@ -26,7 +33,7 @@ impl<H: HandleNewConnection + ReceiveMessage> Bucket<H> for ApiBucket<H> {
         log::info!("ApiBucket stoped");
     }
 
-    fn handle_message(&mut self, mut message: BaseBucketMessage) {
+    fn handle_message(&mut self, mut message: BaseBucketMessage, bucekt_manager: Arc<Mutex<BaseBucketManager>>) {
         log::info!("Api received a message: {}", str::from_utf8(&message.get_content()).unwrap());
 
         let client = message.get_client();

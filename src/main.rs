@@ -12,12 +12,15 @@ mod data_manager;
 
 // extern crate syn;
 
+use std::sync::{Arc, Mutex};
+
 use bucketer::http_server::trait_run_http_server::RunHttpServer;
 use bucketer::logger::SimpleLogger;
 use bucketer::http_server;
 
-use bucketer::logic::bucket_server::{BaseBucketServer, BaseBucket, BaseConnectionHandler};
+use bucketer::logic::bucket_server::{BaseBucketServer, BaseConnectionHandler};
 use bucketer::logic::traits_bucket_server::{BucketServer};
+use bucketer::logic::bucket_manager::BaseBucketManager;
 
 use bucketer::websocket_server::server::WebSocketServer;
 
@@ -31,8 +34,11 @@ fn main() -> std::io::Result<()> {
             SimpleLogger::init("config/log4rs.yaml");
             log::info!("Main thread running");
 
+            let bucket_manager = Arc::new(Mutex::new(BaseBucketManager::new()));
+
+            // let mut api_bucket = BaseBucketServer::<BaseConnectionHandler, ApiBucket<BaseConnectionHandler>, WebSocketServer>::new("localhost", "8002", bucket_manager);
             let mut api_bucket = BaseBucketServer::<BaseConnectionHandler, ApiBucket<BaseConnectionHandler>, WebSocketServer>::new("localhost", "8002");
-            let handle = api_bucket.start();
+            let handle = api_bucket.start(bucket_manager);
 
             let mut server = http_server::server::HttpGameServer::new("localhost", "8000"); // load ip and port from config
             let handle = server.start();
