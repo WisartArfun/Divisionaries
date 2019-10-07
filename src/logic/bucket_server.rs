@@ -12,7 +12,7 @@ use crate::connection::Connection;
 
 use crate::websocket_server::ws_connection::WSConnection;
 
-use crate::logic::bucket_manager::BaseBucketManager;
+use crate::logic::bucket_manager::BaseBucketManagerData;
 
 pub struct BaseBucketServer<H: HandleNewConnection + ReceiveMessage, B: Bucket<H>, S: ConnectionServer> {
     connection_handler: Arc<Mutex<H>>,
@@ -24,15 +24,15 @@ pub struct BaseBucketServer<H: HandleNewConnection + ReceiveMessage, B: Bucket<H
 }
 
 // QUES: ugly that BaseBucketServer needs type parameters??? // QUES: WARN: PROB: 'static lifetime
-impl<H: HandleNewConnection + ReceiveMessage + Send + 'static, B: Bucket<H> + Send + 'static, S: ConnectionServer> BucketServer<H, B, S> for BaseBucketServer<H, B, S> { // WARN: types are declared twice: here and in struct decleration
-// impl<H: HandleNewConnection + ReceiveMessage + Send + 'static, B: Bucket<H> + Send + 'static, S: ConnectionServer> BaseBucketServer<H, B, S> { // WARN: types are declared twice: here and in struct decleration
-    // fn new(ip: &str, port: &str, bucket_manager: Arc<Mutex<BaseBucketManager>>) -> Self { // QUES: why type parameter static?
-    fn new(ip: &str, port: &str) -> Self { // QUES: why type parameter static?
+// impl<H: HandleNewConnection + ReceiveMessage + Send + 'static, B: Bucket<H> + Send + 'static, S: ConnectionServer> BucketServer<H, B, S> for BaseBucketServer<H, B, S> { // WARN: types are declared twice: here and in struct decleration
+impl<H: HandleNewConnection + ReceiveMessage + Send + 'static, B: Bucket<H> + Send + 'static, S: ConnectionServer> BaseBucketServer<H, B, S> { // WARN: types are declared twice: here and in struct decleration
+    pub fn new(ip: &str, port: &str, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self { // QUES: why type parameter static?
+    // fn new(ip: &str, port: &str) -> Self { // QUES: why type parameter static?
         log::info!("new BucketServer, ip: {}, port: {}", ip, port);
         let connection_handler = Arc::new(Mutex::new(H::new()));
         BaseBucketServer{
             connection_handler: connection_handler.clone(),
-            bucket: Arc::new(Mutex::new(B::new(connection_handler))), //, bucket_manager))),
+            bucket: Arc::new(Mutex::new(B::new(connection_handler, bucket_manager))), //, bucket_manager))),
             // bucket: Arc::new(Mutex::new(B::new(connection_handler, Arc::new(Mutex::new(BaseBucketManager::new()))))),
             ws_server: S::new(ip, port),
             ip: ip.to_string(),
@@ -42,12 +42,12 @@ impl<H: HandleNewConnection + ReceiveMessage + Send + 'static, B: Bucket<H> + Se
     }
 
     // fn start<M: BucketMessage>(&mut self) { // return handle
-    fn start(&mut self, bucket_manager: Arc<Mutex<BaseBucketManager>>) -> thread::JoinHandle<std::io::Result<()>> { // PROB: better solution
+    pub fn start(&mut self) -> thread::JoinHandle<std::io::Result<()>> { // PROB: better solution
         self.ws_server.start(self.connection_handler.clone()); // WARN: check if already started
 
         let connection_handler = self.connection_handler.clone();
         let bucket = self.bucket.clone();
-        let bucket_manager = bucket_manager.clone();
+        // let bucket_manager = bucket_manager.clone();
 
         let handle = thread::spawn(move || {
             loop {
@@ -57,7 +57,7 @@ impl<H: HandleNewConnection + ReceiveMessage + Send + 'static, B: Bucket<H> + Se
                     let message = connection_handler.lock().unwrap().receive_message();
                     if let Some(mut res) = message {
                         log::debug!("BaseBucketServer received a message: {:?}", &res.get_content());
-                        bucket.lock().unwrap().handle_message(res, bucket_manager.clone());
+                        bucket.lock().unwrap().handle_message(res); //, bucket_manager.clone());
                     } else {
                         break;
                     }

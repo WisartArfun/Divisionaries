@@ -1,6 +1,6 @@
 
 let ready = false;
-let socket = new WebSocket('ws://localhost:8002');
+let socket = new WebSocket('ws://localhost:8001');
 socket.onopen = function(event) {
     ready = true;
 

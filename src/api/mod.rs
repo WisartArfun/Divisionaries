@@ -9,19 +9,21 @@ use crate::connection::HandleNewConnection;
 use crate::logic::traits_bucket_server::{ReceiveMessage, Bucket};
 use crate::logic::bucket_server::{BaseBucketMessage};
 
-use crate::logic::bucket_manager::BaseBucketManager;
+use crate::logic::bucket_manager::BaseBucketManagerData;
 
 pub struct ApiBucket<H: HandleNewConnection + ReceiveMessage> {
     connection_handler: Arc<Mutex<H>>,
-    // bucket_manager: Arc<Mutex<BaseBucketManager<'static>>>,
+    bucket_manager: Arc<Mutex<BaseBucketManagerData>>,
 }
+
+unsafe impl<H: HandleNewConnection + ReceiveMessage> Send for ApiBucket<H> {}
 
 impl<H: HandleNewConnection + ReceiveMessage> Bucket<H> for ApiBucket<H> {
     // fn new(connection_handler: Arc<Mutex<H>>, bucket_manager: Arc<Mutex<BaseBucketManager<'static>>>) -> Self { // PROB: 'static
-    fn new(connection_handler: Arc<Mutex<H>>) -> Self {
+    fn new(connection_handler: Arc<Mutex<H>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self {
         Self{
             connection_handler,
-            // bucket_manager,
+            bucket_manager,
         }
     }
 
@@ -33,7 +35,7 @@ impl<H: HandleNewConnection + ReceiveMessage> Bucket<H> for ApiBucket<H> {
         log::info!("ApiBucket stoped");
     }
 
-    fn handle_message(&mut self, mut message: BaseBucketMessage, bucekt_manager: Arc<Mutex<BaseBucketManager>>) {
+    fn handle_message(&mut self, mut message: BaseBucketMessage) { //}, bucket_manager: Arc<Mutex<BaseBucketManager>>) {
         log::info!("Api received a message: {}", str::from_utf8(&message.get_content()).unwrap());
 
         let client = message.get_client();
@@ -47,6 +49,7 @@ impl<H: HandleNewConnection + ReceiveMessage> Bucket<H> for ApiBucket<H> {
                     client.lock().unwrap().send(serde_json::to_vec(&APIResponse::JoinGame("some_id".to_string())).unwrap()); // PROB: error handling // QUES: efficiency?
                     let id = client.lock().unwrap().get_id(); // QUES: two times lock bad?
                     self.connection_handler.lock().unwrap().disconnect_client(id);
+                    // bucket_manager.lock().unwrap().start_lobby("tets".to_string());
                     log::debug!("Client left ApiBucket");
                 },
                 APIRequest::GetOpenLobbies => {

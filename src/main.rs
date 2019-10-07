@@ -34,24 +34,20 @@ fn main() -> std::io::Result<()> {
             SimpleLogger::init("config/log4rs.yaml");
             log::info!("Main thread running");
 
-            let bucket_manager = Arc::new(Mutex::new(BaseBucketManager::new()));
+            let mut bucket_manager = BaseBucketManager::new();
 
-            // let mut api_bucket = BaseBucketServer::<BaseConnectionHandler, ApiBucket<BaseConnectionHandler>, WebSocketServer>::new("localhost", "8002", bucket_manager);
-            let mut api_bucket = BaseBucketServer::<BaseConnectionHandler, ApiBucket<BaseConnectionHandler>, WebSocketServer>::new("localhost", "8002");
-            let handle = api_bucket.start(bucket_manager);
+            let mut api_bucket = BaseBucketServer::<BaseConnectionHandler, ApiBucket<BaseConnectionHandler>, WebSocketServer>::new("localhost", "8001", bucket_manager.get_data());
+            let handle_api = api_bucket.start();
 
             let mut server = http_server::server::HttpGameServer::new("localhost", "8000"); // load ip and port from config
-            let handle = server.start();
+            let handle_http = server.start();
 
-            // let mut api_server = api::server::APIServer::new("localhost", "8001");
-            // api_server.start();
-
-            // let mut bucket_server = BucketServer::new("localhost", "8002");
-            // bucket_server.start();
-            // let mut nor_div_game_server = logic::normal_div_game::NormalDivGame::new("localhost", "8002");
-            // nor_div_game_server.start_server();
-
-            if let Err(e) = handle.join().unwrap() {
+            // WARN: add try_join in loop
+            if let Err(e) = handle_api.join().unwrap() {
+                log::error!("An error occured while joining the api_bucket:\n\t{:?}", e);
+                panic!("");
+            }
+            if let Err(e) = handle_http.join().unwrap() {
                 log::error!("An error occured while joining the http_server:\n\t{:?}", e);
                 panic!("");
             }
