@@ -30,6 +30,7 @@ impl<H: HandleNewConnection + ReceiveMessage> Bucket<H> for ApiBucket<H> {
         log::info!("Api received a message: {}", str::from_utf8(&message.get_content()).unwrap());
 
         let client = message.get_client();
+        let _ = client.clone().lock().unwrap();
         let msg = message.get_content();
         let content = str::from_utf8(&msg).unwrap(); // PROB: error handling
         if let Ok(api_request) = serde_json::from_str::<APIRequest>(content) {
@@ -39,6 +40,7 @@ impl<H: HandleNewConnection + ReceiveMessage> Bucket<H> for ApiBucket<H> {
                     client.lock().unwrap().send(serde_json::to_vec(&APIResponse::JoinGame("some_id".to_string())).unwrap()); // PROB: error handling // QUES: efficiency?
                     let id = client.lock().unwrap().get_id(); // QUES: two times lock bad?
                     self.connection_handler.lock().unwrap().disconnect_client(id);
+                    log::debug!("Client left ApiBucket");
                 },
                 APIRequest::GetOpenLobbies => {
                     log::debug!("client asked for open lobbies");

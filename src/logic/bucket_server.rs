@@ -33,16 +33,16 @@ impl<H: HandleNewConnection + ReceiveMessage + Send + 'static, B: Bucket<H> + Se
     fn start(&mut self) -> thread::JoinHandle<std::io::Result<()>> {
         self.ws_server.start(self.connection_handler.clone()); // WARN: check if already started
 
-        let connections = self.connection_handler.clone();
+        let connection_handler = self.connection_handler.clone();
         let bucket = self.bucket.clone();
 
         let handle = thread::spawn(move || {
             loop {
-                thread::sleep(time::Duration::from_millis(2000));
+                thread::sleep(time::Duration::from_millis(200));
                 
-                println!("hello tyhere");
                 loop {
-                    if let Some(mut res) = connections.lock().unwrap().receive_message() {
+                    let message = connection_handler.lock().unwrap().receive_message();
+                    if let Some(mut res) = message {
                         log::debug!("BaseBucketServer received a message: {:?}", &res.get_content());
                         bucket.lock().unwrap().handle_message(res);
                     } else {
@@ -135,11 +135,13 @@ impl BaseBucketClient {
     }
 
     pub fn send(&mut self, content: Vec<u8>) {
+        log::debug!("BaseBucketClient is sending a message");
         self.connection.send(content);
     }
 
     pub fn close_connection(&mut self) {
-        unimplemented!();
+        log::debug!("BaseBucketClient is closing a connection");
+        self.connection.close();
     }
 }
 
