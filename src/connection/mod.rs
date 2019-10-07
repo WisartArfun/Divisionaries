@@ -4,6 +4,8 @@ use std::sync::{Arc, Mutex};
 
 use crate::websocket_server::ws_connection::WSConnection;
 
+use crate::logic::bucket_server::BaseConnectionHandler;
+
 /// Trait to make new connections.
 /// 
 /// A `struct` that implements `Connection` can be treated connection.websocket_server.
@@ -138,6 +140,7 @@ pub trait HandleMessage { // QUES: type parameters here or in method???
 pub trait ConnectionServer {
     fn new(ip: &str, port: &str) -> Self where Self: Sized;
 
-    fn start<T: HandleNewConnection + Send + 'static>(&mut self, callback: Arc<Mutex<T>>) where Self: Sized; // PROB: generics
+    fn start(&mut self, callback: Arc<Mutex<BaseConnectionHandler>>);
+    // fn start<T: HandleNewConnection + Send + 'static>(&mut self, callback: Arc<Mutex<T>>) where Self: Sized; // PROB: generics
     // fn start(&mut self, callback: Arc<Mutex<dyn HandleNewConnection>>) where Self: Sized; // PROB: the `handle_new_connection` method cannot be invoked on a trait object
 }

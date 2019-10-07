@@ -19,7 +19,7 @@ use bucketer::logger::SimpleLogger;
 use bucketer::http_server;
 
 use bucketer::logic::bucket_server::{BaseBucketServer, BaseConnectionHandler};
-use bucketer::logic::traits_bucket_server::{BucketServer};
+// use bucketer::logic::traits_bucket_server::{BucketServer};
 use bucketer::logic::bucket_manager::BaseBucketManager;
 
 use bucketer::websocket_server::server::WebSocketServer;
@@ -36,7 +36,9 @@ fn main() -> std::io::Result<()> {
 
             let mut bucket_manager = BaseBucketManager::new();
 
-            let mut api_bucket = BaseBucketServer::<BaseConnectionHandler, ApiBucket<BaseConnectionHandler>, WebSocketServer>::new("localhost", "8001", bucket_manager.get_data());
+            // let mut api_bucket = BaseBucketServer::<BaseConnectionHandler, ApiBucket<BaseConnectionHandler>, WebSocketServer>::new("localhost", "8001", bucket_manager.get_data());
+            let mut api_bucket = Arc::new(Mutex::new(ApiBucket::new(bucket_manager.get_data())));
+            let mut api_bucket = BaseBucketServer::new("localhost", "8001", api_bucket); // IDEA: directly in here
             let handle_api = api_bucket.start();
 
             let mut server = http_server::server::HttpGameServer::new("localhost", "8000"); // load ip and port from config

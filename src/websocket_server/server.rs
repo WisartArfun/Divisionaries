@@ -5,10 +5,12 @@ use std::{thread, time};
 use log;
 use tungstenite;
 
-use crate::connection::HandleNewConnection;
+// use crate::connection::HandleNewConnection;
 use crate::websocket_server::ws_connection::WSConnection;
 
 use crate::connection::ConnectionServer;
+
+use crate::logic::bucket_server::BaseConnectionHandler;
 
 pub struct WebSocketServer {
     ip: Arc<Mutex<String>>,
@@ -29,7 +31,8 @@ impl ConnectionServer for WebSocketServer {
     }
 
     // PROB: QUES: generics
-    fn start<T: HandleNewConnection + Send + 'static>(&mut self, callback: Arc<Mutex<T>>) {
+    // fn start<T: HandleNewConnection + Send + 'static>(&mut self, callback: Arc<Mutex<T>>) {
+    fn start(&mut self, callback: Arc<Mutex<BaseConnectionHandler>>) {
         // QUES: Send? Send unsafe? // QUES: what exactly does 'static do and when to use it
         // fn start(&mut self, callback: Arc<Mutex<dyn HandleNewConnection>>) { // PROB: the the `handle_new_connection` method cannot be invoked on a trait object
         if self.running {

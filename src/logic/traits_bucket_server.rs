@@ -2,21 +2,25 @@ use std::sync::{Arc, Mutex};
 
 use std::thread;
 
-use crate::connection::ConnectionServer;
-use crate::connection::HandleNewConnection;
+// use crate::connection::ConnectionServer;
+// use crate::connection::HandleNewConnection;
 // use crate::connection::Connection;
 
+use crate::logic::bucket_server::BaseConnectionHandler;
 use crate::logic::bucket_server::BaseBucketMessage;
+
 use crate::logic::bucket_manager::BaseBucketManagerData;
 
-pub trait BucketServer<H: HandleNewConnection + ReceiveMessage, B: Bucket<H>, S: ConnectionServer> { // QUES: generics here or in method
-    fn new(ip: &str, port: &str, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self where Self: Sized;
-    // fn new(ip: &str, port: &str) -> Self where Self: Sized;
+// use crate::logic::bucket_manager::BaseBucketManagerData;
 
-    // fn start<M: BucketMessage>(&mut self); // WARN: return handle
-    fn start(&mut self) -> thread::JoinHandle<std::io::Result<()>>;
-    // fn start(&mut self, bucket_manager: Arc<Mutex<BaseBucketManager>>) -> thread::JoinHandle<std::io::Result<()>>;
-}
+// pub trait BucketServer<H: HandleNewConnection + ReceiveMessage, B: Bucket<H>, S: ConnectionServer> { // QUES: generics here or in method
+//     fn new(ip: &str, port: &str, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self where Self: Sized;
+//     // fn new(ip: &str, port: &str) -> Self where Self: Sized;
+
+//     // fn start<M: BucketMessage>(&mut self); // WARN: return handle
+//     fn start(&mut self) -> thread::JoinHandle<std::io::Result<()>>;
+//     // fn start(&mut self, bucket_manager: Arc<Mutex<BaseBucketManager>>) -> thread::JoinHandle<std::io::Result<()>>;
+// }
 
 // pub trait BucketClient<C: Connection> { // when struct when trait?
 //     fn new(id: i64, connection: C) -> Self where Self: Sized;
@@ -35,10 +39,12 @@ pub trait BucketServer<H: HandleNewConnection + ReceiveMessage, B: Bucket<H>, S:
 //     fn get_client<C: Connection>() -> Arc<Mutex<dyn BucketClient<C>>>;
 // }
 
-pub trait Bucket<H: HandleNewConnection + ReceiveMessage> { // QUES: WARN: functino or whole trait generic???
+pub trait Bucket: Send {
+// pub trait Bucket<H: HandleNewConnection + ReceiveMessage> { // QUES: WARN: functino or whole trait generic???
     // fn new(connection_handler: Arc<Mutex<H>>, bucket_manager: Arc<Mutex<BaseBucketManager<'static>>>) -> Self where Self: Sized;
     // fn new(connection_handler: Arc<Mutex<H>>, ) -> Self where Self: Sized;
-    fn new(connection_handler: Arc<Mutex<H>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self where Self: Sized;
+    // fn new(connection_handler: Arc<Mutex<H>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self where Self: Sized;
+    // fn new(connection_handler: Arc<Mutex<BaseConnectionHandler>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self where Self: Sized;
 
     fn start(&mut self);
 
@@ -49,7 +55,7 @@ pub trait Bucket<H: HandleNewConnection + ReceiveMessage> { // QUES: WARN: funct
     // fn handle_message(&mut self, message: impl BucketMessage) where Self: Sized; // QUES: why sized needed??? // QUES: why is & needed even when with &
 }
 
-pub trait ReceiveMessage {
-    fn receive_message(&mut self) -> Option<BaseBucketMessage>;
-    // fn receive_message<M: BucketMessage>(&mut self) -> Option<Box<M>>;
-}
+// pub trait ReceiveMessage {
+//     fn receive_message(&mut self) -> Option<BaseBucketMessage>;
+//     // fn receive_message<M: BucketMessage>(&mut self) -> Option<Box<M>>;
+// }

@@ -11,13 +11,19 @@ use crate::connection::HandleNewConnection;
 use crate::connection::Connection;
 
 use crate::websocket_server::ws_connection::WSConnection;
+use crate::websocket_server::server::WebSocketServer;
 
 use crate::logic::bucket_manager::BaseBucketManagerData;
 
-pub struct BaseBucketServer<H: HandleNewConnection + ReceiveMessage, B: Bucket<H>, S: ConnectionServer> {
-    connection_handler: Arc<Mutex<H>>,
-    bucket: Arc<Mutex<B>>,
-    ws_server: S,
+// pub struct BaseBucketServer<H: HandleNewConnection + ReceiveMessage, B: Bucket<H>, S: ConnectionServer> {
+// pub struct BaseBucketServer<B: Bucket> {
+pub struct BaseBucketServer {
+    // connection_handler: Arc<Mutex<H>>,
+    connection_handler: Arc<Mutex<BaseConnectionHandler>>,
+    // bucket: Arc<Mutex<B>>,
+    bucket:Arc<Mutex<dyn Bucket>>,
+    // ws_server: S,
+    ws_server: WebSocketServer,
     ip: String,
     port: String,
     running: bool,
@@ -25,16 +31,23 @@ pub struct BaseBucketServer<H: HandleNewConnection + ReceiveMessage, B: Bucket<H
 
 // QUES: ugly that BaseBucketServer needs type parameters??? // QUES: WARN: PROB: 'static lifetime
 // impl<H: HandleNewConnection + ReceiveMessage + Send + 'static, B: Bucket<H> + Send + 'static, S: ConnectionServer> BucketServer<H, B, S> for BaseBucketServer<H, B, S> { // WARN: types are declared twice: here and in struct decleration
-impl<H: HandleNewConnection + ReceiveMessage + Send + 'static, B: Bucket<H> + Send + 'static, S: ConnectionServer> BaseBucketServer<H, B, S> { // WARN: types are declared twice: here and in struct decleration
-    pub fn new(ip: &str, port: &str, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self { // QUES: why type parameter static?
+// impl<H: HandleNewConnection + ReceiveMessage + Send + 'static, B: Bucket<H> + Send + 'static, S: ConnectionServer> BaseBucketServer<H, B, S> { // WARN: types are declared twice: here and in struct decleration
+// impl<B: Bucket + Send + 'static> BaseBucketServer<B> { // WARN: types are declared twice: here and in struct decleration
+impl BaseBucketServer {
+    // QUES: why no lifetime problems with A<M<dyn Bucket>> but with dyn Bucket???
+    pub fn new(ip: &str, port: &str, bucket: Arc<Mutex<dyn Bucket>>) -> Self { //, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self { // QUES: why type parameter static?
     // fn new(ip: &str, port: &str) -> Self { // QUES: why type parameter static?
         log::info!("new BucketServer, ip: {}, port: {}", ip, port);
-        let connection_handler = Arc::new(Mutex::new(H::new()));
+        // let connection_handler = Arc::new(Mutex::new(H::new()));
+        let connection_handler = Arc::new(Mutex::new(BaseConnectionHandler::new()));
         BaseBucketServer{
             connection_handler: connection_handler.clone(),
-            bucket: Arc::new(Mutex::new(B::new(connection_handler, bucket_manager))), //, bucket_manager))),
+            // bucket: Arc::new(Mutex::new(B::new(connection_handler, bucket_manager))), //, bucket_manager))),
+            // bucket: Arc::new(Mutex::new(bucket)),
+            bucket,
             // bucket: Arc::new(Mutex::new(B::new(connection_handler, Arc::new(Mutex::new(BaseBucketManager::new()))))),
-            ws_server: S::new(ip, port),
+            // ws_server: S::new(ip, port),
+            ws_server: WebSocketServer::new(ip, port),
             ip: ip.to_string(),
             port: port.to_string(),
             running: false
@@ -165,8 +178,9 @@ pub struct BaseConnectionHandler {
     highest_id: i64,
 }
 
-impl HandleNewConnection for BaseConnectionHandler {  
-    fn new() -> Self {
+// impl HandleNewConnection for BaseConnectionHandler {  
+impl BaseConnectionHandler {
+    pub fn new() -> Self {
         log::info!("new BaseConnectionHandler was created");
         BaseConnectionHandler{
             connections: HashMap::new(),
@@ -175,7 +189,7 @@ impl HandleNewConnection for BaseConnectionHandler {
         }
     }
 
-    fn handle_new_connection(&mut self, connection : WSConnection) {
+    pub fn handle_new_connection(&mut self, connection : WSConnection) {
     // fn handle_new_connection(&mut self, connection: impl Connection) { // QUES: dyn Connection => trait cannot be made into an object
         log::debug!("handling a new connection");
         let id: i64;
@@ -190,7 +204,8 @@ impl HandleNewConnection for BaseConnectionHandler {
         self.connections.insert(id, client);
     }
 
-    fn disconnect_client(&mut self, id: i64) {
+    pub fn disconnect_client(&mut self, id: i64) {
+        println!("connections: {}", self.connections.len());
         if let Some(client) = self.connections.remove(&id) {
             client.lock().unwrap().close_connection();
             self.available_ids.push(id);
@@ -198,10 +213,11 @@ impl HandleNewConnection for BaseConnectionHandler {
             panic!("Client does not exist"); // PROB: nice handling
         }
     }
-}
+// }
 
-impl ReceiveMessage for BaseConnectionHandler {
-    fn receive_message(&mut self) -> Option<BaseBucketMessage> {
+// // impl ReceiveMessage for BaseConnectionHandler {
+// impl BaseConnectionHandler {
+    pub fn receive_message(&mut self) -> Option<BaseBucketMessage> {
         for (id, org_client) in (&self.connections).iter() { // iter vs normal??? // PROB: keep track of order => not every time the same one
             let client = org_client.clone();
             let message_res = client.lock().unwrap().try_recv();

@@ -6,27 +6,35 @@ use serde_json;
 
 use crate::connection::HandleNewConnection;
 
-use crate::logic::traits_bucket_server::{ReceiveMessage, Bucket};
-use crate::logic::bucket_server::{BaseBucketMessage};
+use crate::logic::traits_bucket_server::{Bucket};
+use crate::logic::bucket_server::{BaseBucketMessage, BaseConnectionHandler};
 
 use crate::logic::bucket_manager::BaseBucketManagerData;
 
-pub struct ApiBucket<H: HandleNewConnection + ReceiveMessage> {
-    connection_handler: Arc<Mutex<H>>,
+// pub struct ApiBucket<H: HandleNewConnection + ReceiveMessage> {
+pub struct ApiBucket {
+    // connection_handler: Arc<Mutex<H>>,
+    connection_handler: Arc<Mutex<BaseConnectionHandler>>,
     bucket_manager: Arc<Mutex<BaseBucketManagerData>>,
 }
 
-unsafe impl<H: HandleNewConnection + ReceiveMessage> Send for ApiBucket<H> {}
+// unsafe impl<H: HandleNewConnection + ReceiveMessage> Send for ApiBucket<H> {}
 
-impl<H: HandleNewConnection + ReceiveMessage> Bucket<H> for ApiBucket<H> {
-    // fn new(connection_handler: Arc<Mutex<H>>, bucket_manager: Arc<Mutex<BaseBucketManager<'static>>>) -> Self { // PROB: 'static
-    fn new(connection_handler: Arc<Mutex<H>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self {
-        Self{
-            connection_handler,
+//     // impl<H: HandleNewConnection + ReceiveMessage> Bucket<H> for ApiBucket<H> {
+// impl Bucket for ApiBucket {
+//     // fn new(connection_handler: Arc<Mutex<H>>, bucket_manager: Arc<Mutex<BaseBucketManager<'static>>>) -> Self { // PROB: 'static
+//     // fn new(connection_handler: Arc<Mutex<H>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self {
+
+impl ApiBucket {
+    pub fn new(bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self {
+        Self {
+            connection_handler: Arc::new(Mutex::new(BaseConnectionHandler::new())),
             bucket_manager,
         }
     }
+}
 
+impl Bucket for ApiBucket {
     fn start(&mut self) {
         log::info!("ApiBucket started");
     }
