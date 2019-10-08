@@ -4,8 +4,6 @@ use std::str;
 use serde::{Serialize, Deserialize};
 use serde_json;
 
-use crate::connection::HandleNewConnection;
-
 use crate::logic::traits_bucket_server::{Bucket};
 use crate::logic::bucket_server::{BaseBucketMessage, BaseConnectionHandler};
 
@@ -26,9 +24,9 @@ pub struct ApiBucket {
 //     // fn new(connection_handler: Arc<Mutex<H>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self {
 
 impl ApiBucket {
-    pub fn new(bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self {
+    pub fn new(connection_handler: Arc<Mutex<BaseConnectionHandler>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self {
         Self {
-            connection_handler: Arc::new(Mutex::new(BaseConnectionHandler::new())),
+            connection_handler,
             bucket_manager,
         }
     }
@@ -50,6 +48,8 @@ impl Bucket for ApiBucket {
         let _ = client.clone().lock().unwrap();
         let msg = message.get_content();
         let content = str::from_utf8(&msg).unwrap(); // PROB: error handling
+        println!("conns: {}", self.connection_handler.lock().unwrap().connections.len());
+        println!("connections: {:p}", &self.connection_handler.lock().unwrap().connections);
         if let Ok(api_request) = serde_json::from_str::<APIRequest>(content) {
             match api_request {
                 APIRequest::JoinDivGameNormal => {

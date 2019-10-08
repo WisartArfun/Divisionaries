@@ -3,15 +3,8 @@ use std::sync::{Arc, Mutex};
 
 use log;
 
-use crate::logic::traits_bucket_server::{Bucket}; //, ReceiveMessage, BucketServer};
 use crate::logic::bucket_server::{BaseBucketServer};
-use crate::connection::{HandleNewConnection, ConnectionServer, Connection};
 
-// trait H: HandleNewConnection + ReceiveMessage {}
-// pub struct BaseBucketManagerData {
-//     lobbies: HashMap<String, Box<BucketServer<dyn H, dyn Bucket<dyn Connection>, dyn ConnectionServer>>>, // QUES: when does this work and when not? (sized and stuff) ???
-//     games: HashMap<String, Box<BucketServer<dyn H, dyn Bucket<dyn Connection>, dyn ConnectionServer>>>, // 
-// }
 pub struct BaseBucketManagerData {
     lobbies: HashMap<String, BaseBucketServer>,
     games: HashMap<String, BaseBucketServer>,
@@ -36,7 +29,6 @@ impl BaseBucketManagerData {
         false
     }
 
-    // pub fn open_lobby(&mut self, id: String, lobby: Box<dyn BucketServer<dyn H, dyn Bucket<dyn Connection>, dyn ConnectionServer>>) {
     pub fn open_lobby(&mut self, id: String, lobby: BaseBucketServer) {
         log::info!("opening a new lobby with id: {}", &id);
         self.lobbies.insert(id, lobby);
@@ -78,7 +70,6 @@ impl BaseBucketManager {
         self.data.lock().unwrap().game_exists(id)
     }
 
-    // pub fn open_lobby(&mut self, id: String, lobby: Box<dyn BucketServer<dyn H, dyn Bucket<dyn Connection>, dyn ConnectionServer>>) {
     pub fn open_lobby(&mut self, id: String, lobby: BaseBucketServer) {
         log::info!("opening a new lobby with id: {}", &id);
         self.data.lock().unwrap().open_lobby(id, lobby);
