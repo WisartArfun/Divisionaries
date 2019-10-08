@@ -5,7 +5,7 @@ use std::{thread, time};
 use log;
 use tungstenite;
 
-use net2::{unix::UnixTcpBuilderExt, TcpBuilder,};
+// use net2::{unix::UnixTcpBuilderExt, TcpBuilder,};
 
 use crate::websocket_server::ws_connection::WSConnection;
 

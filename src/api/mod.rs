@@ -48,8 +48,6 @@ impl Bucket for ApiBucket {
         let _ = client.clone().lock().unwrap();
         let msg = message.get_content();
         let content = str::from_utf8(&msg).unwrap(); // PROB: error handling
-        println!("conns: {}", self.connection_handler.lock().unwrap().connections.len());
-        println!("connections: {:p}", &self.connection_handler.lock().unwrap().connections);
         if let Ok(api_request) = serde_json::from_str::<APIRequest>(content) {
             match api_request {
                 APIRequest::JoinDivGameNormal => {

@@ -5,7 +5,6 @@ use std::collections::HashMap;
 use ctrlc;
 use config;
 
-use bucketer::http_server::trait_run_http_server::RunHttpServer;
 use bucketer::logger::SimpleLogger;
 use bucketer::http_server;
 

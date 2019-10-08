@@ -1,9 +1,9 @@
-use std::thread;
+// use std::thread;
 
-use super::server::HttpGameServer;
+// use super::server::HttpGameServer;
 
-pub trait RunHttpServer {
-    fn new<S: Into<String>>(ip: S, port: S) -> HttpGameServer;
+// pub trait RunHttpServer {
+//     fn new<S: Into<String>>(ip: S, port: S) -> HttpGameServer;
 
-    fn start(&mut self) -> thread::JoinHandle<std::io::Result<()>>;
-}
+//     fn start(&mut self) -> thread::JoinHandle<std::io::Result<()>>;
+// }
