@@ -48,14 +48,14 @@ impl ConnectionServer for WebSocketServer {
         );
 
         let web_socket_handle = thread::spawn(move || -> std::io::Result<()> {
-            // let server =
-            //     TcpListener::bind(format!("{}:{}", ip.lock().unwrap(), port.lock().unwrap()))
-            //         .unwrap();
-            let server = TcpBuilder::new_v4()?
-                .reuse_address(true)?
-                .reuse_port(true)?
-                .bind(format!("{}:{}", ip.lock().unwrap(), port.lock().unwrap()))?
-                .listen(42)?;
+            let server =
+                TcpListener::bind(format!("{}:{}", ip.lock().unwrap(), port.lock().unwrap()))
+                    .unwrap();
+            // let server = TcpBuilder::new_v4()?
+            //     .reuse_address(true)?
+            //     .reuse_port(true)?
+            //     .bind(format!("{}:{}", ip.lock().unwrap(), port.lock().unwrap()))?
+            //     .listen(42)?;
             for stream in server.incoming() {
                 // WARN: handle connection closed // PROB: extremely ugly and not modular
                 let stream = stream?;

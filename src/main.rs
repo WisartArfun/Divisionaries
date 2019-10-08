@@ -1,7 +1,9 @@
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::collections::HashMap;
 
 use ctrlc;
+use config;
 
 use bucketer::http_server::trait_run_http_server::RunHttpServer;
 use bucketer::logger::SimpleLogger;
@@ -23,7 +25,20 @@ fn main() -> std::io::Result<()> {
             ctrlc::set_handler(move || {
                 r.store(false, Ordering::SeqCst);
             }).expect("Error setting Ctrl-C handler");
+            
+            let mut settings = config::Config::default();
+            settings.merge(config::File::with_name("Settings")).unwrap();
+            let settings = settings.try_into::<HashMap<String, String>>().unwrap();
+            
+            // let api_ip = match settings.get("api_ip") { // QUES: with if let
+            //     Some(port) => port,
+            //     None => "localhost",
+            // };
+            let api_ip = if let Some(port) = settings.get("api_ip") {port} else {"localhost"};
+            let api_port = if let Some(port) = settings.get("api_port") {port} else {"8001"};
 
+            let http_ip = if let Some(port) = settings.get("http_ip") {port} else {"localhost"};
+            let http_port = if let Some(port) = settings.get("http_port") {port} else {"8000"};
 
             SimpleLogger::init("config/log4rs.yaml");
             log::info!("Main thread running");
@@ -32,10 +47,10 @@ fn main() -> std::io::Result<()> {
 
             let connection_handler = Arc::new(Mutex::new(BaseConnectionHandler::new()));
             let api_bucket = Arc::new(Mutex::new(ApiBucket::new(connection_handler.clone(), bucket_manager.get_data())));
-            let mut api_bucket = BaseBucketServer::new("localhost", "8005", api_bucket, connection_handler); // IDEA: directly in here
+            let mut api_bucket = BaseBucketServer::new(api_ip, api_port, api_bucket, connection_handler); // IDEA: directly in here
             let handle_api = api_bucket.start(running.clone());
 
-            let mut server = http_server::server::HttpGameServer::new("localhost", "8200"); // IDEA: load ip and port from config
+            let mut server = http_server::server::HttpGameServer::new(http_ip, http_port); // IDEA: load ip and port from config
             let handle_http = server.start();
 
             // WARN: add try_join in loop
