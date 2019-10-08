@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::thread;
 use std::time;
 use std::str;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use crate::logic::traits_bucket_server::*;
 
@@ -35,17 +36,17 @@ impl BaseBucketServer {
         }
     }
 
-    pub fn start(&mut self) -> thread::JoinHandle<std::io::Result<()>> { // PROB: better solution
+    pub fn start(&mut self, running: Arc<AtomicBool>) -> thread::JoinHandle<std::io::Result<()>> { // PROB: better solution
         self.ws_server.start(self.connection_handler.clone()); // WARN: check if already started
 
         let connection_handler = self.connection_handler.clone();
         let bucket = self.bucket.clone();
 
         let handle = thread::spawn(move || {
-            loop {
+            while running.load(Ordering::SeqCst) {
                 thread::sleep(time::Duration::from_millis(200));
                 
-                loop {
+                while running.load(Ordering::SeqCst) {
                     let message = connection_handler.lock().unwrap().receive_message();
                     if let Some(mut res) = message {
                         log::debug!("BaseBucketServer received a message: {:?}", &res.get_content());
@@ -55,6 +56,8 @@ impl BaseBucketServer {
                     }
                 }
             }
+
+            Ok(())
         });
 
         handle

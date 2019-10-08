@@ -1,4 +1,7 @@
 use std::sync::{Arc, Mutex};
+use std::sync::atomic::{AtomicBool, Ordering};
+
+use ctrlc;
 
 use bucketer::http_server::trait_run_http_server::RunHttpServer;
 use bucketer::logger::SimpleLogger;
@@ -14,6 +17,14 @@ fn main() -> std::io::Result<()> {
 
     match mode {
         "RUN" => {
+            let running = Arc::new(AtomicBool::new(true));
+            let r = running.clone();
+
+            ctrlc::set_handler(move || {
+                r.store(false, Ordering::SeqCst);
+            }).expect("Error setting Ctrl-C handler");
+
+
             SimpleLogger::init("config/log4rs.yaml");
             log::info!("Main thread running");
 
@@ -21,10 +32,10 @@ fn main() -> std::io::Result<()> {
 
             let connection_handler = Arc::new(Mutex::new(BaseConnectionHandler::new()));
             let api_bucket = Arc::new(Mutex::new(ApiBucket::new(connection_handler.clone(), bucket_manager.get_data())));
-            let mut api_bucket = BaseBucketServer::new("localhost", "8030", api_bucket, connection_handler); // IDEA: directly in here
-            let handle_api = api_bucket.start();
+            let mut api_bucket = BaseBucketServer::new("localhost", "8005", api_bucket, connection_handler); // IDEA: directly in here
+            let handle_api = api_bucket.start(running.clone());
 
-            let mut server = http_server::server::HttpGameServer::new("localhost", "8072"); // IDEA: load ip and port from config
+            let mut server = http_server::server::HttpGameServer::new("localhost", "8200"); // IDEA: load ip and port from config
             let handle_http = server.start();
 
             // WARN: add try_join in loop
