@@ -43,6 +43,10 @@ fn main() -> std::io::Result<()> {
 
             let http_ip = if let Some(port) = settings.get("http_ip") {port} else {"localhost"};
             let http_port = if let Some(port) = settings.get("http_port") {port} else {"8000"};
+            
+            //
+            // IDEA: in BaseBucketServer save bucket and bucketdata seperately
+            //
 
             // initialize bucket manager
             log::info!("creating bucket manager");

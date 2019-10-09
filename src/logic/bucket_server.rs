@@ -19,7 +19,8 @@ use crate::websocket_server::WebSocketServer;
 
 pub struct BaseBucketServer {
     connection_handler: Arc<Mutex<BaseConnectionHandler>>,
-    bucket:Arc<Mutex<dyn Bucket>>,
+    bucket: Arc<Mutex<dyn Bucket>>,
+    bucket_data: BaseBucketData,
     ws_server: WebSocketServer,
     ip: String,
     port: String,
@@ -28,11 +29,12 @@ pub struct BaseBucketServer {
 
 impl BaseBucketServer {
     // QUES: why no lifetime problems with A<M<dyn Bucket>> but with dyn Bucket???
-    pub fn new(ip: &str, port: &str, bucket: Arc<Mutex<dyn Bucket>>, connection_handler: Arc<Mutex<BaseConnectionHandler>>) -> Self {
+    pub fn new(ip: &str, port: &str, bucket: Arc<Mutex<dyn Bucket>>, bucket_data: BaseBucketData, connection_handler: Arc<Mutex<BaseConnectionHandler>>) -> Self {
         log::info!("new BucketServer, ip: {}, port: {}", ip, port);
         BaseBucketServer{
             connection_handler,
             bucket,
+            bucket_data,
             ws_server: WebSocketServer::new(ip, port),
             ip: ip.to_string(),
             port: port.to_string(),
@@ -81,7 +83,8 @@ impl BaseBucketServer {
     }
 
     pub fn get_bucket_data(&mut self) -> BaseBucketData {
-        self.bucket.lock().unwrap().get_bucket_data()
+        // self.bucket.lock().unwrap().get_bucket_data()
+        self.bucket_data.clone()
     }
 }
 

@@ -62,6 +62,7 @@ impl BaseBucketManagerData {
     }
 
     pub fn get_open_lobbies(&mut self) -> Vec<BaseBucketData> {
+        log::debug!("getting open lobbies from BaseBucketManagerData");
         let mut lobby_data = Vec::new();
         for (_, lobby) in &mut self.lobbies {
             lobby_data.push(lobby.get_bucket_data());
@@ -114,8 +115,9 @@ impl BaseBucketManager {
     pub fn create_api_bucket(&mut self, api_ip: &str, api_port: &str, running: Arc<AtomicBool>) {
         log::info!("creating api bucket");
         let connection_handler = Arc::new(Mutex::new(BaseConnectionHandler::new()));
-        let api_bucket = Arc::new(Mutex::new(ApiBucket::new(connection_handler.clone(), self.get_data(), BaseBucketData::new("API", 10_000))));
-        let mut api_bucket = BaseBucketServer::new(api_ip, api_port, api_bucket, connection_handler); // IDEA: directly in here
+        let api_bucket = Arc::new(Mutex::new(ApiBucket::new(connection_handler.clone(), self.get_data()))); //, BaseBucketData::new("API", 10_000))));
+        // let mut api_bucket = BaseBucketServer::new(api_ip, api_port, api_bucket, connection_handler); // IDEA: directly in here
+        let mut api_bucket = BaseBucketServer::new(api_ip, api_port, api_bucket, BaseBucketData::new("API", 10_000), connection_handler);
         let _handle_api = api_bucket.start(running);
 
         self.open_lobby("API".to_string(), api_bucket);

@@ -12,15 +12,15 @@ use crate::logic::bucket_manager::BaseBucketManagerData;
 pub struct ApiBucket {
     connection_handler: Arc<Mutex<BaseConnectionHandler>>,
     bucket_manager: Arc<Mutex<BaseBucketManagerData>>,
-    bucket_data: BaseBucketData,
+    // bucket_data: BaseBucketData,
 }
 
 impl ApiBucket { // IDEA: NEXT: add bucket data and state
-    pub fn new(connection_handler: Arc<Mutex<BaseConnectionHandler>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>, bucket_data: BaseBucketData) -> Self {
+    pub fn new(connection_handler: Arc<Mutex<BaseConnectionHandler>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self { //, bucket_data: BaseBucketData) -> Self {
         Self {
             connection_handler,
             bucket_manager,
-            bucket_data,
+            // bucket_data,
         }
     }
 }
@@ -51,7 +51,6 @@ impl Bucket for ApiBucket {
                     log::debug!("Client left ApiBucket");
                 },
                 APIRequest::GetOpenLobbies => {
-                    log::debug!("client asked for open lobbies");
                     let lobbies = self.bucket_manager.lock().unwrap().get_open_lobbies();
                     client.lock().unwrap().send(serde_json::to_vec(&APIResponse::OpenLobbies(lobbies)).unwrap())
                 },
@@ -71,9 +70,9 @@ impl Bucket for ApiBucket {
         }
     }
 
-    fn get_bucket_data(&mut self) -> BaseBucketData {
-        self.bucket_data.clone()
-    }
+    // fn get_bucket_data(&mut self) -> BaseBucketData {
+    //     self.bucket_data.clone()
+    // }
 }
 
 #[derive(Serialize, Deserialize, Debug)]

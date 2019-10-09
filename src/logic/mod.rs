@@ -10,5 +10,5 @@ pub trait Bucket: Send {
 
     fn handle_message(&mut self, message: BaseBucketMessage);
 
-    fn get_bucket_data(&mut self) -> BaseBucketData;
+    // fn get_bucket_data(&mut self) -> BaseBucketData;
 }
