@@ -14,9 +14,24 @@
 
         <h3>Join Queue</h3>
         <button onclick="join_div_game_normal()">Normal</button>
+
+        <h3>Open Lobbies</h3>
+        <button onclick="get_open_lobbies()">Open Lobbies</button>
+
+        <div>
+            <p id="open_lobbies"></p>
+        </div>
+
+        <h3>Running Games</h3>
+        <button onclick="get_running_games()">Running Games</button>
+
+        <div>
+            <p id="running_games"></p>
+        </div>
     </div>
 
     <!-- provides: join_div_game_direct(), join_div_game_normal() -->
     <script src="/scripts/api_index.js"></script>
+
 
 </html>

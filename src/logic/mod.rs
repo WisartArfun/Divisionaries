@@ -1,12 +1,7 @@
-// pub trait Game { // QUES: more stuff???
-//     fn start_server(&mut self); // QUES: does this belong here??? // QUES: return handle???
+pub mod bucket_server;
+pub mod bucket_manager;
 
-//     fn start_game(&mut self); // QUES: return handle???
-
-//     fn update(&mut self);
-// }
-
-use crate::logic::bucket_server::BaseBucketMessage;
+use crate::logic::bucket_server::{BaseBucketMessage, BaseBucketData};
 
 pub trait Bucket: Send {
     fn start(&mut self);
@@ -14,7 +9,6 @@ pub trait Bucket: Send {
     fn stop(&mut self);
 
     fn handle_message(&mut self, message: BaseBucketMessage);
-}
 
-pub mod bucket_server;
-pub mod bucket_manager;
+    fn get_bucket_data(&mut self) -> BaseBucketData;
+}

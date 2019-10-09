@@ -9,7 +9,7 @@ use bucketer::logger::SimpleLogger;
 use bucketer::http_server;
 use bucketer::http_server::game_service_provider::GameServiceProvider;
 
-use bucketer::logic::bucket_server::{BaseBucketServer, BaseConnectionHandler};
+use bucketer::logic::bucket_server::{BaseBucketServer, BaseConnectionHandler, BaseBucketData};
 use bucketer::logic::bucket_manager::BaseBucketManager;
 
 use bucketer::api::ApiBucket;
@@ -35,7 +35,7 @@ fn main() -> std::io::Result<()> {
             // load config data
             log::info!("loading data from config file");
             let mut settings = config::Config::default();
-            settings.merge(config::File::with_name("Settings")).unwrap(); // QUES: error handling
+            settings.merge(config::File::with_name("config/Settings")).unwrap(); // QUES: error handling
             let settings = settings.try_into::<HashMap<String, String>>().unwrap();
 
             let api_ip = if let Some(port) = settings.get("api_ip") {port} else {"localhost"};
@@ -47,13 +47,16 @@ fn main() -> std::io::Result<()> {
             // initialize bucket manager
             log::info!("creating bucket manager");
             let mut bucket_manager = BaseBucketManager::new();
-
+            
+            bucket_manager.create_api_bucket(api_ip, api_port, running.clone());
             // initializing bucket api
-            log::info!("creating api bucket");
-            let connection_handler = Arc::new(Mutex::new(BaseConnectionHandler::new()));
-            let api_bucket = Arc::new(Mutex::new(ApiBucket::new(connection_handler.clone(), bucket_manager.get_data())));
-            let mut api_bucket = BaseBucketServer::new(api_ip, api_port, api_bucket, connection_handler); // IDEA: directly in here
-            let handle_api = api_bucket.start(running.clone());
+            // log::info!("creating api bucket");
+            // let connection_handler = Arc::new(Mutex::new(BaseConnectionHandler::new()));
+            // let api_bucket = Arc::new(Mutex::new(ApiBucket::new(connection_handler.clone(), bucket_manager.get_data(), BaseBucketData::new("API", 10_000))));
+            // let mut api_bucket = BaseBucketServer::new(api_ip, api_port, api_bucket, connection_handler); // IDEA: directly in here
+            // let _handle_api = api_bucket.start(running.clone());
+
+            // bucket_manager.open_lobby("API".to_string(), api_bucket);
 
             // Initializing http server
             log::info!("creating http server");
@@ -65,10 +68,10 @@ fn main() -> std::io::Result<()> {
                 log::error!("An error occured while joining the http_server:\n\t{:?}", e);
                 panic!("");
             }
-            if let Err(e) = handle_api.join().unwrap() {
-                log::error!("An error occured while joining the api_bucket:\n\t{:?}", e);
-                panic!("");
-            }
+            // if let Err(e) = handle_api.join().unwrap() {
+            //     log::error!("An error occured while joining the api_bucket:\n\t{:?}", e);
+            //     panic!("");
+            // }
         },
         "TEST" => {
             let vec: Vec<u8> = vec!(1, 2, 3);

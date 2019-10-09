@@ -5,20 +5,22 @@ use serde::{Serialize, Deserialize};
 use serde_json;
 
 use crate::logic::Bucket;
-use crate::logic::bucket_server::{BaseBucketMessage, BaseConnectionHandler};
+use crate::logic::bucket_server::{BaseBucketMessage, BaseConnectionHandler, BaseBucketData};
 
 use crate::logic::bucket_manager::BaseBucketManagerData;
 
 pub struct ApiBucket {
     connection_handler: Arc<Mutex<BaseConnectionHandler>>,
     bucket_manager: Arc<Mutex<BaseBucketManagerData>>,
+    bucket_data: BaseBucketData,
 }
 
 impl ApiBucket { // IDEA: NEXT: add bucket data and state
-    pub fn new(connection_handler: Arc<Mutex<BaseConnectionHandler>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self {
+    pub fn new(connection_handler: Arc<Mutex<BaseConnectionHandler>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>, bucket_data: BaseBucketData) -> Self {
         Self {
             connection_handler,
             bucket_manager,
+            bucket_data,
         }
     }
 }
@@ -50,11 +52,13 @@ impl Bucket for ApiBucket {
                 },
                 APIRequest::GetOpenLobbies => {
                     log::debug!("client asked for open lobbies");
-                    client.lock().unwrap().send(serde_json::to_vec(&APIResponse::OpenLobbies(vec!(r#"{"id": "some_id", "max_players": 8, "current_players": 4}"#.to_string()))).unwrap())
+                    let lobbies = self.bucket_manager.lock().unwrap().get_open_lobbies();
+                    client.lock().unwrap().send(serde_json::to_vec(&APIResponse::OpenLobbies(lobbies)).unwrap())
                 },
                 APIRequest::GetRunningGames => {
                     log::debug!("client asked for open lobbies");
-                    client.lock().unwrap().send(serde_json::to_vec(&APIResponse::RunningGames(vec!(r#"{"id": "some_id", "players_start": 8, "current_players": 4, "ticks": 243}"#.to_string()))).unwrap())
+                    let games = self.bucket_manager.lock().unwrap().get_running_games();
+                    client.lock().unwrap().send(serde_json::to_vec(&APIResponse::RunningGames(games)).unwrap())
                 },
                 _ => {
                     log::warn!("invalid APIRequest send to APIServer");
@@ -65,6 +69,10 @@ impl Bucket for ApiBucket {
             log::warn!("An error occured when parsing message");
             client.lock().unwrap().send(serde_json::to_vec(&APIResponse::InvalidJson).unwrap()); // PROB: error handling // QUES: efficiency?
         }
+    }
+
+    fn get_bucket_data(&mut self) -> BaseBucketData {
+        self.bucket_data.clone()
     }
 }
 
@@ -80,8 +88,8 @@ enum APIResponse {
     InvalidJson,
     InvalidRequest,
     JoinGame(String),
-    OpenLobbies(Vec<String>), // TODO: Vec<GameMetaData>
-    RunningGames(Vec<String>), // TODO: Vec<GameMetaData>
+    OpenLobbies(Vec<BaseBucketData>), // TODO: Vec<GameMetaData>
+    RunningGames(Vec<BaseBucketData>), // TODO: Vec<GameMetaData>
 }
 
 

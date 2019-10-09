@@ -15,8 +15,16 @@ socket.onopen = function(event) {
                     case 'JoinGame':
                         window.location.href = "/games/" + parsed['JoinGame'];
                         break;
+                    case 'OpenLobbies':
+                        document.getElementById("open_lobbies").innerText = parsed['OpenLobbies'];
+                        break;
+                    case 'RunningGames':
+                        console.log(parsed['RunningGames']);
+                        document.getElementById("running_games").innerText = parsed['RunningGames'];
+                        document.getElementById("running_games").innerText = "hi there";
+                        break;
                     default:
-                        alert('default');
+                        alert(parsed);
                 }
             }
             catch(err) {
@@ -44,4 +52,12 @@ function join_div_game_direct() { // change this
 
 function join_div_game_normal() {
     send('"JoinDivGameNormal"');
+}
+
+function get_open_lobbies() {
+    send('"GetOpenLobbies"');
+}
+
+function get_running_games() {
+    send('"GetRunningGames"');
 }

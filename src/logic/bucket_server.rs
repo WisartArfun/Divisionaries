@@ -5,6 +5,8 @@ use std::time;
 use std::str;
 use std::sync::atomic::{AtomicBool, Ordering};
 
+use serde::{Serialize, Deserialize};
+
 use tungstenite;
 
 use crate::logic::Bucket;
@@ -76,6 +78,10 @@ impl BaseBucketServer {
         });
 
         handle
+    }
+
+    pub fn get_bucket_data(&mut self) -> BaseBucketData {
+        self.bucket.lock().unwrap().get_bucket_data()
     }
 }
 
@@ -204,5 +210,43 @@ impl BaseConnectionHandler {
         }
 
         None
+    }
+}
+
+
+#[derive(Clone, Serialize, Deserialize, Debug)]
+pub struct BaseBucketData { // get this passed to constructor
+    id: String,
+    max_user_size: i64,
+    current_users: i64,
+}
+
+impl BaseBucketData {
+    pub fn new<S: Into<String>>(id: S, max_user_size: i64) -> Self {
+        Self {
+            id: id.into(),
+            max_user_size,
+            current_users: 0,
+        }
+    }
+
+    pub fn get_id(&mut self) -> String {
+        self.id.clone()
+    }
+
+    pub fn get_current_users(&mut self) -> i64 {
+        self.current_users.clone()
+    }
+
+    pub fn increment_current_users(&mut self) {
+        self.current_users += 1;
+    }
+
+    pub fn decrement_current_users(&mut self) {
+        self.current_users -= 1;
+    }
+
+    pub fn get_max_user_size(&mut self) -> i64 {
+        self.max_user_size
     }
 }
