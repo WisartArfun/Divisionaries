@@ -5,6 +5,8 @@ use std::time;
 use std::str;
 use std::sync::atomic::{AtomicBool, Ordering};
 
+use tungstenite;
+
 use crate::logic::traits_bucket_server::*;
 
 use crate::connection::ConnectionServer;
@@ -48,6 +50,19 @@ impl BaseBucketServer {
                 
                 while running.load(Ordering::SeqCst) {
                     let message = connection_handler.lock().unwrap().receive_message();
+                    // match message {
+                    //     Ok(mes) => {
+                    //         if let Some(mut res) = message {
+                    //             log::debug!("BaseBucketServer received a message: {:?}", &res.get_content());
+                    //             bucket.lock().unwrap().handle_message(res); //, bucket_manager.clone());
+                    //         } else {
+                    //             break;
+                    //         }
+                    //     },
+                    //     Err(e) => {
+                    //         return Ok(()); //disconnect
+                    //     }
+                    // }
                     if let Some(mut res) = message {
                         log::debug!("BaseBucketServer received a message: {:?}", &res.get_content());
                         bucket.lock().unwrap().handle_message(res); //, bucket_manager.clone());
@@ -106,7 +121,7 @@ impl BaseBucketClient {
         self.id
     }
 
-    pub fn try_recv(&mut self) -> Option<Vec<u8>> {
+    pub fn try_recv(&mut self) -> Result<Option<Vec<u8>>, tungstenite::error::Error> {
         self.connection.try_recv()
     }
 
@@ -162,13 +177,30 @@ impl BaseConnectionHandler {
     }
 
     pub fn receive_message(&mut self) -> Option<BaseBucketMessage> {
+        let mut id_kill = None;
         for (id, org_client) in (&self.connections).iter() { // QUES: iter vs normal??? // PROB: keep track of order => not every time the same one
             let client = org_client.clone();
             let message_res = client.lock().unwrap().try_recv();
-            if let Some(message) = message_res {
-                log::info!("BaseConnectionHandler received a message");
-                return Some(BaseBucketMessage::new(client, message));
+
+            let mut kill = false;
+            match message_res {
+                Ok(message) => {
+                    if let Some(mes) = message {
+                        log::info!("BaseConnectionHandler received a message");
+                        return Some(BaseBucketMessage::new(client, mes));
+                    }
+                },
+                Err(err) => {
+                    log::warn!("an error occured and client is being removed: {}", err);
+                    id_kill = Some(*id);
+                    kill = true;
+                }
             }
+            if kill {break;}
+        }
+
+        if let Some(id) = id_kill {
+            self.disconnect_client(id);
         }
 
         None

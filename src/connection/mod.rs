@@ -2,6 +2,8 @@
 
 use std::sync::{Arc, Mutex};
 
+use tungstenite;
+
 use crate::websocket_server::ws_connection::WSConnection;
 
 use crate::logic::bucket_server::BaseConnectionHandler;
@@ -52,7 +54,7 @@ pub trait Connection { // QUES: Sized
     /// # Returns
     /// 
     /// * message: `Option<Vec<u8>>` - `Some(message)` if there is one, else `None`
-    fn try_recv(&mut self) -> Option<Vec<u8>> where Self: Sized;
+    fn try_recv(&mut self) -> Result<Option<Vec<u8>>, tungstenite::error::Error> where Self: Sized;
 }
 
 pub trait UserServer { // QUES: stop???
