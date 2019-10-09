@@ -4,7 +4,7 @@ use std::str;
 use serde::{Serialize, Deserialize};
 use serde_json;
 
-use crate::logic::traits_bucket_server::{Bucket};
+use crate::logic::Bucket;
 use crate::logic::bucket_server::{BaseBucketMessage, BaseConnectionHandler};
 
 use crate::logic::bucket_manager::BaseBucketManagerData;

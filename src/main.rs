@@ -5,7 +5,9 @@ use ctrlc;
 use config;
 
 use bucketer::logger::SimpleLogger;
+
 use bucketer::http_server;
+use bucketer::http_server::game_service_provider::GameServiceProvider;
 
 use bucketer::logic::bucket_server::{BaseBucketServer, BaseConnectionHandler};
 use bucketer::logic::bucket_manager::BaseBucketManager;
@@ -55,8 +57,8 @@ fn main() -> std::io::Result<()> {
 
             // Initializing http server
             log::info!("creating http server");
-            let mut server = http_server::server::HttpGameServer::new(http_ip, http_port); // IDEA: load ip and port from config
-            let handle_http = server.start();
+            let mut server = http_server::HttpGameServer::new(http_ip, http_port); // IDEA: load ip and port from config
+            let handle_http = server.start::<GameServiceProvider>();
 
             // handling started threads // WARN: add try_join in loop
             if let Err(e) = handle_http.join().unwrap() {

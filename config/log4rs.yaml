@@ -9,8 +9,18 @@ appenders:
     encoder:
       pattern: "{d(%H:%M:%S %Z)(utc)} [{h({l})}] - {m}{n}"
   file:
+    # kind: rolling_file
     kind: file
     path: "logs/log.log"
+    # policy:
+    #   kind: compound
+    #   trigger:
+    #     kind: size
+    #     limit: 50mb
+    #   roller:
+    #     kind: fixed_window
+    #     base: 1
+    #     count: 5
     encoder:
       pattern: "{f}{n}{M} - l: {L}{n}{d(%Y-%m-%d %H:%M:%S %Z)(utc)} [{h({l})}] - {m}{n}"
 root:

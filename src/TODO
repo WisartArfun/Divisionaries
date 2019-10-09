@@ -3,6 +3,7 @@
     - making better function and mod descriptions and structure
     - code annotations
     - join WSServer and Game Loop to one thread???
+    - automaticaly delete logs when too big
 
 - crate::http_server::http_utils::read_files
     - add checking if file exists and error handling

@@ -2,8 +2,7 @@ use actix_web::{web, Responder};
 
 use log;
 
-use super::trait_provide_service::ProvideService;
-use super::http_utils;
+use crate::http_server::{ProvideService, http_utils};
 
 // DESCRIPTION: configures an actix_web::App for crate::http_server::server::GameHttpServer
 pub struct GameServiceProvider {}

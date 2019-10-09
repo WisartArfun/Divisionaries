@@ -7,13 +7,13 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 use tungstenite;
 
-use crate::logic::traits_bucket_server::*;
+use crate::logic::Bucket;
 
 use crate::connection::ConnectionServer;
 use crate::connection::Connection;
 
 use crate::websocket_server::ws_connection::WSConnection;
-use crate::websocket_server::server::WebSocketServer;
+use crate::websocket_server::WebSocketServer;
 
 pub struct BaseBucketServer {
     connection_handler: Arc<Mutex<BaseConnectionHandler>>,
