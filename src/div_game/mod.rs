@@ -9,38 +9,34 @@ use crate::logic::bucket_server::{BaseBucketMessage, BaseConnectionHandler, Base
 
 use crate::logic::bucket_manager::BaseBucketManagerData;
 
-pub struct ApiBucket {
+pub struct DivGameBucket {
     connection_handler: Arc<Mutex<BaseConnectionHandler>>,
     bucket_manager: Arc<Mutex<BaseBucketManagerData>>,
 }
 
-impl ApiBucket {
+impl DivGameBucket {
     pub fn new(connection_handler: Arc<Mutex<BaseConnectionHandler>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self {
         Self {
             connection_handler,
             bucket_manager,
         }
     }
-
-    // fn creat_new_div_game_normal(&mut self) {
-
-    // }
 }
 
-impl Bucket for ApiBucket {
+impl Bucket for DivGameBucket {
     fn start(&mut self) {
-        log::info!("ApiBucket started");
+        log::info!("DivGameBucket started");
     }
 
     fn stop(&mut self) {
-        log::info!("ApiBucket stoped");
+        log::info!("DivGameBucket stoped");
     }
 
     fn handle_message(&mut self, mut message: BaseBucketMessage) { //}, bucket_manager: Arc<Mutex<BaseBucketManager>>) {
-        log::info!("Api received a message: {}", str::from_utf8(&message.get_content()).unwrap());
+        log::info!("DivGameBucket received a message: {}", str::from_utf8(&message.get_content()).unwrap());
         let client = message.get_client();
         let msg = message.get_content();
-        
+
         let content = str::from_utf8(&msg).unwrap(); // PROB: error handling
         if let Ok(api_request) = serde_json::from_str::<APIRequest>(content) {
             match api_request {
@@ -80,42 +76,38 @@ impl Bucket for ApiBucket {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-enum APIRequest {
-    JoinDivGameNormal,
-    JoinDivGameDirect(String),
-    GetRunningGames,
-    GetOpenLobbies,
+enum DivGameRunningRequest {
+    Test,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-enum APIResponse {
-    InvalidJson,
-    InvalidRequest,
-    JoinGame(String),
-    OpenLobbies(Vec<BaseBucketData>),
-    RunningGames(Vec<BaseBucketData>),
+enum DivGameLobbyRequest {
+    Ready,
+    NotReady,
+    Leave,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+enum DivGameRequest {
+    Running(DivGameRunningRequest),
+    Lobby(DivGameLobbyRequest),
+}
 
-// JAVASCRIPT TEST
+#[derive(Serialize, Deserialize, Debug)]
+enum DivGameRunningResponse {
+    GameEnd, // TODO: send some score/ranking
+}
 
-// let socket = new WebSocket('ws://localhost:8001');
-// let m = '"JoinDivGameNormal"';
-// let tmp = undefined;
-// let tmp2 = undefined;
-// socket.onopen = function(event) {
-// 	socket.send(m);
+#[derive(Serialize, Deserialize, Debug)]
+enum DivGameLobbyResponse {
+    StartGame,
+    LobbyStatus,
+}
 
-// 	socket.onmessage = function(event) {
-// 		tmp = event;
-// 		tmp.data.text().then(res => {
-// 			tmp2 = res; console.log(res);
-// 			console.log(event);
-//         });
-//     }
-
-// 	socket.onclose = function(event) {
-// 		console.log("connection closed");
-// 		console.log(event);
-//     }
-// }
+#[derive(Serialize, Deserialize, Debug)]
+enum DivGameResponse {
+    InvalidJson,
+    InvalidRequest,
+    Running(DivGameRunningResponse),
+    Lobby(DivGameLobbyResponse),
+}
