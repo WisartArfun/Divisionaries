@@ -111,15 +111,4 @@ impl BaseBucketManager {
         log::debug!("getting BaseBucketManagerData clone from BaseBucketManager");
         self.data.clone()
     }
-
-    pub fn create_api_bucket(&mut self, api_ip: &str, api_port: &str, running: Arc<AtomicBool>) {
-        log::info!("creating api bucket");
-        let connection_handler = Arc::new(Mutex::new(BaseConnectionHandler::new()));
-        let api_bucket = Arc::new(Mutex::new(ApiBucket::new(connection_handler.clone(), self.get_data()))); //, BaseBucketData::new("API", 10_000))));
-        // let mut api_bucket = BaseBucketServer::new(api_ip, api_port, api_bucket, connection_handler); // IDEA: directly in here
-        let mut api_bucket = BaseBucketServer::new(api_ip, api_port, api_bucket, BaseBucketData::new("API", 10_000), connection_handler);
-        let _handle_api = api_bucket.start(running);
-
-        self.open_lobby("API".to_string(), api_bucket);
-    }
 }

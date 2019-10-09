@@ -50,14 +50,13 @@ function send(message) {
     socket.send(message);
 }
 
-function join_div_game_direct() { // change this
-    let lobby_id_input = document.getElementById("lobby_id_input");
-    let input = lobby_id_input.value;
-    window.location.href = "/games/" + input;
-}
-
 function join_div_game_normal() {
     send('"JoinDivGameNormal"');
+}
+
+function join_div_game_direct(id) {
+    let lobby_id_input = document.getElementById("lobby_id_input");
+    send('{"JoinDivGameDirect": "' + lobby_id_input.value + '"}');
 }
 
 function get_open_lobbies() {

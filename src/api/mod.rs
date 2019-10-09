@@ -23,6 +23,10 @@ impl ApiBucket { // IDEA: NEXT: add bucket data and state
             // bucket_data,
         }
     }
+
+    // fn creat_new_div_game_normal(&mut self) {
+
+    // }
 }
 
 impl Bucket for ApiBucket {
@@ -36,7 +40,6 @@ impl Bucket for ApiBucket {
 
     fn handle_message(&mut self, mut message: BaseBucketMessage) { //}, bucket_manager: Arc<Mutex<BaseBucketManager>>) {
         log::info!("Api received a message: {}", str::from_utf8(&message.get_content()).unwrap());
-
         let client = message.get_client();
         let _ = client.clone().lock().unwrap();
         let msg = message.get_content();
@@ -48,7 +51,14 @@ impl Bucket for ApiBucket {
                     client.lock().unwrap().send(serde_json::to_vec(&APIResponse::JoinGame("some_id".to_string())).unwrap()); // PROB: error handling // QUES: efficiency?
                     let id = client.lock().unwrap().get_id(); // QUES: two times lock bad?
                     self.connection_handler.lock().unwrap().disconnect_client(id);
-                    log::debug!("Client left ApiBucket");
+                    log::debug!("client left ApiBucket");
+                },
+                APIRequest::JoinDivGameDirect(id) => {
+                    log::info!("client joined a normal div game direct");
+                    client.lock().unwrap().send(serde_json::to_vec(&APIResponse::JoinGame(id)).unwrap()); // PROB: error handling // QUES: efficiency?
+                    let id = client.lock().unwrap().get_id(); // QUES: two times lock bad?
+                    self.connection_handler.lock().unwrap().disconnect_client(id);
+                    log::debug!("client left ApiBucket");
                 },
                 APIRequest::GetOpenLobbies => {
                     let lobbies = self.bucket_manager.lock().unwrap().get_open_lobbies();
@@ -78,6 +88,7 @@ impl Bucket for ApiBucket {
 #[derive(Serialize, Deserialize, Debug)]
 enum APIRequest {
     JoinDivGameNormal,
+    JoinDivGameDirect(String),
     GetRunningGames,
     GetOpenLobbies,
 }
