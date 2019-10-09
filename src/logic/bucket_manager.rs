@@ -12,7 +12,7 @@ pub struct BaseBucketManagerData {
 
 impl BaseBucketManagerData {
     pub fn new() -> Self {
-        log::info!("new BaseBucketManager created");
+        log::info!("new BaseBucketManagerData created");
         Self {
             lobbies: HashMap::new(),
             games: HashMap::new(),

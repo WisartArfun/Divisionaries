@@ -11,7 +11,7 @@ pub struct File {
 
 impl File {
     pub fn new(file: fs::File) -> File {
-        log::info!("creating new File object");
+        log::debug!("creating new File object");
         let new_file = File{file};
 
         new_file
@@ -54,7 +54,7 @@ impl FileManager {
     }
     
     pub fn read_file(src: &str) ->Option<Vec<u8>> {
-        log::info!("getting file content from {}", src);
+        log::debug!("getting file content from {}", src);
         if let Some(mut f_file) = FileManager::get_file(src) {
             return Some(f_file.read());
         }

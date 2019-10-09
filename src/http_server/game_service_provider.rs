@@ -10,7 +10,7 @@ pub struct GameServiceProvider {}
 
 impl ProvideService for GameServiceProvider {
     fn configure_services(cfg: &mut web::ServiceConfig) {
-        log::info!("configuring cfg for a GameServiceProvider");
+        log::debug!("configuring cfg for a GameServiceProvider");
         cfg
             // HTML
             .service(web::resource("/").to(GameServiceProvider::get_html_index))

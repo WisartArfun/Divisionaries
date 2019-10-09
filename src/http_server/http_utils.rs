@@ -36,7 +36,7 @@ pub fn get_file_with_replace(src: &str, mime: &str, replacers: &[(&str, &str)]) 
 }
 
 fn get_replace<S: Into<String>>(content: S, replacers: &[(&str, &str)]) -> String {
-    log::info!("get_replace");
+    log::debug!("get_replace");
     let mut content = content.into();
     for replacer in replacers {
         let (old, new) = replacer;

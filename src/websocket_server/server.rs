@@ -69,12 +69,18 @@ impl ConnectionServer for WebSocketServer {
                 );
                 thread::sleep(time::Duration::from_millis(5)); // PROB: somehow set_nonblocking needs time => error
 
-                let websocket = tungstenite::server::accept(stream).unwrap();
-                log::debug!("calling callback from ConnectionServer");
-                callback
-                    .lock()
-                    .unwrap()
-                    .handle_new_connection(WSConnection::new(websocket));
+                match tungstenite::server::accept(stream) {
+                    Ok(websocket) => {
+                        log::debug!("calling callback from ConnectionServer");
+                        callback
+                            .lock()
+                            .unwrap()
+                            .handle_new_connection(WSConnection::new(websocket));
+                    },
+                    Err(e) => {
+                        log::warn!("an error occured while accepting an incomming connection: {}", e);
+                    }
+                }
             }
 
             Ok(())

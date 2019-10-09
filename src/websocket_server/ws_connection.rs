@@ -1,5 +1,6 @@
 use std::net::TcpStream;
 use std::sync::{Arc, Mutex};
+use std::io;
 
 use tungstenite;
 use log;
@@ -25,8 +26,14 @@ impl Connection for WSConnection {
                 }
             },
             // QUEST: correct error handling
-            Err(ref _e) => {} //if e.kind == io::ErrorKind::WouldBlock => {
-            // Err(e) => panic!("encountered IO error: {}", e),
+            Err(ref e) => {
+                if let tungstenite::error::Error::Io(err) = e {
+                    if err.kind() == io::ErrorKind::WouldBlock {
+                        return None;
+                    };
+                }
+                log::warn!("an error occured while receiving a message from WSConnection: {}", e);
+            }
         };
 
         None

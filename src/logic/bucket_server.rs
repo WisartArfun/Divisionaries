@@ -149,12 +149,10 @@ impl BaseConnectionHandler {
         log::debug!("BaseConnectionHandler is handling a new connection with id: {}", &id);
         let client = Arc::new(Mutex::new(BaseBucketClient::new(id, connection)));
         self.connections.insert(id, client);
-        println!("connections: {}", self.connections.len());
-        println!("connections: {:p}", &self.connections);
+        log::debug!("amount of connections: {}", self.connections.len());
     }
 
     pub fn disconnect_client(&mut self, id: i64) {
-        println!("connections: {}", self.connections.len());
         if let Some(client) = self.connections.remove(&id) {
             client.lock().unwrap().close_connection();
             self.available_ids.push(id);

@@ -1,7 +1,6 @@
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::collections::HashMap;
-
 use ctrlc;
 use config;
 
@@ -18,6 +17,12 @@ fn main() -> std::io::Result<()> {
 
     match mode {
         "RUN" => {
+            // initialize logger
+            SimpleLogger::init("config/log4rs.yaml");
+            log::info!("Main thread running");
+
+            // ctrl-c handling => atomic bool that can stop all other threads
+            log::info!("setting ctrl-c handler");
             let running = Arc::new(AtomicBool::new(true));
             let r = running.clone();
 
@@ -25,34 +30,35 @@ fn main() -> std::io::Result<()> {
                 r.store(false, Ordering::SeqCst);
             }).expect("Error setting Ctrl-C handler");
             
+            // load config data
+            log::info!("loading data from config file");
             let mut settings = config::Config::default();
-            settings.merge(config::File::with_name("Settings")).unwrap();
+            settings.merge(config::File::with_name("Settings")).unwrap(); // QUES: error handling
             let settings = settings.try_into::<HashMap<String, String>>().unwrap();
-            
-            // let api_ip = match settings.get("api_ip") { // QUES: with if let
-            //     Some(port) => port,
-            //     None => "localhost",
-            // };
+
             let api_ip = if let Some(port) = settings.get("api_ip") {port} else {"localhost"};
             let api_port = if let Some(port) = settings.get("api_port") {port} else {"8001"};
 
             let http_ip = if let Some(port) = settings.get("http_ip") {port} else {"localhost"};
             let http_port = if let Some(port) = settings.get("http_port") {port} else {"8000"};
 
-            SimpleLogger::init("config/log4rs.yaml");
-            log::info!("Main thread running");
-
+            // initialize bucket manager
+            log::info!("creating bucket manager");
             let mut bucket_manager = BaseBucketManager::new();
 
+            // initializing bucket api
+            log::info!("creating api bucket");
             let connection_handler = Arc::new(Mutex::new(BaseConnectionHandler::new()));
             let api_bucket = Arc::new(Mutex::new(ApiBucket::new(connection_handler.clone(), bucket_manager.get_data())));
             let mut api_bucket = BaseBucketServer::new(api_ip, api_port, api_bucket, connection_handler); // IDEA: directly in here
             let handle_api = api_bucket.start(running.clone());
 
+            // Initializing http server
+            log::info!("creating http server");
             let mut server = http_server::server::HttpGameServer::new(http_ip, http_port); // IDEA: load ip and port from config
             let handle_http = server.start();
 
-            // WARN: add try_join in loop
+            // handling started threads // WARN: add try_join in loop
             if let Err(e) = handle_http.join().unwrap() {
                 log::error!("An error occured while joining the http_server:\n\t{:?}", e);
                 panic!("");
