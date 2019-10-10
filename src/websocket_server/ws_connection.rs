@@ -49,6 +49,6 @@ impl WSConnection {
 
     pub fn close(&mut self) { // WARN: do this with a trait
         log::info!("closing WSConnection");
-        self.ws_conn.lock().unwrap().close(None);
+        self.ws_conn.lock().unwrap().close(None).unwrap();
     }
 }

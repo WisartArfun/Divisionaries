@@ -15,7 +15,7 @@ pub struct GameManager {
 }
 
 lazy_static!{
-    pub static ref GAMEMANAGER: Mutex<GameManager> = Mutex::new(GameManager{ip: "localhost".to_string(), lobbies: HashMap::new(), running_games: HashMap::new()});
+    pub static ref GAMEMANAGER: Mutex<GameManager> = Mutex::new(GameManager{ip: "127.0.0.1".to_string(), lobbies: HashMap::new(), running_games: HashMap::new()});
 }
 
 impl GameManager {

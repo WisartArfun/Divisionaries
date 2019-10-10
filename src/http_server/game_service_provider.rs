@@ -35,7 +35,7 @@ impl GameServiceProvider {
 
     fn get_html_game_lobby(lobby_id: web::Path<(String)>) -> impl Responder { // QUES: what to do here?
         log::debug!("get html game lobby from GameServiceProvider");
-        http_utils::get_file_with_replace("client/files/game.html", "text/html", &[("#ID#", &lobby_id), ("#IP#", "localhost"), ("#PORT#", "8001")])
+        http_utils::get_file_with_replace("client/files/game.html", "text/html", &[("#ID#", &lobby_id), ("#IP#", "127.0.0.1"), ("#PORT#", "8001")])
         // if let Some(game) = GAMEMANAGER.lock().unwrap().get_game_lobby(&lobby_id) {
         //     game.lock().unwrap().start();
         //     let ip = game.lock().unwrap().get_ip();

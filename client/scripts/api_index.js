@@ -1,5 +1,5 @@
 let ready = false;
-let socket = new WebSocket('ws://localhost:8020');
+let socket = new WebSocket('ws://127.0.0.1:8020');
 socket.onopen = function(event) {
     ready = true;
 
@@ -18,7 +18,7 @@ socket.onopen = function(event) {
                         content = "<table><tr><th>Lobby Id</th><th>Players</th><th>Max Players</th></tr>";
                         running_games = parsed['OpenLobbies'];
                         for (lobby in running_games) {
-                            content += "<tr><th>" + running_games[lobby]['id'] + "</th><th>" + running_games[lobby]['current_users'] + "</th><th>" + running_games[lobby]['max_user_size'] + "</th></tr>";
+                            content += '<tr><th><button onclick="join_div_game_direct()">' + running_games[lobby]['id'] + "</button></th><th>" + running_games[lobby]['current_users'] + "</th><th>" + running_games[lobby]['max_user_size'] + "</th></tr>";
                         }
                         document.getElementById("open_lobbies").innerHTML = content;
                         break;
@@ -54,9 +54,14 @@ function join_div_game_normal() {
     send('"JoinDivGameNormal"');
 }
 
+function join_div_game_id(id) {
+    send('{"JoinDivGameDirect": "' + id + '"}');
+}
+
 function join_div_game_direct(id) {
     let lobby_id_input = document.getElementById("lobby_id_input");
-    send('{"JoinDivGameDirect": "' + lobby_id_input.value + '"}');
+    join_div_game_id(lobby_id_input.value);
+    // send('{"JoinDivGameDirect": "' + lobby_id_input.value + '"}');
 }
 
 function get_open_lobbies() {

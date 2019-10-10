@@ -1,4 +1,4 @@
-http_ip = "localhost"
+http_ip = "127.0.0.1"
 http_port = "8040"
-api_ip = "localhost"
+api_ip = "127.0.0.1"
 api_port = "8020"

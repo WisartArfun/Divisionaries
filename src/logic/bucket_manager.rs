@@ -94,7 +94,6 @@ impl BaseBucketManager {
     pub fn open_lobby(&mut self, id: String, lobby: BaseBucketServer) {
         log::info!("opening a new lobby with id: {}", &id);
         self.data.lock().unwrap().open_lobby(id, lobby);
-        log::error!("heeerre");
     }
 
     pub fn start_lobby(&mut self, id: String) {

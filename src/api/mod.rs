@@ -99,7 +99,7 @@ enum APIResponse {
 
 // JAVASCRIPT TEST
 
-// let socket = new WebSocket('ws://localhost:8001');
+// let socket = new WebSocket('ws://127.0.0.1:8001');
 // let m = '"JoinDivGameNormal"';
 // let tmp = undefined;
 // let tmp2 = undefined;
