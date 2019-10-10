@@ -1,4 +1,5 @@
 use std::sync::{Arc, Mutex};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::str;
 
 use serde::{Serialize, Deserialize};
@@ -14,21 +15,26 @@ use crate::div_game::DivGameBucket;
 pub struct ApiBucket {
     connection_handler: Arc<Mutex<BaseConnectionHandler>>,
     bucket_manager: Arc<Mutex<BaseBucketManagerData>>,
+    running: Arc<AtomicBool>,
 }
 
 impl ApiBucket {
-    pub fn new(connection_handler: Arc<Mutex<BaseConnectionHandler>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self {
+    pub fn new(connection_handler: Arc<Mutex<BaseConnectionHandler>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>, running: Arc<AtomicBool>) -> Self {
         Self {
             connection_handler,
             bucket_manager,
+            running,
         }
     }
 
-    fn creat_new_div_game_normal(&mut self, id: &str, port: &str, bucket_data: BaseBucketData) {
+    // fn creat_new_div_game_normal(&mut self, id: &str, port: &str, bucket_data: BaseBucketData) {
+    fn create_new_div_game_normal(&mut self, mut bucket_data: BaseBucketData) {
         log::info!("creating new div game normal");
         let gm = Arc::new(Mutex::new(DivGameBucket::new(self.connection_handler.clone(), self.bucket_manager.clone())));
-        let server = BaseBucketServer::new(id, port, gm, bucket_data, self.connection_handler.clone());
-        self.bucket_manager.lock().unwrap().open_lobby(id.to_string(), server);
+        let id = bucket_data.get_id();
+        let mut server = BaseBucketServer::new(&bucket_data.get_ip(), &bucket_data.get_port(), gm, bucket_data, self.connection_handler.clone());
+        let _ = server.start(self.running.clone());
+        self.bucket_manager.lock().unwrap().open_lobby(id, server);
     }
 }
 
@@ -55,7 +61,7 @@ impl Bucket for ApiBucket {
                     let game_id = "match".to_string();
                     let ip = "127.0.0.1".to_string();
                     let port = "8022".to_string();
-                    self.creat_new_div_game_normal(&game_id, &port, BaseBucketData::new(&game_id, &ip, &port, 4));
+                    self.create_new_div_game_normal(BaseBucketData::new(&game_id, &ip, &port, 4));
 
                     client.lock().unwrap().send(serde_json::to_vec(&APIResponse::JoinGame(game_id)).unwrap()); // PROB: error handling // QUES: efficiency?
                     let id = client.lock().unwrap().get_id(); // QUES: two times lock bad?
@@ -66,8 +72,8 @@ impl Bucket for ApiBucket {
                     log::info!("client joined a normal div game direct");
 
                     let ip = "127.0.0.1".to_string();
-                    let port = "8022~".to_string();
-                    self.creat_new_div_game_normal(&game_id, &port, BaseBucketData::new(&game_id, &ip, &port, 4));
+                    let port = "8022".to_string();
+                    self.create_new_div_game_normal(BaseBucketData::new(&game_id, &ip, &port, 4));
 
                     client.lock().unwrap().send(serde_json::to_vec(&APIResponse::JoinGame(game_id)).unwrap()); // PROB: error handling // QUES: efficiency?
                     let id = client.lock().unwrap().get_id(); // QUES: two times lock bad?

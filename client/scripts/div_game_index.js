@@ -1,5 +1,5 @@
 let ready = false;
-let socket = new WebSocket('ws://127.0.0.1:8020');
+let socket = new WebSocket('ws://127.0.0.1:8050');
 let bucket_ready = false;
 let bucket_socket = null;
 
@@ -16,6 +16,7 @@ socket.onopen = function(event) {
                 switch (first_key) {
                     case 'LobbyLocation':
                         data = parsed[first_key];
+                        console.log(data);
                         init_bucket_api(data[0], data[1], data[2]);
                         break;
                     default:
@@ -34,7 +35,8 @@ socket.onopen = function(event) {
 }
 
 function init_bucket_api(id, ip, port) {
-    bucket_socket = new WebSocket('ws://' + data[1] + ':' + data[2]);
+    console.log(ip + ":" + port);
+    bucket_socket = new WebSocket('ws://' + ip + ':' + port);
 
     bucket_socket.onopen = function(event) {
         bucket_ready = true;
@@ -52,8 +54,7 @@ function init_bucket_api(id, ip, port) {
                         //     socket = new WebSocket('ws://' + data[1] + ':' + data[2]);
                         //     console.log("hi");
                         //     break;
-                        default:
-                            alert(parsed);
+                        default: alert(parsed);
                     }
                 } catch (err) {
                     console.log(err.message);
@@ -68,12 +69,13 @@ function init_bucket_api(id, ip, port) {
     }
 }
 
-function send(message) {
+function send_api(message) {
     while (!ready) {} // sleep
+    console.log("send to api: " + message);
     socket.send(message);
 }
 
 function get_bucket_data() {
     let id = document.getElementById("bucket_id");
-    socket.send('{"GetLobbyLocation": "' + id.innerText + '"}');
+    send_api('{"GetLobbyLocation": "' + id.innerText + '"}');
 }

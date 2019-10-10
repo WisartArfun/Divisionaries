@@ -12,6 +12,8 @@ use bucketer::http_server::game_service_provider::GameServiceProvider;
 use bucketer::logic::bucket_server::{BaseBucketServer, BaseConnectionHandler, BaseBucketData};
 use bucketer::logic::bucket_manager::BaseBucketManager;
 
+use bucketer::div_game::DivGameBucket;
+
 use bucketer::api::ApiBucket;
 
 fn main() -> std::io::Result<()> {
@@ -43,11 +45,7 @@ fn main() -> std::io::Result<()> {
 
             let http_ip = if let Some(port) = settings.get("http_ip") {port} else {"127.0.0.1"};
             let http_port = if let Some(port) = settings.get("http_port") {port} else {"8000"};
-            
-            //
-            // IDEA: in BaseBucketServer save bucket and bucketdata seperately
-            //
-
+    
             // initialize bucket manager
             log::info!("creating bucket manager");
             let mut bucket_manager = BaseBucketManager::new();
@@ -55,7 +53,7 @@ fn main() -> std::io::Result<()> {
             // initializing bucket api
             log::info!("creating api bucket");
             let connection_handler = Arc::new(Mutex::new(BaseConnectionHandler::new()));
-            let api_bucket = Arc::new(Mutex::new(ApiBucket::new(connection_handler.clone(), bucket_manager.get_data())));
+            let api_bucket = Arc::new(Mutex::new(ApiBucket::new(connection_handler.clone(), bucket_manager.get_data(), running.clone())));
             let mut api_bucket = BaseBucketServer::new(api_ip, api_port, api_bucket, BaseBucketData::new("API", api_ip, api_port, 10_000), connection_handler);
             let _handle_api = api_bucket.start(running.clone());
 
