@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html>
 
+<var id="bucket_id">#ID#</var>
+
 <body>
     <h1>Have fun playing game ##ID#</h1>
 
-    <canvas id="game-canvas" width="200" height="100" style="border:1px solid #000000;"></canvas>
+    <div>
+        <h2>Info</h2>
+
+        <h3>Running Games</h3>
+        <button onclick="get_bucket_data()">Bucket Data</button>
+
+        <div>
+            <p id="bucket_data"></p>
+        </div>
+    </div>
+
+    <script src="/scripts/div_game_index.js"></script>
 </body>
 
 </html>

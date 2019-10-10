@@ -1,4 +1,4 @@
 http_ip = "127.0.0.1"
-http_port = "8040"
+http_port = "8060"
 api_ip = "127.0.0.1"
-api_port = "8020"
+api_port = "8050"

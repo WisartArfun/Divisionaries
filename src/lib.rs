@@ -5,3 +5,4 @@ pub mod http_server;
 pub mod logger;
 pub mod logic;
 pub mod websocket_server;
+pub mod div_game;

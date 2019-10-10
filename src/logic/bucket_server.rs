@@ -82,7 +82,7 @@ impl BaseBucketServer {
         handle
     }
 
-    pub fn get_bucket_data(&mut self) -> BaseBucketData {
+    pub fn get_bucket_data(&self) -> BaseBucketData {
         // self.bucket.lock().unwrap().get_bucket_data()
         self.bucket_data.clone()
     }
@@ -220,14 +220,18 @@ impl BaseConnectionHandler {
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct BaseBucketData { // get this passed to constructor
     id: String,
+    ip: String,
+    port: String,
     max_user_size: i64,
     current_users: i64,
 }
 
 impl BaseBucketData {
-    pub fn new<S: Into<String>>(id: S, max_user_size: i64) -> Self {
+    pub fn new<S: Into<String>>(id: S, ip: S, port: S, max_user_size: i64) -> Self {
         Self {
             id: id.into(),
+            ip: ip.into(),
+            port: port.into(),
             max_user_size,
             current_users: 0,
         }
@@ -235,6 +239,14 @@ impl BaseBucketData {
 
     pub fn get_id(&mut self) -> String {
         self.id.clone()
+    }
+
+    pub fn get_ip(&mut self) -> String {
+        self.ip.clone()
+    }
+
+    pub fn get_port(&mut self) -> String {
+        self.port.clone()
     }
 
     pub fn get_current_users(&mut self) -> i64 {

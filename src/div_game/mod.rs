@@ -38,9 +38,9 @@ impl Bucket for DivGameBucket {
         let msg = message.get_content();
 
         let content = str::from_utf8(&msg).unwrap(); // PROB: error handling
-        if let Ok(api_request) = serde_json::from_str::<APIRequest>(content) {
+        if let Ok(api_request) = serde_json::from_str::<DivGameRequest>(content) {
             match api_request {
-                DivGameLobbyRequest(lobby_request) => {
+                DivGameRequest::Lobby(lobby_request) => {
                     match lobby_request {
                         DivGameLobbyRequest::Ready => {
                             log::debug!("client is ready");
@@ -48,7 +48,7 @@ impl Bucket for DivGameBucket {
                         },
                         _ => {
                             log::warn!("invalid APIRequest send to APIServer");
-                            client.lock().unwrap().send(serde_json::to_vec(&APIResponse::InvalidRequest).unwrap());
+                            client.lock().unwrap().send(serde_json::to_vec(&DivGameResponse::InvalidRequest).unwrap());
                         },
                     }
                 },
@@ -77,12 +77,12 @@ impl Bucket for DivGameBucket {
                 // },
                 _ => {
                     log::warn!("invalid APIRequest send to APIServer");
-                    client.lock().unwrap().send(serde_json::to_vec(&APIResponse::InvalidRequest).unwrap());
+                    client.lock().unwrap().send(serde_json::to_vec(&DivGameResponse::InvalidRequest).unwrap());
                 },
             }
         } else { // Prob: QUES: WARN: differentiate between invalid json and invalid request
             log::warn!("An error occured when parsing message");
-            client.lock().unwrap().send(serde_json::to_vec(&APIResponse::InvalidJson).unwrap()); // PROB: error handling // QUES: efficiency?
+            client.lock().unwrap().send(serde_json::to_vec(&DivGameResponse::InvalidJson).unwrap()); // PROB: error handling // QUES: efficiency?
         }
     }
 }

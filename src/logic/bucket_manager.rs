@@ -69,6 +69,24 @@ impl BaseBucketManagerData {
         }
         lobby_data
     }
+
+    pub fn get_lobby_location(&mut self, id: &str) -> Option<BaseBucketData> {
+        log::debug!("getting lobby location from BaseBucketManagerData");
+        if !self.lobby_exists(id) {
+            return None;
+        }
+
+        Some(self.lobbies.get(id).unwrap().get_bucket_data())
+    }
+
+    pub fn get_game_location(&mut self, id: &str) -> Option<BaseBucketData> {
+        log::debug!("getting game location from BaseBucketManagerData");
+        if !self.game_exists(id) {
+            return None;
+        }
+        
+        Some(self.games.get(id).unwrap().get_bucket_data())
+    }
 }
 
 pub struct BaseBucketManager {
@@ -109,5 +127,13 @@ impl BaseBucketManager {
     pub fn get_data(&mut self) -> Arc<Mutex<BaseBucketManagerData>> {
         log::debug!("getting BaseBucketManagerData clone from BaseBucketManager");
         self.data.clone()
+    }
+
+    pub fn get_lobby_location(&mut self, id: &str) -> Option<BaseBucketData> {
+        self.data.lock().unwrap().get_lobby_location(id)
+    }
+
+    pub fn get_game_location(&mut self, id: &str) -> Option<BaseBucketData> {
+        self.data.lock().unwrap().get_game_location(id)
     }
 }

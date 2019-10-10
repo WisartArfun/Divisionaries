@@ -1,5 +1,5 @@
 let ready = false;
-let socket = new WebSocket('ws://127.0.0.1:8020');
+let socket = new WebSocket('ws://127.0.0.1:8050');
 socket.onopen = function(event) {
     ready = true;
 

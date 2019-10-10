@@ -56,10 +56,10 @@ fn main() -> std::io::Result<()> {
             log::info!("creating api bucket");
             let connection_handler = Arc::new(Mutex::new(BaseConnectionHandler::new()));
             let api_bucket = Arc::new(Mutex::new(ApiBucket::new(connection_handler.clone(), bucket_manager.get_data())));
-            let mut api_bucket = BaseBucketServer::new(api_ip, api_port, api_bucket, BaseBucketData::new("API", 10_000), connection_handler);
+            let mut api_bucket = BaseBucketServer::new(api_ip, api_port, api_bucket, BaseBucketData::new("API", api_ip, api_port, 10_000), connection_handler);
             let _handle_api = api_bucket.start(running.clone());
 
-            bucket_manager.open_lobby("API".to_string(), api_bucket);
+            // bucket_manager.open_lobby("API".to_string(), api_bucket);
 
             // Initializing http server
             log::info!("creating http server");
