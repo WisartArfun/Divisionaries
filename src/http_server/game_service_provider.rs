@@ -1,11 +1,13 @@
-use actix_web::{web, Responder};
+use std::collections::HashMap;
 
+use actix_web::{web, Responder};
+use config;
 use log;
 
 use crate::http_server::{ProvideService, http_utils};
 
 // DESCRIPTION: configures an actix_web::App for crate::http_server::server::GameHttpServer
-pub struct GameServiceProvider {}
+pub struct GameServiceProvider;
 
 impl ProvideService for GameServiceProvider {
     fn configure_services(cfg: &mut web::ServiceConfig) {
@@ -35,7 +37,14 @@ impl GameServiceProvider {
 
     fn get_html_game_lobby(lobby_id: web::Path<(String)>) -> impl Responder { // QUES: what to do here?
         log::debug!("get html game lobby from GameServiceProvider");
-        http_utils::get_file_with_replace("client/files/game.html", "text/html", &[("#ID#", &lobby_id), ("#IP#", "127.0.0.1"), ("#PORT#", "8001")])
+        log::info!("loading data from config file");
+        let mut settings = config::Config::default();
+        settings.merge(config::File::with_name("config/Settings")).unwrap(); // QUES: error handling
+        let settings = settings.try_into::<HashMap<String, String>>().unwrap();
+
+        let api_ip = if let Some(port) = settings.get("api_ip") {port} else {"127.0.0.1"};
+        let api_port = if let Some(port) = settings.get("api_port") {port} else {"8001"};
+        http_utils::get_file_with_replace("client/files/game.html", "text/html", &[("#ID#", &lobby_id), ("#IP#", &api_ip), ("#PORT#", &api_port)])
         // if let Some(game) = GAMEMANAGER.lock().unwrap().get_game_lobby(&lobby_id) {
         //     game.lock().unwrap().start();
         //     let ip = game.lock().unwrap().get_ip();

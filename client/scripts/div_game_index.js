@@ -31,7 +31,6 @@ function open_api_bucket(ip, port) {
                             data = parsed[first_key];
                             init_game_bucket(data[0], data[1], data[2]);
                             api_socket.close();
-                            console.log("api closed");
                             break;
                         default:
                             alert(parsed);
@@ -67,13 +66,29 @@ function init_game_bucket(id, ip, port) {
                 try {
                     let parsed = JSON.parse(res);
                     let first_key = Object.keys(parsed)[0];
+                    console.log("First key: " + first_key);
                     switch (first_key) {
-                        // case 'LobbyLocation':
-                        //     data = parsed[first_key];
-                        //     socket = new WebSocket('ws://' + data[1] + ':' + data[2]);
-                        //     console.log("hi");
-                        //     break;
-                        default: alert(JSON.stringify(parsed));
+                        case 'Lobby':
+                            let second_key = parsed[first_key];
+                            console.log("second key: " + second_key);
+                            switch (second_key) {
+                                case 'StartGame':
+                                    // fetch('/old_game_template/' + id)
+                                    fetch('/files/old_game_template.html')
+                                        .then(response => response.text())
+                                        .then(text => {
+                                            replace_content(text);
+                                            let script = document.createElement('script');
+                                            script.src = "/scripts/game_template.js";
+                                            document.head.appendChild(script);
+                                        })
+                                    break;
+                                default: alert(JSON.stringify(parsed));
+                            }
+                            break;
+                        default:
+                            alert("1");
+                            alert(JSON.stringify(parsed));
                     }
                 } catch (err) {
                     console.log(err.message);
@@ -134,4 +149,10 @@ function player_switch_ready() {
     }
     document.getElementById("ready_button").innerText = ready ? "Not Ready" : "Ready";
     document.getElementById("player_ready").innerText = ready ? "The player is ready" : "The player is not ready";
+}
+
+let replace_content = function(content) {
+    document.open();
+    document.write(content);
+    document.close();
 }

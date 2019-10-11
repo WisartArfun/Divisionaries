@@ -71,7 +71,8 @@ impl Bucket for DivGameBucket {
                             client.lock().unwrap().set_ready(true);
                             self.state.clients = self.connection_handler.lock().unwrap().connections.len() as u64;
                             self.state.ready += 1;
-                            if self.state.clients > 1 && self.state.ready * 3 > self.state.clients * 2 {
+                            // if self.state.clients > 1 && self.state.ready * 3 > self.state.clients * 2 {
+                            if self.state.ready * 3 > self.state.clients * 2 {
                                 self.state.running = true;
                                 self.connection_handler.lock().unwrap().broadcast(serde_json::to_vec(&DivGameResponse::Lobby(DivGameLobbyResponse::StartGame)).unwrap());
                             }
