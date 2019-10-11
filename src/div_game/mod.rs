@@ -9,9 +9,26 @@ use crate::logic::bucket_server::{BaseBucketMessage, BaseConnectionHandler, Base
 
 use crate::logic::bucket_manager::BaseBucketManagerData;
 
+struct DivGameBucketState {
+    pub clients: u64,
+    pub ready: u64,
+    pub running: bool,
+}
+
+impl DivGameBucketState {
+    pub fn new() -> Self {
+        Self {
+            clients: 0,
+            ready: 0,
+            running: false,
+        }
+    }
+}
+
 pub struct DivGameBucket {
     connection_handler: Arc<Mutex<BaseConnectionHandler>>,
     bucket_manager: Arc<Mutex<BaseBucketManagerData>>,
+    state: DivGameBucketState,
 }
 
 impl DivGameBucket {
@@ -19,6 +36,7 @@ impl DivGameBucket {
         Self {
             connection_handler,
             bucket_manager,
+            state: DivGameBucketState::new(),
         }
     }
 }
@@ -41,12 +59,27 @@ impl Bucket for DivGameBucket {
         if let Ok(api_request) = serde_json::from_str::<DivGameRequest>(content) {
             match api_request {
                 DivGameRequest::Lobby(lobby_request) => {
+                    if self.state.running {
+                        log::warn!("DivGameBucket received a lobby request although game is running");
+                        return;
+                    }
                     match lobby_request {
                         DivGameLobbyRequest::Ready => {
+                            let ready = client.lock().unwrap().get_ready();
+                            if ready {return;}
                             log::debug!("client is ready");
+                            client.lock().unwrap().set_ready(true);
+                            self.state.clients = self.connection_handler.lock().unwrap().connections.len() as u64;
+                            self.state.ready += 1;
+                            if self.state.clients > 1 && self.state.ready * 3 > self.state.clients * 2 {
+                                self.state.running = true;
+                                self.connection_handler.lock().unwrap().broadcast(serde_json::to_vec(&DivGameResponse::Lobby(DivGameLobbyResponse::StartGame)).unwrap());
+                            }
                         },
                         DivGameLobbyRequest::NotReady => {
                             log::debug!("client is not ready");
+                            self.state.clients = self.connection_handler.lock().unwrap().connections.len() as u64;
+                            self.state.ready -= 1;
                         },
                         _ => {
                             log::warn!("invalid APIRequest send to APIServer");
@@ -54,29 +87,6 @@ impl Bucket for DivGameBucket {
                         },
                     }
                 },
-                // APIRequest::JoinDivGameNormal => {
-                //     log::info!("client joined a normal div game");
-                //     client.lock().unwrap().send(serde_json::to_vec(&APIResponse::JoinGame("some_id".to_string())).unwrap()); // PROB: error handling // QUES: efficiency?
-                //     let id = client.lock().unwrap().get_id(); // QUES: two times lock bad?
-                //     self.connection_handler.lock().unwrap().disconnect_client(id);
-                //     log::debug!("client left ApiBucket");
-                // },
-                // APIRequest::JoinDivGameDirect(id) => {
-                //     log::info!("client joined a normal div game direct");
-                //     client.lock().unwrap().send(serde_json::to_vec(&APIResponse::JoinGame(id)).unwrap()); // PROB: error handling // QUES: efficiency?
-                //     let id = client.lock().unwrap().get_id(); // QUES: two times lock bad?
-                //     self.connection_handler.lock().unwrap().disconnect_client(id);
-                //     log::debug!("client left ApiBucket");
-                // },
-                // APIRequest::GetOpenLobbies => {
-                //     let lobbies = self.bucket_manager.lock().unwrap().get_open_lobbies();
-                //     client.lock().unwrap().send(serde_json::to_vec(&APIResponse::OpenLobbies(lobbies)).unwrap())
-                // },
-                // APIRequest::GetRunningGames => {
-                //     log::debug!("client asked for open lobbies");
-                //     let games = self.bucket_manager.lock().unwrap().get_running_games();
-                //     client.lock().unwrap().send(serde_json::to_vec(&APIResponse::RunningGames(games)).unwrap())
-                // },
                 _ => {
                     log::warn!("invalid APIRequest send to APIServer");
                     client.lock().unwrap().send(serde_json::to_vec(&DivGameResponse::InvalidRequest).unwrap());

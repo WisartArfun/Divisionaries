@@ -29,7 +29,7 @@ function open_api_bucket(ip, port) {
                     switch (first_key) {
                         case 'LobbyLocation':
                             data = parsed[first_key];
-                            init_bucket_api(data[0], data[1], data[2]);
+                            init_game_bucket(data[0], data[1], data[2]);
                             api_socket.close();
                             console.log("api closed");
                             break;
@@ -50,7 +50,7 @@ function open_api_bucket(ip, port) {
     }
 }
 
-function init_bucket_api(id, ip, port) {
+function init_game_bucket(id, ip, port) {
     if (bucket_init) return; // two readies?
     bucket_init = true;
 
@@ -73,7 +73,7 @@ function init_bucket_api(id, ip, port) {
                         //     socket = new WebSocket('ws://' + data[1] + ':' + data[2]);
                         //     console.log("hi");
                         //     break;
-                        default: alert(parsed);
+                        default: alert(JSON.stringify(parsed));
                     }
                 } catch (err) {
                     console.log(err.message);

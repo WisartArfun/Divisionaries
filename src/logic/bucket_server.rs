@@ -118,6 +118,7 @@ impl BaseBucketMessage {
 pub struct BaseBucketClient {
     id: i64,
     connection: WSConnection,
+    ready: bool,
 }
 
 impl BaseBucketClient {
@@ -126,11 +127,20 @@ impl BaseBucketClient {
         BaseBucketClient {
             id,
             connection,
+            ready: false,
         }
     }
 
     pub fn get_id(&mut self) -> i64 {
         self.id
+    }
+
+    pub fn get_ready(&mut self) -> bool {
+        self.ready
+    }
+
+    pub fn set_ready(&mut self, ready: bool) {
+        self.ready = ready;
     }
 
     pub fn try_recv(&mut self) -> Result<Option<Vec<u8>>, tungstenite::error::Error> {
@@ -216,6 +226,13 @@ impl BaseConnectionHandler {
         }
 
         None
+    }
+
+    pub fn broadcast(&mut self, message: Vec<u8>) {
+        for (_, org_client) in (&self.connections).iter() {
+            let client = org_client.clone();
+            client.lock().unwrap().send(message.clone());
+        }
     }
 }
 
