@@ -1,9 +1,9 @@
 let ready = false;
-let socket = new WebSocket('ws://127.0.0.1:8050');
-socket.onopen = function(event) {
-    ready = true;
+let api_socket = new WebSocket('ws://127.0.0.1:8050');
+api_socket.onopen = function(event) {
+    api_ready = true;
 
-    socket.onmessage = function(event) {
+    api_socket.onmessage = function(event) {
         event.data.text().then(res => {
             console.log(res);
             console.log(event);
@@ -40,14 +40,14 @@ socket.onopen = function(event) {
         });
     }
 
-    socket.onclose = function(event) {
+    api_socket.onclose = function(event) {
         console.log("connection with api server closed");
     }
 }
 
 function send(message) {
-    while (!ready) {} // sleep
-    socket.send(message);
+    while (!api_ready) {} // sleep
+    api_socket.send(message);
 }
 
 function join_div_game_normal() {

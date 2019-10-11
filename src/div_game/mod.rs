@@ -44,7 +44,9 @@ impl Bucket for DivGameBucket {
                     match lobby_request {
                         DivGameLobbyRequest::Ready => {
                             log::debug!("client is ready");
-                            
+                        },
+                        DivGameLobbyRequest::NotReady => {
+                            log::debug!("client is not ready");
                         },
                         _ => {
                             log::warn!("invalid APIRequest send to APIServer");

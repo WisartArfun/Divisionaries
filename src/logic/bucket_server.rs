@@ -47,13 +47,16 @@ impl BaseBucketServer {
 
         let connection_handler = self.connection_handler.clone();
         let bucket = self.bucket.clone();
-
+        
+        let port = self.port.clone();
+        let id = self.bucket_data.get_id();
+        log::info!("starting BaseBucketServer with id: {}", &id);
         let handle = thread::spawn(move || {
             while running.load(Ordering::SeqCst) {
                 thread::sleep(time::Duration::from_millis(200));
                 
                 while running.load(Ordering::SeqCst) {
-                    let message = connection_handler.lock().unwrap().receive_message();
+                    let message = connection_handler.lock().unwrap().receive_message(&id);
                     // match message {
                     //     Ok(mes) => {
                     //         if let Some(mut res) = message {
@@ -68,7 +71,7 @@ impl BaseBucketServer {
                     //     }
                     // }
                     if let Some(mut res) = message {
-                        log::debug!("BaseBucketServer received a message: {:?}", &res.get_content());
+                        log::debug!("BaseBucketServer received a message from port {}: {:?}", &port, &res.get_content());
                         bucket.lock().unwrap().handle_message(res); //, bucket_manager.clone());
                     } else {
                         break;
@@ -185,7 +188,7 @@ impl BaseConnectionHandler {
         }
     }
 
-    pub fn receive_message(&mut self) -> Option<BaseBucketMessage> {
+    pub fn receive_message(&mut self, game_id: &str) -> Option<BaseBucketMessage> {
         let mut id_kill = None;
         for (id, org_client) in (&self.connections).iter() { // QUES: iter vs normal??? // PROB: keep track of order => not every time the same one
             let client = org_client.clone();
@@ -195,7 +198,7 @@ impl BaseConnectionHandler {
             match message_res {
                 Ok(message) => {
                     if let Some(mes) = message {
-                        log::info!("BaseConnectionHandler received a message");
+                        log::info!("BaseConnectionHandler received a message from id: {}", &game_id);
                         return Some(BaseBucketMessage::new(client, mes));
                     }
                 },

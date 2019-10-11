@@ -9,12 +9,14 @@
     <div>
         <h2>Info</h2>
 
-        <h3>Running Games</h3>
-        <button onclick="get_bucket_data()">Bucket Data</button>
-
+        <h3>Ready</h3>
+        <button id="ready_button" onclick="player_switch_ready()">Player Ready</button>
         <div>
-            <p id="bucket_data"></p>
+            <p id="player_ready"></p>
         </div>
+
+        <h3>Test</h3>
+        <button onclick="get_bucket_data()">Bucket Data</button>
     </div>
 
     <script src="/scripts/div_game_index.js"></script>
