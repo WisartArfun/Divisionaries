@@ -33,10 +33,17 @@ function init_game_bucket(id, ip, port) {
                                         .then(response => response.text())
                                         .then(text => {
                                             game_container.innerHTML = text;
-                                            let script = document.createElement('script');
-                                            script.type = "module";
-                                            script.src = "/scripts/game_template.js";
-                                            document.head.appendChild(script);
+                                            // let script = document.createElement('script');
+                                            // script.innerText = "window.start_connection('127.0.0.1', '8022', 'game-canvas');";
+                                            // game_container.appendChild(script);
+
+
+                                            // window.start_connection('127.0.0.1', '8022', 'game-canvas');
+                                            // let script = document.createElement('script');
+                                            // script.type = "module";
+                                            // script.src = "/scripts/game_template.js";
+                                            // document.head.appendChild(script);
+
                                             // let script = document.createElement('script');
                                             // script.type = "module";
                                             // // script.src = "/scripts/Game.js";
@@ -123,3 +130,6 @@ function player_switch_ready() {
     document.getElementById("ready_button").innerText = ready ? "Not Ready" : "Ready";
     document.getElementById("player_ready").innerText = ready ? "The player is ready" : "The player is not ready";
 }
+
+const _init_game_bucket = init_game_bucket;
+export { _init_game_bucket as init_game_bucket };

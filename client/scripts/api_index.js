@@ -1,3 +1,5 @@
+import { init_game_bucket } from "./div_game_index.js";
+
 console.log("starting api");
 let api_ready = false;
 let api_socket = new WebSocket('ws://127.0.0.1:8050');
@@ -37,14 +39,16 @@ api_socket.onopen = function(event) {
                         // in bucket lobby
                     case 'LobbyLocation':
                         data = parsed[first_key];
-                        let script = document.createElement('script');
-                        script.src = "/scripts/div_game_index.js";
-                        document.body.append(script);
-                        script.onload = function(event) {
-                            console.log("initializing game bucket");
-                            init_game_bucket(data[0], data[1], data[2]);
-                        };
+                        // let script = document.createElement('script');
+                        // script.src = "/scripts/div_game_index.js";
+                        // document.body.appendChild(script);
+                        // script.onload = function(event) {
+                        //     console.log("initializing game bucket");
+                        //     init_game_bucket(data[0], data[1], data[2]);
+                        // };
                         // api_socket.close();
+
+                        init_game_bucket(data[0], data[1], data[2]);
                         break;
                     default:
                         alert(parsed);
@@ -102,3 +106,6 @@ function get_bucket_data() {
     let id = document.getElementById("bucket_id");
     send_api('{"GetLobbyLocation": "' + id.innerText + '"}');
 }
+
+const _get_bucket_data = get_bucket_data;
+export { _get_bucket_data as get_bucket_data };

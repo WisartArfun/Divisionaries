@@ -67,13 +67,15 @@ class Game {
     }
 }
 
-let start_connection = function(ip, port, canvas_name) { //, callback) {
+start_connection = function(ip, port, canvas_name) { //, callback) {
     console.log("starting game connection");
     let game = new Game(ip, port, canvas_name); //, callback);
     game.start_game();
 
     return game;
 }
+window.start_connection = start_connection;
+console.log(window.start_connection);
 
 // let start_game_instance = function(x_size, y_size, canvas_name, ip, port) {
 //     let canvas = document.getElementById(canvas_name);
