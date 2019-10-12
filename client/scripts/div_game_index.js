@@ -35,23 +35,27 @@ function init_game_bucket(id, ip, port) {
                                             game_container.innerHTML = text;
                                             let script = document.createElement('script');
                                             script.type = "module";
-                                            // script.src = "/scripts/Game.js";
-                                            text = "import { start_connection } from '/scripts/Game.js'; start_connection(" + ip + "," + port + ", 'game-canvas');"
-                                            console.log(text);
-                                            // script.innerHTML = "import { start_connection } from '/scripts/Game.js'; start_connection(" + text + ");";
-                                            // game_container.appendChild(script);
-                                            document.body.appendChild(script);
-                                            script.onload = function(event) {
-                                                console.log("script has been loaded");
-                                                start_connection(ip, port, 'game-canvas');
-                                            };
+                                            script.src = "/scripts/game_template.js";
+                                            document.head.appendChild(script);
                                             // let script = document.createElement('script');
-                                            // script.type = "javascript/application";
-                                            // script.src = "/scripts/Game.js";
+                                            // script.type = "module";
+                                            // // script.src = "/scripts/Game.js";
+                                            // text = "import { start_connection } from '/scripts/Game.js'; start_connection(" + ip + "," + port + ", 'game-canvas');"
+                                            // console.log(text);
+                                            // // script.innerHTML = "import { start_connection } from '/scripts/Game.js'; start_connection(" + text + ");";
+                                            // // game_container.appendChild(script);
+                                            // document.body.appendChild(script);
                                             // script.onload = function(event) {
-                                            //     start_connection("")
-                                            // }
-                                            console.log("loaded game");
+                                            //     console.log("script has been loaded");
+                                            //     start_connection(ip, port, 'game-canvas');
+                                            // };
+                                            // // let script = document.createElement('script');
+                                            // // script.type = "javascript/application";
+                                            // // script.src = "/scripts/Game.js";
+                                            // // script.onload = function(event) {
+                                            // //     start_connection("")
+                                            // // }
+                                            // console.log("loaded game");
                                         })
                                     break;
                                 default:
