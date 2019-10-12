@@ -69,14 +69,14 @@ fn get_new_game_lobby_html(lobby_id: web::Path<(String)>) -> impl Responder {
         game.lock().unwrap().start();
         let ip = game.lock().unwrap().get_ip();
         let port = game.lock().unwrap().get_port();
-        return get_replace("Client/files/game.html", &[("#ID#", &lobby_id), ("#IP#", &ip), ("#PORT#", &port)], "text/html");
+        return get_replace("Client/files/NorDivGameLobby.html", &[("#ID#", &lobby_id), ("#IP#", &ip), ("#PORT#", &port)], "text/html");
     }
     
     Response::Ok().body("No available port") // panic! ???
 }
 
 fn get_new_game_html(game_id: web::Path<(String)>) -> impl Responder {
-    get_replace("Client/files/game_template.html", &[("#ID#", &game_id)], "text/html")
+    get_replace("Client/files/nor_div_game_lobby.html", &[("#ID#", &game_id)], "text/html")
 }
 
 fn get_html(file_name: web::Path<(String)>) -> impl Responder {

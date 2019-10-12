@@ -19,25 +19,25 @@ class Game {
     //     this.state.add_map(canvas);
     // }
 
-    constructor(ip, port, canvas_name, load_game_callback) { // change this
+    constructor(ip, port, canvas_name) { //, load_game_callback) { // change this
         this.ip = ip;
         this.port = port;
 
         this.canvas_name = canvas_name;
-        this.load_game_callback = load_game_callback;
+        // this.load_game_callback = load_game_callback;
 
         this.started = false;
 
-        this.game_connection = new GameConnection(ip, port);
+        // this.game_connection = new GameConnection(ip, port);
         // this.game_connection.start(this.update_state.bind(this));
-        this.game_connection.start(this.receive_message.bind(this));
+        // this.game_connection.start(this.receive_message.bind(this));
     }
 
     start_game() {
         this.size_x = 10;
         this.size_y = 10;
 
-        this.load_game_callback();
+        // this.load_game_callback();
 
         this.canvas = document.getElementById(this.canvas_name);
 
@@ -45,21 +45,21 @@ class Game {
         this.state.add_map(this.canvas);
     }
 
-    ready() {
-        this.game_connection.socket.send("ready");
-    }
+    // ready() {
+    //     this.game_connection.socket.send("ready");
+    // }
 
-    receive_message(message) {
-        if (!this.started) {
-            if (message == "game_started") {
-                this.started = true;
-                this.start_game();
-            }
-        } else {
-            console.log(message);
-            this.update_state(message);
-        }
-    }
+    // receive_message(message) {
+    //     if (!this.started) {
+    //         if (message == "game_started") {
+    //             this.started = true;
+    //             this.start_game();
+    //         }
+    //     } else {
+    //         console.log(message);
+    //         this.update_state(message);
+    //     }
+    // }
 
     update_state(message) {
         let state_update = ProtocolInterpreter.translate_packet(message);
@@ -67,8 +67,10 @@ class Game {
     }
 }
 
-let start_connection = function(ip, port, canvas_name, callback) {
-    let game = new Game(ip, port, canvas_name, callback);
+let start_connection = function(ip, port, canvas_name) { //, callback) {
+    console.log("starting game connection");
+    let game = new Game(ip, port, canvas_name); //, callback);
+    game.start_game();
 
     return game;
 }

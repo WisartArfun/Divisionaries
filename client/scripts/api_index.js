@@ -1,6 +1,9 @@
-let ready = false;
+console.log("starting api");
+let api_ready = false;
 let api_socket = new WebSocket('ws://127.0.0.1:8050');
+
 api_socket.onopen = function(event) {
+    console.log("api started");
     api_ready = true;
 
     api_socket.onmessage = function(event) {
@@ -11,6 +14,7 @@ api_socket.onopen = function(event) {
                 let parsed = JSON.parse(res);
                 let first_key = Object.keys(parsed)[0];
                 switch (first_key) {
+                    // general
                     case 'JoinGame':
                         window.location.href = "/games/" + parsed['JoinGame'];
                         break;
@@ -30,6 +34,18 @@ api_socket.onopen = function(event) {
                         }
                         document.getElementById("running_games").innerHTML = content;
                         break;
+                        // in bucket lobby
+                    case 'LobbyLocation':
+                        data = parsed[first_key];
+                        let script = document.createElement('script');
+                        script.src = "/scripts/div_game_index.js";
+                        document.body.append(script);
+                        script.onload = function(event) {
+                            console.log("initializing game bucket");
+                            init_game_bucket(data[0], data[1], data[2]);
+                        };
+                        // api_socket.close();
+                        break;
                     default:
                         alert(parsed);
                 }
@@ -45,17 +61,26 @@ api_socket.onopen = function(event) {
     }
 }
 
-function send(message) {
-    while (!api_ready) {} // sleep
-    api_socket.send(message);
+// util
+function send_api(message) {
+    setTimeout(function() {
+        if (!api_ready) {
+            send_api(message);
+            return;
+        }
+        console.log("sending message to api");
+        api_socket.send(message);
+        return;
+    }, 10);
 }
 
+// general
 function join_div_game_normal() {
-    send('"JoinDivGameNormal"');
+    send_api('"JoinDivGameNormal"');
 }
 
 function join_div_game_id(id) {
-    send('{"JoinDivGameDirect": "' + id + '"}');
+    send_api('{"JoinDivGameDirect": "' + id + '"}');
 }
 
 function join_div_game_direct(id) {
@@ -65,9 +90,15 @@ function join_div_game_direct(id) {
 }
 
 function get_open_lobbies() {
-    send('"GetOpenLobbies"');
+    send_api('"GetOpenLobbies"');
 }
 
 function get_running_games() {
-    send('"GetRunningGames"');
+    send_api('"GetRunningGames"');
+}
+
+// bucket lobby
+function get_bucket_data() {
+    let id = document.getElementById("bucket_id");
+    send_api('{"GetLobbyLocation": "' + id.innerText + '"}');
 }

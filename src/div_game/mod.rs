@@ -56,6 +56,7 @@ impl Bucket for DivGameBucket {
         let msg = message.get_content();
 
         let content = str::from_utf8(&msg).unwrap(); // PROB: error handling
+        println!("{:?}", serde_json::to_string(&DivGameRequest::Lobby(DivGameLobbyRequest::Ready)));
         if let Ok(api_request) = serde_json::from_str::<DivGameRequest>(content) {
             match api_request {
                 DivGameRequest::Lobby(lobby_request) => {

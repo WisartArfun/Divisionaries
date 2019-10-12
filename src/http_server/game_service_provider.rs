@@ -6,6 +6,7 @@ use log;
 
 use crate::http_server::{ProvideService, http_utils};
 
+// WARN: PROB: IDEA: NEXT: get default parser
 // DESCRIPTION: configures an actix_web::App for crate::http_server::server::GameHttpServer
 pub struct GameServiceProvider;
 
@@ -17,8 +18,8 @@ impl ProvideService for GameServiceProvider {
             .service(web::resource("/").to(GameServiceProvider::get_html_index))
             .service(web::resource("/index.html").to(GameServiceProvider::get_html_index))
             .service(web::resource("/files/{file_name}").to(GameServiceProvider::get_html))
-            .service(web::resource("/game_template/{lobby_id}").to(GameServiceProvider::get_html_game_lobby))
-            .service(web::resource("/games/{game_id}").to(GameServiceProvider::get_html_game))
+            .service(web::resource("/nor_div_game_lobby/{game_id}").to(GameServiceProvider::get_html_game))
+            .service(web::resource("/games/{lobby_id}").to(GameServiceProvider::get_html_game_lobby))
             // JS
             .service(web::resource("/scripts/{script_name}").to(GameServiceProvider::get_js))
             // GRAPHICS
@@ -44,7 +45,7 @@ impl GameServiceProvider {
 
         let api_ip = if let Some(port) = settings.get("api_ip") {port} else {"127.0.0.1"};
         let api_port = if let Some(port) = settings.get("api_port") {port} else {"8001"};
-        http_utils::get_file_with_replace("client/files/game.html", "text/html", &[("#ID#", &lobby_id), ("#IP#", &api_ip), ("#PORT#", &api_port)])
+        http_utils::get_file_with_replace("client/files/nor_div_game_lobby.html", "text/html", &[("#ID#", &lobby_id), ("#IP#", &api_ip), ("#PORT#", &api_port)])
         // if let Some(game) = GAMEMANAGER.lock().unwrap().get_game_lobby(&lobby_id) {
         //     game.lock().unwrap().start();
         //     let ip = game.lock().unwrap().get_ip();
@@ -57,7 +58,7 @@ impl GameServiceProvider {
 
     fn get_html_game(game_id: web::Path<(String)>) -> impl Responder {
         log::debug!("get html game from GameServiceProbvider");
-        http_utils::get_file_with_replace("client/files/game_template.html", "text/html", &[("#ID#", &game_id)])
+        http_utils::get_file_with_replace("client/files/nor_div_game.html", "text/html", &[("#ID#", &game_id)])
     }
 
     fn get_html(file_name: web::Path<(String)>) -> impl Responder {

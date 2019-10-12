@@ -6,7 +6,7 @@
 <body>
     <h1>Have fun playing game ##ID#</h1>
 
-    <div>
+    <div id="game-container">
         <h2>Info</h2>
 
         <h3>Ready</h3>
@@ -19,7 +19,11 @@
         <button onclick="get_bucket_data()">Bucket Data</button>
     </div>
 
-    <script src="/scripts/div_game_index.js"></script>
+    <!-- <script src="/scripts/div_game_index.js"></script> -->
+    <script src="/scripts/api_index.js"></script>
+    <script>
+        get_bucket_data();
+    </script>
 </body>
 
 </html>

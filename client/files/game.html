@@ -2,21 +2,15 @@
 <html>
 
 <body>
-    <h1>Divisionaries Lobby #ID# </h1>
+    <div id="game-container">
+        <h1>Divisionaries Lobby #ID# </h1>
 
-    <button onclick="ready()" id="ready_button">Ready</button>
-    <!-- <button onclick="start_game()">Start Game</button> -->
-    <!-- <a href="javascript:Hi() ">Start Game</a> -->
+        <button onclick="ready()" id="ready_button">Ready</button>
+        <!-- <button onclick="start_game()">Start Game</button> -->
+        <!-- <a href="javascript:Hi() ">Start Game</a> -->
+    </div>
 
     <script>
-        let replace_content = function(NC) {
-            document.open();
-            document.write(NC);
-            document.close();
-        }
-
-        let document_content = "";
-
         fetch('/game_template/#ID#')
             .then(response => response.text())
             .then(text => document_content = text);
@@ -41,7 +35,7 @@
 
     <!-- // automatic setting of ip and port  -->
     <script type="module">
-        import { start_connection } from "/scripts/Game.js"; let game = start_connection("#IP#", "#PORT#", 'game-canvas', start_game); let ready_button = document.getElementById("ready_button"); ready_button.onclick = function() {game.ready();}
+        import { start_connection } from "/scripts/Game.js"; let game = start_connection("#IP#", "#PORT#", 'game-canvas', start_game); let ready_button = document.getElementById("ready_button"); ready_button.onclick = function () { game.ready(); }
     </script>
 
 
