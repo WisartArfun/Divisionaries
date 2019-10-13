@@ -1,23 +1,46 @@
 <!DOCTYPE html>
-
 <html>
 
-
 <head>
-    <script>
-        console.log("hello");
-        import ('./scripts/main.mjs')
-        .then((module) => {
-            module.Test1.test1();
-        });
+    <script type="module">
+        import('./scripts/api.mjs') .then((module) => { window.api = new module.Api('127.0.0.1', '8050'); }); // QUES: WARN: better solution
     </script>
-    <!-- <script type="module" src="main.mjs">
-        console.log("hello there"); Test1.test1();
-    </script> -->
 </head>
 
 <body>
-    <h1>Modules Test</h1>
-</body>
+
+    <h1>Welcome to BucketGames</h1>
+
+    <div>
+        <h2>Divisionaries</h2>
+
+        <h3>Play with Friends:</h3>
+        Please enter a lobby name: <input id="lobby_id_input" type="text" name="lobby_id" value="random"><br>
+        <button onclick="api.join_div_game_direct('lobby_id_input')">Start Game</button>
+
+        <h3>Join Queue</h3>
+        <button onclick="api.join_div_game_normal()">Normal</button>
+
+        <h3>Open Lobbies</h3>
+        <button onclick="api.get_open_lobbies()">Open Lobbies</button>
+
+        <div>
+            <p id="open_lobbies"></p>
+        </div>
+
+        <h3>Running Games</h3>
+        <button onclick="api.get_running_games()">Running Games</button>
+
+        <div>
+            <p id="running_games"></p>
+        </div>
+    </div>
+
+    <!-- provides: join_div_game_direct(), join_div_game_normal() -->
+    <!-- <script type="" src="/scripts/api_index.js"></script> -->
+    <!-- <script type="module" src="/scripts/api_index.js"></script> -->
+    <!-- <script type="module">
+        var api; import('./scripts/api.mjs') .then((module) => { api = new module.Api('127.0.0.1', '8050'); });
+    </script> -->
 
 </html>
