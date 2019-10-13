@@ -50,9 +50,14 @@ impl ConnectionServer for WebSocketServer {
         );
 
         let web_socket_handle = thread::spawn(move || -> std::io::Result<()> {
-            let server =
-                TcpListener::bind(format!("{}:{}", ip.lock().unwrap(), port.lock().unwrap()))
-                    .unwrap();
+            let server = match TcpListener::bind(format!("{}:{}", ip.lock().unwrap(), port.lock().unwrap())) {
+                Ok(res) => res,
+                Err(e) => {
+                    log::error!("error occured while binding TcpListener: {:?}", e);
+                    return Ok(());
+                },
+            };
+
             // let server = TcpBuilder::new_v4()?
             //     .reuse_address(true)?
             //     .reuse_port(true)?
