@@ -135,7 +135,8 @@ class Map {
         for (let y = 0; y < this.x_fields; y += 1) {
             for (let x = 0; x < this.y_fields; x += 1) {
                 // this.fields[y][x].update_state(state.fields[y][x]);
-                this.update_single_state(x, y, state.fields[y][x]); // [DANGER] unnecessary abstraction
+                // this.update_single_state(x, y, state.fields[y][x]); // [DANGER] unnecessary abstraction
+                this.update_single_state(x, y, state);
             }
         }
     }

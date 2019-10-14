@@ -4,13 +4,15 @@ import { State } from './State.js';
 
 class ProtocolInterpreter {
     static get_type(type_encoding) {
-        let types = { 0: 'ground', 1: 'fog', 2: 'king' };
-        return types[type_encoding];
+        // let types = { 0: 'ground', 1: 'fog', 2: 'king' };
+        let types = {'field': 'ground', 'king': 'king'};
+        return types[type_encoding.toLowerCase()];
     }
 
     static get_color(color_encoding) {
-        let colors = { 0: 'emtpy', 1: 'red', 2: 'green', 3: 'blue' };
-        return colors[color_encoding];
+        // let colors = { 0: 'emtpy', 1: 'red', 2: 'green', 3: 'blue' };
+        let colors = {'empty': 'empty', 'red': 'red', 'blue': 'blue', 'green': 'green'};
+        return colors[color_encoding.toLowerCase()];
     }
 
     static translate_packet(packet) { // packet = list of u8 (unsigned 8 bit integers)
@@ -30,16 +32,35 @@ class ProtocolInterpreter {
         let state = [];
         for (let y in message) {
             let row = message[y];
-            console.log('row ' + row);
             let part = [];
             for (let x in row) {
                 let field = row[x];
-                console.log(field);
-                let color = ProtocolInterpreter.get_color(field['Color']);
-                let type = ProtocolInterpreter.get_type(field['Field'])
-                console.log(color + "\t" + type);
+
+                let type = Object.keys(field)[0];
+                switch (type) {
+                    case 'Field':
+                        {
+                            let color = ProtocolInterpreter.get_color(field[type]['color']);
+                            let troops = field[type]['troops'];
+                            type = ProtocolInterpreter.get_type(type);
+                            part.push({'type': type, 'color': color, 'troops': troops});
+                        } break;
+                    case 'King':
+                        {
+                            let color = ProtocolInterpreter.get_color(field[type]['color']);
+                            let troops = field[type]['troops'];
+                            type = ProtocolInterpreter.get_type(type);
+                            part.push({'type': type, 'color': color, 'troops': troops});
+                        } break;
+                    default:
+                        alert('unknow protocol type');
+                        break;
+                }
             }
+            state.push(part);
         }
+        console.log(state);
+        return state;
     }
 }
 

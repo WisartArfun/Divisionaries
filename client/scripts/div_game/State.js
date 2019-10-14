@@ -25,6 +25,13 @@ class State {
             this.maps[i].update_single_state(x, y, state);
         }
     }
+
+    set(state) {
+        this.state = state;
+        for (let i in this.maps) {
+            this.maps[i].update_state(state);
+        }
+    }
 }
 
 const _State = State;

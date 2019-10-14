@@ -77,7 +77,7 @@ class Game {
 
     set_state(message) {
         let state = ProtocolInterpreter.translate_state(message);
-        this.state.state = state; // WARN: nicer
+        this.state.set(state);
     }
 }
 
