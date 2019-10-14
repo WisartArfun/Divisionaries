@@ -21,6 +21,7 @@ impl ProvideService for GameServiceProvider {
             .service(web::resource("/nor_div_game_lobby/{game_id}").to(GameServiceProvider::get_html_game))
             .service(web::resource("/games/{lobby_id}").to(GameServiceProvider::get_html_game_lobby))
             // JS
+            .service(web::resource("/scripts/{folder}/{script_name}").to(GameServiceProvider::get_js_mod))
             .service(web::resource("/scripts/{script_name}").to(GameServiceProvider::get_js))
             // GRAPHICS
             .service(web::resource("/graphics/{jpeg_name}").to(GameServiceProvider::get_jpeg));
@@ -70,6 +71,13 @@ impl GameServiceProvider {
     fn get_js(script_name: web::Path<(String)>) -> impl Responder {
         log::debug!("get js from: {}", &script_name);
         http_utils::get_file(&format!("client/scripts/{}", &script_name), "application/javascript")
+    }
+
+    fn get_js_mod(data: web::Path<(String, String)>) -> impl Responder {
+        let folder_name = &data.0;
+        let script_name = &data.1;
+        log::debug!("get js from: {}/{}", folder_name, script_name);
+        http_utils::get_file(&format!("client/scripts/{}/{}", folder_name, script_name), "application/javascript")
     }
 
     // GRAPHICS

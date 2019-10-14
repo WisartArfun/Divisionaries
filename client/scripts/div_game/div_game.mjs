@@ -54,7 +54,7 @@ class DivGame {
                                 .then(text => {
                                     game_container.innerHTML = text;
                                 });
-                            import ('/scripts/Game.js') .then((module) => module.start_connection(self.ip, self.port, 'game-canvas')); // PROB: QUES: WARN: better solution, pass canvas name somehow
+                            import ('./Game.js') .then((module) => module.start_connection(self.ip, self.port, 'game-canvas')); // PROB: QUES: WARN: better solution, pass canvas name somehow
                             
                             break;
                         default:

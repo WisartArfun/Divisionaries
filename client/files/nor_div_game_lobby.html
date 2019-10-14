@@ -7,7 +7,7 @@
         import('/scripts/api.mjs') .then((module) => { window.api = new module.Api('127.0.0.1', '8050'); }); // QUES: WARN: better solution
     </script>
     <script type="module">
-        import('/scripts/div_game.mjs') .then((module) => { window.DivGame = module.DivGame;}); // QUES: WARN: better solution
+        import('/scripts/div_game/div_game.mjs') .then((module) => { window.DivGame = module.DivGame;}); // QUES: WARN: better solution
     </script>
     <script>
         let timout = function() {

@@ -71,7 +71,7 @@ class Api {
                 {
                     let data = parsed[first_key];
                     window.div_ready = false;
-                    import ('/scripts/div_game.mjs')
+                    import ('/scripts/div_game/div_game.mjs')
                     .then((module) => window.div_game = new module.DivGame(data[0], data[1], data[2]));
                 }
                 break;
