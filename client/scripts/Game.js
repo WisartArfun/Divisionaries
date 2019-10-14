@@ -1,3 +1,5 @@
+"use strict";
+
 import { ProtocolInterpreter } from './ProtocolInterpreter.js';
 import { State } from './State.js';
 import { GameConnection } from './GameConnection.js';
@@ -67,7 +69,7 @@ class Game {
     }
 }
 
-start_connection = function(ip, port, canvas_name) { //, callback) {
+let start_connection = function(ip, port, canvas_name) { //, callback) {
     console.log("starting game connection");
     let game = new Game(ip, port, canvas_name); //, callback);
     game.start_game();
@@ -85,5 +87,4 @@ console.log(window.start_connection);
 // const _start_game_instance = start_game_instance
 // export { _start_game_instance as start_game_instance };
 
-const _start_connection = start_connection;
-export { _start_connection as start_connection };
+export { start_connection };

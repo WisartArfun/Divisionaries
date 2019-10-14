@@ -3,7 +3,7 @@
 
 <head>
     <script type="module">
-        import('./scripts/api.mjs') .then((module) => { window.api = new module.Api('127.0.0.1', '8050'); }); // QUES: WARN: better solution
+        import('/scripts/api.mjs') .then((module) => { window.api = new module.Api('127.0.0.1', '8050'); }); // QUES: WARN: better solution
     </script>
 </head>
 
@@ -35,12 +35,5 @@
             <p id="running_games"></p>
         </div>
     </div>
-
-    <!-- provides: join_div_game_direct(), join_div_game_normal() -->
-    <!-- <script type="" src="/scripts/api_index.js"></script> -->
-    <!-- <script type="module" src="/scripts/api_index.js"></script> -->
-    <!-- <script type="module">
-        var api; import('./scripts/api.mjs') .then((module) => { api = new module.Api('127.0.0.1', '8050'); });
-    </script> -->
 
 </html>

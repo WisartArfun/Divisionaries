@@ -1,7 +1,27 @@
 <!DOCTYPE html>
 <html>
 
-<!-- <var id="bucket_id">#ID#</var> -->
+<head>
+    <script type="module">
+        import('/scripts/api.mjs') .then((module) => { window.api = new module.Api('127.0.0.1', '8050'); }); // QUES: WARN: better solution
+    </script>
+    <script type="module">
+        import('/scripts/div_game.mjs') .then((module) => { window.DivGame = module.DivGame;}); // QUES: WARN: better solution
+    </script>
+    <script>
+        let timout = function() {
+            console.log("test");
+            setTimeout(function() {
+                if (typeof api == 'undefined') { // QUES: WARN: better solution
+                    timout();
+                    return;
+                }
+                let data = api.get_bucket_data('#ID#');
+            }, 10);
+        }
+        timout();
+    </script>
+</head>
 
 <body>
     <h1>Have fun playing game ##ID#</h1>
@@ -10,22 +30,12 @@
         <h2>Info</h2>
 
         <h3>Ready</h3>
-        <button id="ready_button" onclick="player_switch_ready()">Player Ready</button>
+        <button id="ready_button" onclick="div_game.player_switch_ready()">Player Ready</button>
         <div>
             <p id="player_ready"></p>
         </div>
 
-        <h3>Test</h3>
-        <button onclick="get_bucket_data('#ID')">Bucket Data</button>
     </div>
-
-    <!-- <script src="/scripts/div_game_index.js"></script> -->
-    <!-- <script src="/scripts/api_index.js"></script>
-    <script>
-        get_bucket_data();
-    </script> -->
-    <!-- <script type="module">import {get_bucket_data} from "/scripts/api_index.js"; get_bucket_data(); </script> -->
-    <script type="module" src="/scripts/api_index.js"></script>
 </body>
 
 </html>
