@@ -8,6 +8,8 @@ pub trait Bucket: Send {
 
     fn stop(&mut self);
 
+    fn update(&mut self);
+
     fn handle_message(&mut self, message: BaseBucketMessage);
 
     // fn get_bucket_data(&mut self) -> BaseBucketData;

@@ -62,6 +62,10 @@ impl Bucket for ApiBucket {
         log::info!("ApiBucket stoped");
     }
 
+    fn update(&mut self) {
+        log::info!("ApiBucket updated");
+    }
+
     fn handle_message(&mut self, mut message: BaseBucketMessage) { //}, bucket_manager: Arc<Mutex<BaseBucketManager>>) {
         log::info!("Api received a message: {}", str::from_utf8(&message.get_content()).unwrap());
         let client = message.get_client();

@@ -30,6 +30,7 @@ pub struct DivGameBucket {
     bucket_manager: Arc<Mutex<BaseBucketManagerData>>,
     state: DivGameBucketState,
     bucket_data: BaseBucketData,
+    game_running: bool,
 }
 
 impl DivGameBucket {
@@ -39,6 +40,7 @@ impl DivGameBucket {
             bucket_manager,
             state: DivGameBucketState::new(),
             bucket_data,
+            game_running: false,
         }
     }
 }
@@ -46,10 +48,17 @@ impl DivGameBucket {
 impl Bucket for DivGameBucket {
     fn start(&mut self) {
         log::info!("DivGameBucket started");
+        self.game_running = true;
     }
 
     fn stop(&mut self) {
         log::info!("DivGameBucket stoped");
+        self.game_running = false;
+    }
+
+    fn update(&mut self) {
+        if !self.game_running {return;}
+        
     }
 
     fn handle_message(&mut self, mut message: BaseBucketMessage) { //}, bucket_manager: Arc<Mutex<BaseBucketManager>>) {
