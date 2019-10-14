@@ -31,7 +31,7 @@ impl ApiBucket {
     fn create_new_div_game_normal(&mut self, mut bucket_data: BaseBucketData) {
         log::info!("creating new div game normal");
         let bch = Arc::new(Mutex::new(BaseConnectionHandler::new()));
-        let gm = Arc::new(Mutex::new(DivGameBucket::new(bch.clone(), self.bucket_manager.clone())));
+        let gm = Arc::new(Mutex::new(DivGameBucket::new(bch.clone(), self.bucket_manager.clone(), bucket_data.clone())));
         let id = bucket_data.get_id();
         let mut server = BaseBucketServer::new(&bucket_data.get_ip(), &bucket_data.get_port(), gm, bucket_data, bch);
         let _ = server.start(self.running.clone());

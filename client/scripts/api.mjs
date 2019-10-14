@@ -58,8 +58,8 @@ class Api {
             case 'RunningGames':
                 {
                     let content = "<table><tr><th>Game Id</th><th>Players</th><th>Max Players</th></tr>";
-                    let running_games = parsed['OpenLobbies'];
-                    for (game in running_games) {
+                    let running_games = parsed['RunningGames'];
+                    for (let game in running_games) {
                         content += "<tr><th>" + running_games[game]['id'] + "</th><th>" + running_games[game]['current_users'] + "</th><th>" + running_games[game]['max_user_size'] + "</th></tr>";
                     }
                     document.getElementById("running_games").innerHTML = content;

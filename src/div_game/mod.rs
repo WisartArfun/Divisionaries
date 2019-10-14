@@ -29,14 +29,16 @@ pub struct DivGameBucket {
     connection_handler: Arc<Mutex<BaseConnectionHandler>>,
     bucket_manager: Arc<Mutex<BaseBucketManagerData>>,
     state: DivGameBucketState,
+    bucket_data: BaseBucketData,
 }
 
 impl DivGameBucket {
-    pub fn new(connection_handler: Arc<Mutex<BaseConnectionHandler>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>) -> Self {
+    pub fn new(connection_handler: Arc<Mutex<BaseConnectionHandler>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>, bucket_data: BaseBucketData) -> Self {
         Self {
             connection_handler,
             bucket_manager,
             state: DivGameBucketState::new(),
+            bucket_data,
         }
     }
 }
@@ -68,13 +70,17 @@ impl Bucket for DivGameBucket {
                         DivGameLobbyRequest::Ready => {
                             let ready = client.lock().unwrap().get_ready();
                             if ready {return;}
+
                             log::debug!("client is ready");
                             client.lock().unwrap().set_ready(true);
                             self.state.clients = self.connection_handler.lock().unwrap().connections.len() as u64;
-                            self.state.ready += 1;
+                            self.state.ready += 1; // WARN: not safe
                             // if self.state.clients > 1 && self.state.ready * 3 > self.state.clients * 2 {
                             if self.state.ready * 3 > self.state.clients * 2 {
+                                log::info!("starting game");
                                 self.state.running = true;
+                                let id = self.bucket_data.get_id();
+                                self.bucket_manager.lock().unwrap().start_lobby(id);
                                 self.connection_handler.lock().unwrap().broadcast(serde_json::to_vec(&DivGameResponse::Lobby(DivGameLobbyResponse::StartGame)).unwrap());
                             }
                         },
