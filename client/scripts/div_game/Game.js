@@ -2,7 +2,13 @@
 
 import { ProtocolInterpreter } from './ProtocolInterpreter.js';
 import { State } from './State.js';
-import { GameConnection } from './GameConnection.js';
+// import { GameConnection } from './GameConnection.js';
+
+function log(message) {
+    console.log('[Game] - ' + message);
+}
+
+log('Game was imported');
 
 class Game {
     // constructor(canvas, size_x, size_y, ip, port) {
@@ -22,6 +28,7 @@ class Game {
     // }
 
     constructor(ip, port, canvas_name) { //, load_game_callback) { // change this
+        log('new Game created');
         this.ip = ip;
         this.port = port;
 
@@ -69,15 +76,13 @@ class Game {
     }
 }
 
-let start_connection = function(ip, port, canvas_name) { //, callback) {
-    console.log("starting game connection");
-    let game = new Game(ip, port, canvas_name); //, callback);
-    game.start_game();
+// let start_connection = function(ip, port, canvas_name) { //, callback) {
+//     console.log("starting game connection");
+//     let game = new Game(ip, port, canvas_name); //, callback);
+//     game.start_game();
 
-    return game;
-}
-window.start_connection = start_connection;
-console.log(window.start_connection);
+//     return game;
+// }
 
 // let start_game_instance = function(x_size, y_size, canvas_name, ip, port) {
 //     let canvas = document.getElementById(canvas_name);
@@ -87,4 +92,5 @@ console.log(window.start_connection);
 // const _start_game_instance = start_game_instance
 // export { _start_game_instance as start_game_instance };
 
-export { start_connection };
+// export { start_connection };
+export { Game };

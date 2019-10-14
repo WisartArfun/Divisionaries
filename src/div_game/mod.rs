@@ -91,6 +91,7 @@ impl Bucket for DivGameBucket {
                                 let id = self.bucket_data.get_id();
                                 self.bucket_manager.lock().unwrap().start_lobby(id);
                                 self.connection_handler.lock().unwrap().broadcast(serde_json::to_vec(&DivGameResponse::Lobby(DivGameLobbyResponse::StartGame)).unwrap());
+                                self.connection_handler.lock().unwrap().broadcast(r#"{"Running":{"StateUpdate":"111111"}}"#.to_string().into_bytes());
                             }
                         },
                         DivGameLobbyRequest::NotReady => {

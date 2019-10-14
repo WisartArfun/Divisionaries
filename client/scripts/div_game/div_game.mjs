@@ -1,5 +1,7 @@
 "use strict";
 
+import { Game } from './Game.js';
+
 function log(message) {
     console.log("[DivGame] - " + message);
 }
@@ -14,6 +16,7 @@ class DivGame {
         this.socket = socket;
 
         this.player_ready = false;
+        this.running = false;
 
         let div_game = this;
         socket.onopen = function(event) {
@@ -40,26 +43,69 @@ class DivGame {
         log('handling: ' + message);
         let parsed = JSON.parse(message);
         let first_key = Object.keys(parsed)[0];
-        log("First key: " + first_key);
+        log("1. key: " + first_key);
         switch (first_key) {
             case 'Lobby':
                 {
                     let second_key = parsed[first_key];
-                    console.log("second key: " + second_key);
+                    if (typeof second_key != 'string') {
+                        second_key = Object.keys(parsed[first_key])[0];
+                    }
+                    log("2. key: " + second_key);
                     switch (second_key) {
-                        case 'StartGame':
+                        case 'StartGame': {
+                            log('starting game...');
                             let game_container = document.getElementById("game-container");
                             fetch('/files/nor_div_game.html')
-                                .then(response => response.text())
-                                .then(text => {
-                                    game_container.innerHTML = text;
-                                });
-                            import ('./Game.js') .then((module) => module.start_connection(self.ip, self.port, 'game-canvas')); // PROB: QUES: WARN: better solution, pass canvas name somehow
-                            
+                            .then(response => response.text())
+                            .then(text => {
+                                game_container.innerHTML = text;
+                                window.game = new Game(this.ip, this.port, 'game-canvas'); // WARN: PROB: pass canvas id
+                                game.start_game();
+                                this.running = true;
+                            });
+                            // window.game = new Game(this.ip, this.port, 'game-canvas'); // WARN: PROB: pass canvas id
+                            // game.start_game();
+                            // import ('./Game.js') .then((module) => {
+                            //     window.game = new module.Game(self.ip, self.port, 'game-canvas');
+                            //     game.start_game();
+                            // }); // PROB: QUES: WARN: better solution, pass canvas name somehow
+                        } break;
+                        default:
+                            {
+                                log("An unknown message type was received - Lobby: " + JSON.stringify(parsed['Lobby']));
+                                alert(JSON.stringify(parsed));
+                            }
+                            break;
+                    }
+                }
+                break;
+            case 'Running':
+                {
+                    let second_key = parsed[first_key];
+                    if (typeof second_key != 'string') {
+                        second_key = Object.keys(parsed[first_key])[0];
+                    }
+                    log("2. key: " + second_key);
+                    switch (second_key) {
+                        case 'StateUpdate':
+                            let that = this;
+                            let wait = function() {
+                                setTimeout(function() {
+                                    console.log(that.running);
+                                    if (!that.running) {
+                                        wait();
+                                        return;
+                                    }
+                                    game.update_state(parsed[first_key]['StateUpdate']);
+                                    return;
+                                }, 10);
+                            }
+                            wait();
                             break;
                         default:
                             {
-                                log("An unknown message type was received: " + parsed);
+                                log("An unknown message type was received - Running: " + JSON.stringify(parsed['Running']));
                                 alert(JSON.stringify(parsed));
                             }
                             break;
@@ -68,7 +114,7 @@ class DivGame {
                 break;
             default:
                 {
-                    log("An unknown message type was received: " + parsed);
+                    log("An unknown message type was received: " + JSON.stringify(parsed));
                     alert(JSON.stringify(parsed));
                 }
                 break;
