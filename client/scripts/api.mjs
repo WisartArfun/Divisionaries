@@ -48,9 +48,9 @@ class Api {
             case 'OpenLobbies':
                 {
                     let content = "<table><tr><th>Lobby Id</th><th>Players</th><th>Max Players</th></tr>";
-                    let running_games = parsed['OpenLobbies'];
-                    for (let lobby in running_games) {
-                        content += '<tr><th><button onclick="join_div_game_direct()">' + running_games[lobby]['id'] + "</button></th><th>" + running_games[lobby]['current_users'] + "</th><th>" + running_games[lobby]['max_user_size'] + "</th></tr>";
+                    let open_lobbies = parsed['OpenLobbies'];
+                    for (let lobby in open_lobbies) {
+                        content += '<tr><th><button onclick="api.join_div_game_id(\'' + open_lobbies[lobby]['id'] + '\')">' + open_lobbies[lobby]['id'] + "</button></th><th>" + open_lobbies[lobby]['current_users'] + "</th><th>" + open_lobbies[lobby]['max_user_size'] + "</th></tr>";
                     }
                     document.getElementById("open_lobbies").innerHTML = content;
                 }
@@ -70,8 +70,9 @@ class Api {
             case 'LobbyLocation':
                 {
                     let data = parsed[first_key];
+                    window.div_ready = false;
                     import ('/scripts/div_game.mjs')
-                    .then((module) => module.start_connection(data[1], data[2], 'game-canvas'));
+                    .then((module) => window.div_game = new module.DivGame(data[0], data[1], data[2]));
                 }
                 break;
             default:

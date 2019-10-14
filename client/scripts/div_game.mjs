@@ -16,7 +16,7 @@ class DivGame {
         this.player_ready = false;
 
         let div_game = this;
-        socket.onopne = function(event) {
+        socket.onopen = function(event) {
             div_game.ready = true;
             log('ready');
 
@@ -38,7 +38,7 @@ class DivGame {
 
     handle_message(message) {
         log('handling: ' + message);
-        let parsed = JSON.parse(res);
+        let parsed = JSON.parse(message);
         let first_key = Object.keys(parsed)[0];
         log("First key: " + first_key);
         switch (first_key) {
@@ -54,6 +54,8 @@ class DivGame {
                                 .then(text => {
                                     game_container.innerHTML = text;
                                 });
+                            import ('/scripts/Game.js') .then((module) => module.start_connection(self.ip, self.port, 'game-canvas')); // PROB: QUES: WARN: better solution, pass canvas name somehow
+                            
                             break;
                         default:
                             {
@@ -72,60 +74,6 @@ class DivGame {
                 break;
         }
     }
-
-    // function init_game_bucket(id, ip, port) {
-    //     if (bucket_init) return; // two readies?
-    //     bucket_init = true;
-    //     console.log("connecting to " + ip + ":" + port + " called " + id);
-
-    //     bucket_socket = new WebSocket('ws://' + ip + ':' + port);
-
-    //     bucket_socket.onopen = function(event) {
-    //         console.log("bucket open");
-    //         bucket_ready = true;
-
-    //         bucket_socket.onmessage = function(event) {
-    //             event.data.text().then(res => {
-    //                 console.log(res);
-    //                 console.log(event);
-    //                 try {
-    //                     let parsed = JSON.parse(res);
-    //                     let first_key = Object.keys(parsed)[0];
-    //                     console.log("First key: " + first_key);
-    //                     switch (first_key) {
-    //                         case 'Lobby':
-    //                             let second_key = parsed[first_key];
-    //                             console.log("second key: " + second_key);
-    //                             switch (second_key) {
-    //                                 case 'StartGame':
-    //                                     let game_container = document.getElementById("game-container");
-    //                                     fetch('/files/nor_div_game.html')
-    //                                         .then(response => response.text())
-    //                                         .then(text => {
-    //                                             game_container.innerHTML = text;
-    //                                         });
-    //                                     break;
-    //                                 default:
-    //                                     alert(JSON.stringify(parsed));
-    //                             }
-    //                             break;
-    //                         default:
-    //                             alert("1");
-    //                             alert(JSON.stringify(parsed));
-    //                     }
-    //                 } catch (err) {
-    //                     console.log(err.message);
-    //                     console.log(err);
-    //                 }
-    //             });
-    //         }
-
-    //         bucket_socket.onclose = function(event) {
-    //             console.log("connection with api server closed");
-    //             bucket_closed = true;
-    //         }
-    //     }
-    // }
 
     // util
     send(message) {
@@ -147,28 +95,25 @@ class DivGame {
         this.send('{"GetLobbyLocation": "' + id.innerText + '"}');
     }
 
-    // let ready = false;
-    // document.getElementById("ready_button").innerText = ready ? "Not Ready" : "Ready";
-
     // set player ready
-    player_ready() {
+    set_player_ready() {
         this.send('{"Lobby":"Ready"}');
-        this.ready = true; // QUES: WARN: only switch when received?
+        this.player_ready = true; // QUES: WARN: only switch when received?
     }
 
-    player_not_ready() {
+    set_player_not_ready() {
         this.send('{"Lobby":"NotReady"}');
-        this.ready = false;
+        this.player_ready = false;
     }
 
     player_switch_ready(button_field, text_field) {
-        if (ready) {
-            player_not_ready();
+        if (this.player_ready) {
+            this.set_player_not_ready();
         } else {
-            player_ready();
+            this.set_player_ready();
         }
-        document.getElementById(button_field).innerText = ready ? "Not Ready" : "Ready";
-        document.getElementById(text_field).innerText = ready ? "The player is ready" : "The player is not ready";
+        document.getElementById(button_field).innerText = this.player_ready ? "Not Ready" : "Ready";
+        document.getElementById(text_field).innerText = this.player_ready ? "The player is ready" : "The player is not ready";
     }
 }
 

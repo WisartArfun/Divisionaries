@@ -24,7 +24,7 @@ api_socket.onopen = function(event) {
                         content = "<table><tr><th>Lobby Id</th><th>Players</th><th>Max Players</th></tr>";
                         running_games = parsed['OpenLobbies'];
                         for (lobby in running_games) {
-                            content += '<tr><th><button onclick="join_div_game_direct()">' + running_games[lobby]['id'] + "</button></th><th>" + running_games[lobby]['current_users'] + "</th><th>" + running_games[lobby]['max_user_size'] + "</th></tr>";
+                            content += '<tr><th><button onclick="join_div_game_direct(' + running_games[lobby]['id'] + ')">' + running_games[lobby]['id'] + "</button></th><th>" + running_games[lobby]['current_users'] + "</th><th>" + running_games[lobby]['max_user_size'] + "</th></tr>";
                         }
                         document.getElementById("open_lobbies").innerHTML = content;
                         break;
