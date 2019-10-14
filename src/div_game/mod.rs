@@ -1,5 +1,6 @@
 use std::sync::{Arc, Mutex};
 use std::str;
+use std::collections::{HashMap, hash_map::Drain};
 
 use serde::{Serialize, Deserialize};
 use serde_json;
@@ -28,7 +29,8 @@ impl DivGameBucketState {
 pub struct DivGameBucket {
     connection_handler: Arc<Mutex<BaseConnectionHandler>>,
     bucket_manager: Arc<Mutex<BaseBucketManagerData>>,
-    state: DivGameBucketState,
+    bucket_state: DivGameBucketState,
+    state: Option<State>,
     bucket_data: BaseBucketData,
     game_running: bool,
 }
@@ -38,7 +40,8 @@ impl DivGameBucket {
         Self {
             connection_handler,
             bucket_manager,
-            state: DivGameBucketState::new(),
+            bucket_state: DivGameBucketState::new(),
+            state: None,
             bucket_data,
             game_running: false,
         }
@@ -71,7 +74,7 @@ impl Bucket for DivGameBucket {
         if let Ok(api_request) = serde_json::from_str::<DivGameRequest>(content) {
             match api_request {
                 DivGameRequest::Lobby(lobby_request) => {
-                    if self.state.running {
+                    if self.bucket_state.running {
                         log::warn!("DivGameBucket received a lobby request although game is running");
                         return;
                     }
@@ -82,22 +85,26 @@ impl Bucket for DivGameBucket {
 
                             log::debug!("client is ready");
                             client.lock().unwrap().set_ready(true);
-                            self.state.clients = self.connection_handler.lock().unwrap().connections.len() as u64;
-                            self.state.ready += 1; // WARN: not safe
+                            self.bucket_state.clients = self.connection_handler.lock().unwrap().connections.len() as u64;
+                            self.bucket_state.ready += 1; // WARN: not safe
                             // if self.state.clients > 1 && self.state.ready * 3 > self.state.clients * 2 {
-                            if self.state.ready * 3 > self.state.clients * 2 {
+                            if self.bucket_state.ready * 3 > self.bucket_state.clients * 2 {
                                 log::info!("starting game");
-                                self.state.running = true;
+                                self.bucket_state.running = true;
                                 let id = self.bucket_data.get_id();
                                 self.bucket_manager.lock().unwrap().start_lobby(id);
                                 self.connection_handler.lock().unwrap().broadcast(serde_json::to_vec(&DivGameResponse::Lobby(DivGameLobbyResponse::StartGame)).unwrap());
-                                self.connection_handler.lock().unwrap().broadcast(r#"{"Running":{"StateUpdate":"111111"}}"#.to_string().into_bytes());
+                                let state = State::new(10, 10);
+                                // self.connection_handler.lock().unwrap().broadcast(r#"{"Running":{"StateUpdate":"111111"}}"#.to_string().into_bytes());
+                                // self.connection_handler.lock().unwrap().broadcast(state.get_serialized_tiles().unwrap());
+                                self.connection_handler.lock().unwrap().broadcast(serde_json::to_vec(&DivGameResponse::Running(DivGameRunningResponse::State(state.get_tiles()))).unwrap()); // QUES: a lot of useless clone
+                                self.state = Some(state);
                             }
                         },
                         DivGameLobbyRequest::NotReady => {
                             log::debug!("client is not ready");
-                            self.state.clients = self.connection_handler.lock().unwrap().connections.len() as u64;
-                            self.state.ready -= 1;
+                            self.bucket_state.clients = self.connection_handler.lock().unwrap().connections.len() as u64;
+                            self.bucket_state.ready -= 1;
                         },
                         _ => {
                             log::warn!("invalid APIRequest send to APIServer");
@@ -138,6 +145,7 @@ enum DivGameRequest {
 #[derive(Serialize, Deserialize, Debug)]
 enum DivGameRunningResponse {
     GameEnd, // TODO: send some score/ranking
+    State(Vec<Vec<Tile>>),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -152,4 +160,183 @@ enum DivGameResponse {
     InvalidRequest,
     Running(DivGameRunningResponse),
     Lobby(DivGameLobbyResponse),
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+enum Color {
+    Empty,
+    Blue,
+    Green,
+    Violet,
+    Red,
+    Cyan,
+    DarkBlue,
+    LightBlue,
+    DarkGreen,
+    LightGreen,
+    Orange,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct Score {
+    players_eliminated: i64,
+    fields_occupied: i64,
+    soldiers: i64,
+    soldiers_eliminated: i64,
+    soldiers_lost: i64,
+    cities_occupied: i64,
+    troops_per_round: f64,
+}
+
+impl Score {
+    pub fn new() -> Self {
+        Self {
+            players_eliminated: 0,
+            fields_occupied: 0,
+            soldiers: 0,
+            soldiers_eliminated: 0,
+            soldiers_lost: 0,
+            cities_occupied: 0,
+            troops_per_round: 0.0,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+enum Move {
+    Step((i64, i64), (i64, i64)),
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct Player {
+    color: Color,
+    score: Score,
+    moves: HashMap<i64, Vec<Move>>,
+    // viewable: HashMap<(i64, i64), i16>,
+}
+
+impl Player {
+    pub fn new(color: Color) -> Self {
+        Self {
+            color,
+            score: Score::new(),
+            moves: HashMap::new(),
+            // viewable: HashMap::new(),
+        }
+    }
+
+    // pub fn get_viewable() {
+        
+    // }
+
+    pub fn get_moves(&mut self, turn: i64) -> Option<Vec<Move>> {
+        self.moves.remove(&turn)
+    }
+
+    pub fn set_move(&mut self, turn: i64, p_move: Move) {
+        if let Some(data) = self.moves.get_mut(&turn) {
+            data.push(p_move);
+        } else {
+            self.moves.insert(turn, vec!(p_move));
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct King {
+    color: Color,
+    troops: i64,
+}
+
+impl King {
+    pub fn new(color: Color) -> Self {
+        Self {
+            color,
+            troops: 0,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct Field {
+    color: Color,
+    troops: i64,
+}
+
+impl Field {
+    pub fn new(color: Color) -> Self {
+        Field {
+            color,
+            troops: 0,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+enum Tile {
+    King(King),
+    Field(Field),
+}
+
+struct Map {
+    width: usize, 
+    height: usize, 
+    pub tiles: Vec<Vec<Tile>>, // WARN: remove pub
+    changes: HashMap<(usize, usize), Tile>,
+}
+
+impl Map {
+    pub fn new(width: usize, height: usize) -> Self {
+        let mut tiles = vec![vec![Tile::Field(Field::new(Color::Empty)); width]; height];
+        tiles[0][2] = Tile::King(King::new(Color::Blue));
+        tiles[5][7] = Tile::King(King::new(Color::Green));
+        let changes = HashMap::new();
+
+        Self {
+            width,
+            height,
+            tiles,
+            changes,
+        }
+    }
+
+    pub fn get_changes(&mut self) -> HashMap<(usize, usize), Tile> {
+        let changes = self.changes.clone(); // PROB: very ugly
+        self.changes = HashMap::new();
+        changes
+    }
+
+    pub fn make_move(&mut self, p_move: Move) {
+        unimplemented!();
+    }
+}
+
+struct State {
+    turn: i64,
+    map: Map,
+    players: HashMap<i64, Player>,
+}
+
+impl State {
+    pub fn new(width: usize, height: usize) -> Self {
+        Self {
+            turn: 0,
+            map: Map::new(width, height),
+            players: HashMap::new(),
+        }
+    }
+
+    pub fn update(&mut self) {
+        unimplemented!();
+    }
+
+    pub fn get_tiles(&self) -> Vec<Vec<Tile>> {
+        self.map.tiles.clone() // QUES: how better?
+    }
+
+    // pub fn get_serialized_tiles(&self) -> std::result::Result<std::vec::Vec<u8>, serde_json::error::Error> {
+    //     serde_json::to_vec(&DivGameResponse::Running(DivGameRunningResponse::State(&self.map.tiles)))
+    // }
+
+    // pub fn 
 }

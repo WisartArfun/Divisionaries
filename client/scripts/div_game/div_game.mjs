@@ -8,6 +8,8 @@ function log(message) {
 
 log('imported DivGame');
 
+let game_html = fetch('/files/nor_div_game.html').then(response => response.text());
+
 class DivGame {
     constructor(id, ip, port) {
         log('initializing...');
@@ -26,7 +28,14 @@ class DivGame {
             socket.onmessage = function(event) {
                 log("message received");
                 try {
-                    event.data.text().then(res => div_game.handle_message(res));
+                    event.data.text().then(res => {
+                        // if (this.running) {
+                        //     game.then(div_game.handle_message(res));
+                        // } else {
+                        //     div_game.handle_message(res);
+                        // }
+                        div_game.handle_message(res);
+                    });
                 } catch (err) {
                     log("error occured while receiving message: " + err.message);
                     console.log(err); // handle or close ???
@@ -56,14 +65,34 @@ class DivGame {
                         case 'StartGame': {
                             log('starting game...');
                             let game_container = document.getElementById("game-container");
-                            fetch('/files/nor_div_game.html')
-                            .then(response => response.text())
-                            .then(text => {
+                            window.game = game_html.then(text => {
                                 game_container.innerHTML = text;
-                                window.game = new Game(this.ip, this.port, 'game-canvas'); // WARN: PROB: pass canvas id
+                                let game = new Game(this.ip, this.port, 'game-canvas');
                                 game.start_game();
                                 this.running = true;
+                                // this.running = true;
+                                return new Promise(function(resolve, reject) {
+                                    resolve(game);
+                                });
                             });
+
+                            // game_container.innerHTML = game_html;
+                            // window.game = new Game(this.ip, this.port, 'game-canvas'); // WARN: PROB: pass canvas id
+                            // console.log("running: " + this.running);
+                            // this.running = true;
+                            // game.start_game(); // this blocks???
+                            // // this.running = true;
+                            // console.log(this.running);
+
+                            // fetch('/files/nor_div_game.html')
+                            // .then(response => response.text())
+                            // .then(text => {
+                            //     game_container.innerHTML = text;
+                            //     window.game = new Game(this.ip, this.port, 'game-canvas'); // WARN: PROB: pass canvas id
+                            //     game.start_game();
+                            //     this.running = true;
+                            // });
+
                             // window.game = new Game(this.ip, this.port, 'game-canvas'); // WARN: PROB: pass canvas id
                             // game.start_game();
                             // import ('./Game.js') .then((module) => {
@@ -82,6 +111,10 @@ class DivGame {
                 break;
             case 'Running':
                 {
+                    // if (!this.running) {
+                    //     log("[ERROR] - The game has not been started yet!!!");
+                    //     return;
+                    // }
                     let second_key = parsed[first_key];
                     if (typeof second_key != 'string') {
                         second_key = Object.keys(parsed[first_key])[0];
@@ -89,20 +122,44 @@ class DivGame {
                     log("2. key: " + second_key);
                     switch (second_key) {
                         case 'StateUpdate':
-                            let that = this;
-                            let wait = function() {
-                                setTimeout(function() {
-                                    console.log(that.running);
-                                    if (!that.running) {
-                                        wait();
-                                        return;
-                                    }
-                                    game.update_state(parsed[first_key]['StateUpdate']);
-                                    return;
-                                }, 10);
+                            {
+                                // let that = this;
+                                game.then(game => game.update_state(parsed[first_key]['StateUpdate'])); // QUES: better solution
+                                // game.update_state(parsed[first_key]['StateUpdate']);
+
+                                // let wait = function() {
+                                //     setTimeout(function() {
+                                //         console.log(that.running);
+                                //         if (!that.running) {
+                                //             wait();
+                                //             return;
+                                //         }
+                                //         game.update_state(parsed[first_key]['StateUpdate']);
+                                //         return;
+                                //     }, 10);
+                                // }
+                                // wait();
                             }
-                            wait();
                             break;
+                        case 'State': {
+                            game.then(game => {
+                                game.set_state(parsed[first_key]['State']);
+                            }); // QUES: PROB: WARN: will order of execution stay the same???
+
+                            // let that = this;
+                            //     let wait = function() {
+                            //         setTimeout(function() {
+                            //             console.log(that.running);
+                            //             if (!that.running) {
+                            //                 wait();
+                            //                 return;
+                            //             }
+                            //             game.update_state(parsed[first_key]['StateUpdate']);
+                            //             return;
+                            //         }, 10);
+                            //     }
+                            //     wait();
+                        } break;
                         default:
                             {
                                 log("An unknown message type was received - Running: " + JSON.stringify(parsed['Running']));

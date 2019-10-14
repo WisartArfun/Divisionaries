@@ -1,3 +1,5 @@
+"use strict";
+
 import { State } from './State.js';
 
 class ProtocolInterpreter {
@@ -22,7 +24,23 @@ class ProtocolInterpreter {
         let state = { type: type, color: color };
         return ({ x: x, y: y, state: state });
     }
+
+    static translate_state(message) {
+        console.log("translating state...")
+        let state = [];
+        for (let y in message) {
+            let row = message[y];
+            console.log('row ' + row);
+            let part = [];
+            for (let x in row) {
+                let field = row[x];
+                console.log(field);
+                let color = ProtocolInterpreter.get_color(field['Color']);
+                let type = ProtocolInterpreter.get_type(field['Field'])
+                console.log(color + "\t" + type);
+            }
+        }
+    }
 }
 
-const _ProtocolInterpreter = ProtocolInterpreter;
-export { _ProtocolInterpreter as ProtocolInterpreter };
+export {ProtocolInterpreter};

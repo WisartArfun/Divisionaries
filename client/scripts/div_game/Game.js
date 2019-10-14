@@ -74,6 +74,11 @@ class Game {
         let state_update = ProtocolInterpreter.translate_packet(message);
         this.state.update(state_update);
     }
+
+    set_state(message) {
+        let state = ProtocolInterpreter.translate_state(message);
+        this.state.state = state; // WARN: nicer
+    }
 }
 
 // let start_connection = function(ip, port, canvas_name) { //, callback) {
