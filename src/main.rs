@@ -40,6 +40,7 @@ fn main() -> std::io::Result<()> {
             settings.merge(config::File::with_name("config/Settings")).unwrap(); // QUES: error handling
             let settings = settings.try_into::<HashMap<String, String>>().unwrap();
 
+            // check if available
             let api_ip = if let Some(port) = settings.get("api_ip") {port} else {"127.0.0.1"};
             let api_port = if let Some(port) = settings.get("api_port") {port} else {"8001"};
 

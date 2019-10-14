@@ -57,19 +57,6 @@ impl BaseBucketServer {
                 
                 while running.load(Ordering::SeqCst) {
                     let message = connection_handler.lock().unwrap().receive_message(&id);
-                    // match message {
-                    //     Ok(mes) => {
-                    //         if let Some(mut res) = message {
-                    //             log::debug!("BaseBucketServer received a message: {:?}", &res.get_content());
-                    //             bucket.lock().unwrap().handle_message(res); //, bucket_manager.clone());
-                    //         } else {
-                    //             break;
-                    //         }
-                    //     },
-                    //     Err(e) => {
-                    //         return Ok(()); //disconnect
-                    //     }
-                    // }
                     if let Some(mut res) = message {
                         log::debug!("BaseBucketServer received a message from port {}: {:?}", &port, &res.get_content());
                         bucket.lock().unwrap().handle_message(res); //, bucket_manager.clone());

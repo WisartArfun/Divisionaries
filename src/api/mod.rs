@@ -8,7 +8,7 @@ use serde_json;
 use crate::logic::Bucket;
 use crate::logic::bucket_server::{BaseBucketMessage, BaseConnectionHandler, BaseBucketData, BaseBucketServer};
 
-use crate::logic::bucket_manager::BaseBucketManagerData;
+use crate::logic::bucket_manager::{BaseBucketManager, BaseBucketManagerData};
 
 use crate::div_game::DivGameBucket;
 
@@ -37,6 +37,20 @@ impl ApiBucket {
         let _ = server.start(self.running.clone());
         self.bucket_manager.lock().unwrap().open_lobby(id, server);
     }
+
+    fn check_div_game(&mut self, game_id: &str) {
+        let (ip, port) = match self.bucket_manager.lock().unwrap().get_lobby_ip_port(&game_id) {
+            Some(data) => data,
+            None => {
+                log::error!("No available port found");
+                return; // QUES: PROB: send message to client
+            },
+        };
+        
+        if !self.bucket_manager.lock().unwrap().lobby_exists(game_id) {
+            self.create_new_div_game_normal(BaseBucketData::new(game_id, &ip, &port, 4));
+        }
+    }
 }
 
 impl Bucket for ApiBucket {
@@ -60,9 +74,7 @@ impl Bucket for ApiBucket {
                     log::info!("client joined a normal div game");
 
                     let game_id = "match".to_string();
-                    let ip = "127.0.0.1".to_string();
-                    let port = "8022".to_string();
-                    self.create_new_div_game_normal(BaseBucketData::new(&game_id, &ip, &port, 4));
+                    self.check_div_game(&game_id);
 
                     client.lock().unwrap().send(serde_json::to_vec(&APIResponse::JoinGame(game_id)).unwrap()); // PROB: error handling // QUES: efficiency?
                     let id = client.lock().unwrap().get_id(); // QUES: two times lock bad?
@@ -72,9 +84,7 @@ impl Bucket for ApiBucket {
                 APIRequest::JoinDivGameDirect(game_id) => {
                     log::info!("client joined a normal div game direct");
 
-                    let ip = "127.0.0.1".to_string();
-                    let port = "8022".to_string();
-                    self.create_new_div_game_normal(BaseBucketData::new(&game_id, &ip, &port, 4));
+                    self.check_div_game(&game_id);
 
                     client.lock().unwrap().send(serde_json::to_vec(&APIResponse::JoinGame(game_id)).unwrap()); // PROB: error handling // QUES: efficiency?
                     let id = client.lock().unwrap().get_id(); // QUES: two times lock bad?
