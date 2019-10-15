@@ -100,42 +100,13 @@ class DivGame {
                     switch (second_key) {
                         case 'StateUpdate':
                             {
-                                // let that = this;
                                 game.then(game => game.update_state(parsed[first_key]['StateUpdate'])); // QUES: better solution
-                                // game.update_state(parsed[first_key]['StateUpdate']);
-
-                                // let wait = function() {
-                                //     setTimeout(function() {
-                                //         console.log(that.running);
-                                //         if (!that.running) {
-                                //             wait();
-                                //             return;
-                                //         }
-                                //         game.update_state(parsed[first_key]['StateUpdate']);
-                                //         return;
-                                //     }, 10);
-                                // }
-                                // wait();
                             }
                             break;
                         case 'State': {
                             game.then(game => {
                                 game.set_state(parsed[first_key]['State']);
-                            }); // QUES: PROB: WARN: will order of execution stay the same???
-
-                            // let that = this;
-                            //     let wait = function() {
-                            //         setTimeout(function() {
-                            //             console.log(that.running);
-                            //             if (!that.running) {
-                            //                 wait();
-                            //                 return;
-                            //             }
-                            //             game.update_state(parsed[first_key]['StateUpdate']);
-                            //             return;
-                            //         }, 10);
-                            //     }
-                            //     wait();
+                            }); // QUES: PROB: WARN: will order of execution stay the same??? what if state after stateupdate or something, wrong order???
                         } break;
                         default:
                             {

@@ -93,8 +93,19 @@ impl Bucket for DivGameBucket {
                                 self.bucket_state.running = true;
                                 let id = self.bucket_data.get_id();
                                 self.bucket_manager.lock().unwrap().start_lobby(id);
-                                let state = State::new(10, 10);
+                                let mut state = State::new(10, 10);
                                 self.connection_handler.lock().unwrap().broadcast(serde_json::to_vec(&DivGameResponse::Lobby(DivGameLobbyResponse::StartGame(state.get_tiles()))).unwrap()); // QEUS: WARN: a lot of useless clone
+                                state.make_move(Move::Step((2, 0), (2, 1), 1.0));
+                                log::error!("move made");
+                                let data = serde_json::to_vec(&DivGameResponse::Running(DivGameRunningResponse::StateUpdate(state.get_changes())));
+                                match &data {
+                                    Err(e) => println!("{:?}", e),
+                                    _ => {},
+                                }
+                                let data = data.unwrap();
+                                log::error!("JSON");
+                                self.connection_handler.lock().unwrap().broadcast(data); // QEUS: WARN: a lot of useless clone
+                                log::error!("sending");
                                 // let state = State::new(10, 10);
                                 // self.connection_handler.lock().unwrap().broadcast(r#"{"Running":{"StateUpdate":"111111"}}"#.to_string().into_bytes());
                                 // self.connection_handler.lock().unwrap().broadcast(state.get_serialized_tiles().unwrap());
@@ -147,6 +158,8 @@ enum DivGameRequest {
 enum DivGameRunningResponse {
     GameEnd, // TODO: send some score/ranking
     State(Vec<Vec<Tile>>),
+    // StateUpdate(Vec<(usize, usize, Tile)>),
+    StateUpdate(HashMap<(usize, usize), Tile>),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -205,7 +218,7 @@ impl Score {
 
 #[derive(Serialize, Deserialize, Debug)]
 enum Move {
-    Step((i64, i64), (i64, i64)),
+    Step((usize, usize), (usize, usize), f32), // from, to, ratio
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -245,8 +258,8 @@ impl Player {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct King {
-    color: Color,
-    troops: i64,
+    pub color: Color,
+    pub troops: i64,
 }
 
 impl King {
@@ -260,8 +273,8 @@ impl King {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct Field {
-    color: Color,
-    troops: i64,
+    pub color: Color,
+    pub troops: i64,
 }
 
 impl Field {
@@ -308,7 +321,28 @@ impl Map {
     }
 
     pub fn make_move(&mut self, p_move: Move) {
-        unimplemented!();
+        match p_move {
+            Move::Step((fx, fy), (tx, ty), ratio) => {
+                let color;
+                match &mut self.tiles[fy][fx] { // later with trait
+                    Tile::King(obj) => {
+                        color = obj.color.clone();
+                    },
+                    _ => panic!("This tile type can not make a step"),
+                }
+                match &mut self.tiles[ty][tx] { // later with trait
+                    Tile::King(obj) => {
+                        obj.color = color;
+                    },
+                    Tile::Field(obj) => {
+                        obj.color = color;
+                    },
+                    _ => panic!("This tile type can not make a step"),
+                }
+                let tile = self.tiles[tx][ty].clone();
+                self.changes.insert((tx, ty), tile);
+            }
+        }
     }
 }
 
@@ -333,6 +367,14 @@ impl State {
 
     pub fn get_tiles(&self) -> Vec<Vec<Tile>> {
         self.map.tiles.clone() // QUES: how better?
+    }
+
+    pub fn get_changes(&mut self) -> HashMap<(usize, usize), Tile> {
+        self.map.get_changes()
+    }
+
+    pub fn make_move(&mut self, p_move: Move) {
+        self.map.make_move(p_move);
     }
 
     // pub fn get_serialized_tiles(&self) -> std::result::Result<std::vec::Vec<u8>, serde_json::error::Error> {

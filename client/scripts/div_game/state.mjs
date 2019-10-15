@@ -23,6 +23,10 @@ class State {
         log('setting state');
         this.state = state;
     }
+
+    get_state() {
+        return this.state;
+    }
 }
 
 export { State };

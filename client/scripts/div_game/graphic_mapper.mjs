@@ -2,7 +2,7 @@ class GraphicMapper {
     static get_src(type, mapping = 'default') {
         let field_types = { // bad to make a new one every call???
             default: {
-                ground: "../graphics/empty.jpg",
+                field: "../graphics/empty.jpg",
                 king: "../graphics/crown.jpg",
                 fog: "../graphics/fog.jpg",
             },

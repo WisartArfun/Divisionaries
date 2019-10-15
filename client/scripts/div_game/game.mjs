@@ -13,9 +13,10 @@ log('imported');
 class Game {
     constructor(canvas) {
         log('new game created');
+        this.canvas = canvas; // QUES: why save??? bad to safe???
         this.started = false;
         this.state = undefined;
-        this.map = new Map(canvas);
+        this.map = undefined;
     }
 
     start(state) {
@@ -27,6 +28,7 @@ class Game {
         this.started = true;
         state = ProtocolInterpreter.translate_state(state);
         this.state = new State(state); // QUES: WARN: initialize State before???
+        this.map = new Map(this.canvas, this.state.get_state());
     }
 
     set_state(state) {
