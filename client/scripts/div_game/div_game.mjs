@@ -1,6 +1,7 @@
 "use strict";
 
-import { Game } from './Game.js';
+// import { Game } from './Game.js';
+import { Game } from './game.mjs';
 
 function log(message) {
     console.log("[DivGame] - " + message);
@@ -67,38 +68,14 @@ class DivGame {
                             let game_container = document.getElementById("game-container");
                             window.game = game_html.then(text => {
                                 game_container.innerHTML = text;
-                                let game = new Game(this.ip, this.port, 'game-canvas');
-                                game.start_game();
+                                let canvas = document.getElementById('game-canvas'); // WARN: better solution
+                                let game = new Game(canvas);
+                                game.start(parsed[first_key]['StartGame']);
                                 this.running = true;
-                                // this.running = true;
                                 return new Promise(function(resolve, reject) {
                                     resolve(game);
                                 });
                             });
-
-                            // game_container.innerHTML = game_html;
-                            // window.game = new Game(this.ip, this.port, 'game-canvas'); // WARN: PROB: pass canvas id
-                            // console.log("running: " + this.running);
-                            // this.running = true;
-                            // game.start_game(); // this blocks???
-                            // // this.running = true;
-                            // console.log(this.running);
-
-                            // fetch('/files/nor_div_game.html')
-                            // .then(response => response.text())
-                            // .then(text => {
-                            //     game_container.innerHTML = text;
-                            //     window.game = new Game(this.ip, this.port, 'game-canvas'); // WARN: PROB: pass canvas id
-                            //     game.start_game();
-                            //     this.running = true;
-                            // });
-
-                            // window.game = new Game(this.ip, this.port, 'game-canvas'); // WARN: PROB: pass canvas id
-                            // game.start_game();
-                            // import ('./Game.js') .then((module) => {
-                            //     window.game = new module.Game(self.ip, self.port, 'game-canvas');
-                            //     game.start_game();
-                            // }); // PROB: QUES: WARN: better solution, pass canvas name somehow
                         } break;
                         default:
                             {

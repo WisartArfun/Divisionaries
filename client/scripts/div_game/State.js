@@ -2,15 +2,23 @@ import { Map } from './Renderer.js';
 
 class State {
     constructor(x_size, y_size) {
-        this.state = {};
-        this.state.x_fields = x_size;
-        this.state.y_fields = y_size;
+        // this.state = {};
+        // this.state.x_fields = x_size;
+        // this.state.y_fields = y_size;
+        // this.maps = [];
+
+        // let col = new Array(this.state.x_fields);
+        // col.fill({ type: 'fog', color: 'empty' }); // references to object => editing will affect whole row
+        // this.state.fields = new Array(this.state.y_fields);
+        // this.state.fields.fill(col);
+
+        this.state = [];
         this.maps = [];
 
-        let col = new Array(this.state.x_fields);
+        let col = new Array(x_size);
         col.fill({ type: 'fog', color: 'empty' }); // references to object => editing will affect whole row
-        this.state.fields = new Array(this.state.y_fields);
-        this.state.fields.fill(col);
+        this.state = new Array(y_size);
+        this.state.fill(col);
     }
 
     add_map(canvas) {

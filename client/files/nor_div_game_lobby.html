@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8">
+    <script>console.log("HERRE");</script>
     <script type="module">
         import('/scripts/api.mjs') .then((module) => { window.api = new module.Api('127.0.0.1', '8050'); }); // QUES: WARN: better solution
     </script>

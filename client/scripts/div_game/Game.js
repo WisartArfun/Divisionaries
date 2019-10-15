@@ -1,5 +1,6 @@
 "use strict";
 
+console.log("BIIIIG OOOOFFFF");
 import { ProtocolInterpreter } from './ProtocolInterpreter.js';
 import { State } from './State.js';
 // import { GameConnection } from './GameConnection.js';
@@ -78,6 +79,7 @@ class Game {
     set_state(message) {
         let state = ProtocolInterpreter.translate_state(message);
         this.state.set(state);
+        console.log(this.state);
     }
 }
 

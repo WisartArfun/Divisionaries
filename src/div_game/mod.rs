@@ -93,11 +93,12 @@ impl Bucket for DivGameBucket {
                                 self.bucket_state.running = true;
                                 let id = self.bucket_data.get_id();
                                 self.bucket_manager.lock().unwrap().start_lobby(id);
-                                self.connection_handler.lock().unwrap().broadcast(serde_json::to_vec(&DivGameResponse::Lobby(DivGameLobbyResponse::StartGame)).unwrap());
                                 let state = State::new(10, 10);
+                                self.connection_handler.lock().unwrap().broadcast(serde_json::to_vec(&DivGameResponse::Lobby(DivGameLobbyResponse::StartGame(state.get_tiles()))).unwrap()); // QEUS: WARN: a lot of useless clone
+                                // let state = State::new(10, 10);
                                 // self.connection_handler.lock().unwrap().broadcast(r#"{"Running":{"StateUpdate":"111111"}}"#.to_string().into_bytes());
                                 // self.connection_handler.lock().unwrap().broadcast(state.get_serialized_tiles().unwrap());
-                                self.connection_handler.lock().unwrap().broadcast(serde_json::to_vec(&DivGameResponse::Running(DivGameRunningResponse::State(state.get_tiles()))).unwrap()); // QUES: a lot of useless clone
+                                // self.connection_handler.lock().unwrap().broadcast(serde_json::to_vec(&DivGameResponse::Running(DivGameRunningResponse::State(state.get_tiles()))).unwrap()); // QUES: a lot of useless clone
                                 self.state = Some(state);
                             }
                         },
@@ -150,7 +151,7 @@ enum DivGameRunningResponse {
 
 #[derive(Serialize, Deserialize, Debug)]
 enum DivGameLobbyResponse {
-    StartGame,
+    StartGame(Vec<Vec<Tile>>),
     LobbyStatus,
 }
 

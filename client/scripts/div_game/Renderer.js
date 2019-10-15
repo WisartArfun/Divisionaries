@@ -114,13 +114,23 @@ class Map {
         this.canvas = canvas;
         let ctx = this.canvas.getContext("2d");
 
-        this.x_fields = state.x_fields;
-        this.y_fields = state.y_fields;
+        // this.x_fields = state.x_fields;
+        // this.y_fields = state.y_fields;
+        this.state = state;
 
         this.fields = [];
-        for (let y = 0; y < this.x_fields; y += 1) {
+        // for (let y = 0; y < this.x_fields; y += 1) {
+        //     let col = [];
+        //     for (let x = 0; x < this.y_fields; x += 1) {
+        //         col.push(new Field(x, y, field_size, ctx));
+        //     }
+        //     this.fields.push(col);
+        // }
+
+        for (let y in this.state) {
+            let row = this.state[y];
             let col = [];
-            for (let x = 0; x < this.y_fields; x += 1) {
+            for (let x in row) {
                 col.push(new Field(x, y, field_size, ctx));
             }
             this.fields.push(col);
@@ -132,13 +142,16 @@ class Map {
 
     // CONTENT
     update_state(state) {
-        for (let y = 0; y < this.x_fields; y += 1) {
-            for (let x = 0; x < this.y_fields; x += 1) {
+        for (let y in state) {
+            let row = state[y];
+            for (let x in row) {
                 // this.fields[y][x].update_state(state.fields[y][x]);
                 // this.update_single_state(x, y, state.fields[y][x]); // [DANGER] unnecessary abstraction
-                this.update_single_state(x, y, state);
+                if (x == 0 && y == 0) console.log(state);
+                this.update_single_state(x, y, row[x]);
             }
         }
+        this.update_size(this.field_size);
     }
 
     // TRANSFORM/FUNCTION
@@ -161,5 +174,4 @@ class Map {
     }
 }
 
-const _Map = Map;
-export { _Map as Map };
+export { Map };

@@ -1,34 +1,26 @@
 "use strict";
 
-import { State } from './State.js';
+function log(message) {
+    console.log('[DivGame] - [ProInt] - ' + message);
+}
 
 class ProtocolInterpreter {
     static get_type(type_encoding) {
-        // let types = { 0: 'ground', 1: 'fog', 2: 'king' };
-        let types = {'field': 'ground', 'king': 'king'};
-        return types[type_encoding.toLowerCase()];
+        type_encoding = type_encoding.toLowerCase();
+        let types = {'field': 'field', 'king': 'king', 'city': 'city', 'fog': 'fog'};
+        if (type_encoding in types) return types[type_encoding];
+        return type_encoding; // WARN: dangerous
     }
 
     static get_color(color_encoding) {
-        // let colors = { 0: 'emtpy', 1: 'red', 2: 'green', 3: 'blue' };
+        color_encoding = color_encoding.toLowerCase();
         let colors = {'empty': 'empty', 'red': 'red', 'blue': 'blue', 'green': 'green'};
-        return colors[color_encoding.toLowerCase()];
-    }
-
-    static translate_packet(packet) { // packet = list of u8 (unsigned 8 bit integers)
-        let x = packet[0];
-        let y = packet[1];
-        let color = ProtocolInterpreter.get_color(packet[2]);
-        let type = ProtocolInterpreter.get_type(packet[3]);
-        let type_specific = (packet[4] << 16) + (packet[5] << 8) + (packet[6]); // 24 bit number // for example amount of troops // check somewhere when overflow
-        console.log(x + " " + y + "\t" + color + "\t" + type + " " + type_specific);
-
-        let state = { type: type, color: color };
-        return ({ x: x, y: y, state: state });
+        if (color_encoding in colors) return colors[color_encoding];
+        return color_encoding;
     }
 
     static translate_state(message) {
-        console.log("translating state...")
+        log("translating state...")
         let state = [];
         for (let y in message) {
             let row = message[y];
