@@ -49,29 +49,30 @@ class ProtocolInterpreter {
     }
 
     static tranlate_field(field) {
-        let type = Object.keys(field)[0];
-        switch (type) {
-            case 'Field':
-                {
-                    let color = ProtocolInterpreter.get_color(field[type]['color']);
-                    let troops = field[type]['troops'];
-                    type = ProtocolInterpreter.get_type(type);
-                    return { 'type': type, 'color': color, 'troops': troops };
-                }
-                break;
-            case 'King':
-                {
-                    let color = ProtocolInterpreter.get_color(field[type]['color']);
-                    let troops = field[type]['troops'];
-                    type = ProtocolInterpreter.get_type(type);
-                    return { 'type': type, 'color': color, 'troops': troops };
-                }
-                break;
-            default:
-                alert('unknow protocol type:', field);
-                return { 'type': '', 'color': '', 'troops': '' };
-                break;
-        }
+        return { 'type': ProtocolInterpreter.get_type(field.tile_type), 'color': ProtocolInterpreter.get_color(field.color), 'troops': field.troops };
+        // let type = Object.keys(field)[0];
+        // switch (type) {
+        //     case 'Field':
+        //         {
+        //             let color = ProtocolInterpreter.get_color(field[type]['color']);
+        //             let troops = field[type]['troops'];
+        //             type = ProtocolInterpreter.get_type(type);
+        //             return { 'type': type, 'color': color, 'troops': troops };
+        //         }
+        //         break;
+        //     case 'King':
+        //         {
+        //             let color = ProtocolInterpreter.get_color(field[type]['color']);
+        //             let troops = field[type]['troops'];
+        //             type = ProtocolInterpreter.get_type(type);
+        //             return { 'type': type, 'color': color, 'troops': troops };
+        //         }
+        //         break;
+        //     default:
+        //         alert('unknow protocol type:', field);
+        //         return { 'type': '', 'color': '', 'troops': '' };
+        //         break;
+        // }
     }
 }
 

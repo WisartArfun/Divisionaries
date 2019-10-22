@@ -11,7 +11,7 @@ class Sprite {
         this.image = new Image();
         this.set_src(src);
         this.image.onload = () => {
-            this.render(this.x_pos, this.y_pos);
+            this.render();
         };
     }
 
@@ -82,6 +82,7 @@ class Map {
         this.ctx = canvas.getContext("2d");
 
         this.set_state(state);
+
         // this.fields = [];
         // for (let y in state) {
         //     let row = state[y];

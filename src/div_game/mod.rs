@@ -137,14 +137,14 @@ impl Bucket for DivGameBucket {
                                     ))
                                     .unwrap(),
                                 ); // QEUS: WARN: a lot of useless clone
-                                self.state.make_move(Move::Step((2, 0), (2, 1), 0.5));
+                                // self.state.make_move(Move::Step((2, 0), (2, 1), 0.5));
                                 
-                                let changes = self.state
-                                        .get_changes_serialized()
-                                        .expect("Could not serialize changes in state");
-                                self.connection_handler.lock().unwrap().broadcast(
-                                    changes
-                                ); // a lot of useless clone
+                                // let changes = self.state
+                                //         .get_changes_serialized()
+                                //         .expect("Could not serialize changes in state");
+                                // self.connection_handler.lock().unwrap().broadcast(
+                                //     changes
+                                // ); // a lot of useless clone
                             }
                         },
                         DivGameLobbyRequest::NotReady => {
@@ -222,7 +222,6 @@ enum DivGameRequest {
 enum DivGameRunningResponse {
     GameEnd, // TODO: send some score/ranking
     State(Vec<Vec<Tile>>),
-    // StateUpdate(Vec<(usize, usize, Tile)>),
     StateUpdate(Vec<(usize, usize, Tile)>),
 }
 
@@ -319,34 +318,59 @@ impl Player {
     }
 }
 
+// #[derive(Serialize, Deserialize, Debug, Clone)]
+// struct King {
+//     pub color: Color,
+//     pub troops: i64,
+// }
+
+// impl King {
+//     pub fn new(color: Color) -> Self {
+//         Self { color, troops: 0 }
+//     }
+// }
+
+// #[derive(Serialize, Deserialize, Debug, Clone)]
+// struct Field {
+//     pub color: Color,
+//     pub troops: i64,
+// }
+
+// impl Field {
+//     pub fn new(color: Color) -> Self {
+//         Field { color, troops: 0 }
+//     }
+// }
+
+// #[derive(Serialize, Deserialize, Debug, Clone)]
+// enum Tile {
+//     King(King),
+//     Field(Field),
+// }
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
-struct King {
+enum TileType {
+    King,
+    Field,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct Tile {
     pub color: Color,
     pub troops: i64,
+    pub walkable: bool,
+    pub tile_type: TileType,
 }
 
-impl King {
-    pub fn new(color: Color) -> Self {
-        Self { color, troops: 0 }
+impl Tile {
+    pub fn new(color: Color, troops: i64, walkable: bool, tile_type: TileType) -> Self {
+        Self {
+            color,
+            troops,
+            walkable,
+            tile_type,
+        }
     }
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-struct Field {
-    pub color: Color,
-    pub troops: i64,
-}
-
-impl Field {
-    pub fn new(color: Color) -> Self {
-        Field { color, troops: 0 }
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-enum Tile {
-    King(King),
-    Field(Field),
 }
 
 struct Map {
@@ -358,9 +382,9 @@ struct Map {
 
 impl Map {
     pub fn new(width: usize, height: usize) -> Self {
-        let mut tiles = vec![vec![Tile::Field(Field::new(Color::Empty)); width]; height];
-        tiles[0][2] = Tile::King(King::new(Color::Blue));
-        tiles[5][7] = Tile::King(King::new(Color::Green));
+        let mut tiles = vec![vec![Tile::new(Color::Empty, 0, true, TileType::Field); width]; height];
+        tiles[0][2] = Tile::new(Color::Red, 1, true, TileType::King);
+        tiles[5][7] = Tile::new(Color::Green, 1, true, TileType::King);
         let changes = HashSet::new();
 
         Self {
@@ -403,29 +427,14 @@ impl Map {
     pub fn make_move(&mut self, p_move: Move) {
         match p_move {
             Move::Step((fx, fy), (tx, ty), ratio) => {
-                let color;
-                match &mut self.tiles[fy][fx] {
-                    // later with trait
-                    Tile::King(obj) => {
-                        color = obj.color.clone();
-                    },
-                    Tile::Field(obj) => {
-                        color = obj.color.clone();
-                    },
-                    _ => panic!("This tile type can not make a step"),
+                // WARN: QUES: check if fx and fy belong to player
+                let color = self.tiles[fy][fx].color.clone();
+                let walkable = self.tiles[tx][ty].walkable;
+                if walkable {
+                    self.tiles[ty][tx].color = color;
+                } else {
+                    log::warn!("this move is not permitted");
                 }
-                match &mut self.tiles[ty][tx] {
-                    // later with trait
-                    Tile::King(obj) => {
-                        obj.color = color;
-                    }
-                    Tile::Field(obj) => {
-                        obj.color = color;
-                    }
-                    _ => panic!("This tile type can not make a step"),
-                }
-                let tile = self.tiles[tx][ty].clone();
-                // self.changes.insert((tx, ty), tile);
                 self.changes.insert((tx, ty));
             }
         }
@@ -490,7 +499,7 @@ impl State {
         let turn = self.turn;
         match &mut self.players.get_mut(&id) {
             Some(player) => {
-                player.set_move(turn + 1, p_move);
+                player.set_move(turn, p_move);
             }
             None => {
                 log::warn!("no player found with that id: {}", id);
