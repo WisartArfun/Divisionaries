@@ -3,8 +3,8 @@ import { GraphicMapper } from './graphic_mapper.mjs';
 // SPRITE   - an object, that can be displayed on a canvas
 class Sprite {
     // CONSTRUCTOR  - initialize content, transform and connection to display
-    constructor(src, color, x_pos, y_pos, width, height, ctx) {        
-        this.color = color;
+    constructor(src, color, x_pos, y_pos, width, height, ctx) {
+        this.set_color(color);
         this.ctx = ctx;
         this.update_transform(x_pos, y_pos, width, height);
 
@@ -20,6 +20,10 @@ class Sprite {
         this.y_pos = y_pos;
         this.width = width;
         this.height = height;
+    }
+
+    set_color(color) {
+        this.color = color;
     }
 
     set_src(src) {
@@ -72,21 +76,23 @@ class Field {
 class Map {
     // CONSTRUCTOR  - initializes all the fields, sets content, sets transform
     constructor(canvas, state, field_size = 30) {
+        this.field_size = field_size;
         canvas.width = field_size * state.length;
         canvas.height = field_size * state[0].length; // QUES: what if x == 0???
-        let ctx = canvas.getContext("2d");
+        this.ctx = canvas.getContext("2d");
 
-        this.fields = [];
-        for (let y in state) {
-            let row = state[y];
-            let col = [];
-            for (let x in row) {
-                col.push(new Field(x, y, state[y][x], field_size, ctx));
-            }
-            this.fields.push(col);
-        }
+        this.set_state(state);
+        // this.fields = [];
+        // for (let y in state) {
+        //     let row = state[y];
+        //     let col = [];
+        //     for (let x in row) {
+        //         col.push(new Field(x, y, state[y][x], field_size, ctx));
+        //     }
+        //     this.fields.push(col);
+        // }
 
-        this.render();
+        // this.render(); // QUES: sprite renders automatically
     }
 
     render() {
@@ -97,8 +103,25 @@ class Map {
         }
     }
 
-    update_state() {
+    set_state(state) {
+        this.fields = [];
+        for (let y in state) {
+            let row = state[y];
+            let col = [];
+            for (let x in row) {
+                let field = new Field(x, y, state[y][x], this.field_size, this.ctx);
+                col.push(field);
+            }
+            this.fields.push(col);
+        }
+    }
 
+    update_state(input) {
+        let x = input.x;
+        let y = input.y;
+        let data = input.state;
+        this.fields[y][x].set_state(data);
+        // this.fields[y][x].render();
     }
 }
 

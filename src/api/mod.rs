@@ -63,7 +63,7 @@ impl Bucket for ApiBucket {
     }
 
     fn update(&mut self) {
-        log::info!("ApiBucket updated");
+        // log::info!("ApiBucket updated");
     }
 
     fn handle_message(&mut self, mut message: BaseBucketMessage) { //}, bucket_manager: Arc<Mutex<BaseBucketManager>>) {

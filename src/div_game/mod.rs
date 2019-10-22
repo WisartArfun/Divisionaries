@@ -1,12 +1,12 @@
-use std::sync::{Arc, Mutex};
+use std::collections::{HashMap, HashSet};
 use std::str;
-use std::collections::{HashMap, hash_map::Drain};
+use std::sync::{Arc, Mutex};
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use serde_json;
 
+use crate::logic::bucket_server::{BaseBucketData, BaseBucketMessage, BaseConnectionHandler};
 use crate::logic::Bucket;
-use crate::logic::bucket_server::{BaseBucketMessage, BaseConnectionHandler, BaseBucketData};
 
 use crate::logic::bucket_manager::BaseBucketManagerData;
 
@@ -30,20 +30,24 @@ pub struct DivGameBucket {
     connection_handler: Arc<Mutex<BaseConnectionHandler>>,
     bucket_manager: Arc<Mutex<BaseBucketManagerData>>,
     bucket_state: DivGameBucketState,
-    state: Option<State>,
+    state: State,
     bucket_data: BaseBucketData,
-    game_running: bool,
+    bucket_running: bool,
 }
 
 impl DivGameBucket {
-    pub fn new(connection_handler: Arc<Mutex<BaseConnectionHandler>>, bucket_manager: Arc<Mutex<BaseBucketManagerData>>, bucket_data: BaseBucketData) -> Self {
+    pub fn new(
+        connection_handler: Arc<Mutex<BaseConnectionHandler>>,
+        bucket_manager: Arc<Mutex<BaseBucketManagerData>>,
+        bucket_data: BaseBucketData,
+    ) -> Self {
         Self {
             connection_handler,
             bucket_manager,
             bucket_state: DivGameBucketState::new(),
-            state: None,
+            state: State::new(10, 10),
             bucket_data,
-            game_running: false,
+            bucket_running: false,
         }
     }
 }
@@ -51,98 +55,158 @@ impl DivGameBucket {
 impl Bucket for DivGameBucket {
     fn start(&mut self) {
         log::info!("DivGameBucket started");
-        self.game_running = true;
+        self.bucket_running = true;
     }
 
     fn stop(&mut self) {
         log::info!("DivGameBucket stoped");
-        self.game_running = false;
+        self.bucket_running = false;
     }
 
     fn update(&mut self) {
-        if !self.game_running {return;}
-        
+        if !self.bucket_state.running {
+            return;
+        }
+        self.state.update();
+        if !self.state.changes_exist() {
+            return;
+        }
+        let changes = self.state.get_changes_serialized().unwrap();
+        self.connection_handler.lock().unwrap().broadcast(
+            changes
+        );
     }
 
-    fn handle_message(&mut self, mut message: BaseBucketMessage) { //}, bucket_manager: Arc<Mutex<BaseBucketManager>>) {
-        log::info!("DivGameBucket received a message: {}", str::from_utf8(&message.get_content()).unwrap());
-        let client = message.get_client();
+    fn handle_message(&mut self, mut message: BaseBucketMessage) {
+        //}, bucket_manager: Arc<Mutex<BaseBucketManager>>) {
         let msg = message.get_content();
+        log::info!(
+            "DivGameBucket received a message: {}",
+            str::from_utf8(&msg).unwrap()
+        );
+        let client = message.get_client();
+        let client_id = client.lock().unwrap().get_id();
 
-        let content = str::from_utf8(&msg).unwrap(); // PROB: error handling
-        println!("{:?}", serde_json::to_string(&DivGameRequest::Lobby(DivGameLobbyRequest::Ready)));
-        if let Ok(api_request) = serde_json::from_str::<DivGameRequest>(content) {
+        if let Ok(api_request) = serde_json::from_slice::<DivGameRequest>(&msg) {
             match api_request {
                 DivGameRequest::Lobby(lobby_request) => {
                     if self.bucket_state.running {
-                        log::warn!("DivGameBucket received a lobby request although game is running");
+                        log::warn!(
+                            "DivGameBucket received a lobby request although game is running"
+                        );
+                        return;
+                    }
+                    if let DivGameLobbyRequest::Join = lobby_request {}
+                    else if !self.state.player_exists(&client_id) { // WARN: QUES: check if state exists and stuff
+                        log::warn!("only a user that joined can call this instruction");
                         return;
                     }
                     match lobby_request {
+                        DivGameLobbyRequest::Join => {
+                            let color = match client_id {
+                                0 => Color::Blue,
+                                1 => Color::Red,
+                                _ => Color::Green,
+                            };
+                            self.bucket_state.clients += 1;
+                            self.state.players.insert(client_id, Player::new(color));
+                        },
                         DivGameLobbyRequest::Ready => {
                             let ready = client.lock().unwrap().get_ready();
-                            if ready {return;}
-
-                            log::debug!("client is ready");
+                            if ready {
+                                return;
+                            }
                             client.lock().unwrap().set_ready(true);
-                            self.bucket_state.clients = self.connection_handler.lock().unwrap().connections.len() as u64;
-                            self.bucket_state.ready += 1; // WARN: not safe
+                            log::debug!("client is ready");
+
+                            self.bucket_state.clients =
+                                self.connection_handler.lock().unwrap().connections.len() as u64;
+                            self.bucket_state.ready += 1;
                             // if self.state.clients > 1 && self.state.ready * 3 > self.state.clients * 2 {
                             if self.bucket_state.ready * 3 > self.bucket_state.clients * 2 {
                                 log::info!("starting game");
                                 self.bucket_state.running = true;
                                 let id = self.bucket_data.get_id();
                                 self.bucket_manager.lock().unwrap().start_lobby(id);
-                                let mut state = State::new(10, 10);
-                                self.connection_handler.lock().unwrap().broadcast(serde_json::to_vec(&DivGameResponse::Lobby(DivGameLobbyResponse::StartGame(state.get_tiles()))).unwrap()); // QEUS: WARN: a lot of useless clone
-                                state.make_move(Move::Step((2, 0), (2, 1), 1.0));
-                                log::error!("move made");
-                                let data = serde_json::to_vec(&DivGameResponse::Running(DivGameRunningResponse::StateUpdate(state.get_changes())));
-                                match &data {
-                                    Err(e) => println!("{:?}", e),
-                                    _ => {},
-                                }
-                                let data = data.unwrap();
-                                log::error!("JSON");
-                                self.connection_handler.lock().unwrap().broadcast(data); // QEUS: WARN: a lot of useless clone
-                                log::error!("sending");
-                                // let state = State::new(10, 10);
-                                // self.connection_handler.lock().unwrap().broadcast(r#"{"Running":{"StateUpdate":"111111"}}"#.to_string().into_bytes());
-                                // self.connection_handler.lock().unwrap().broadcast(state.get_serialized_tiles().unwrap());
-                                // self.connection_handler.lock().unwrap().broadcast(serde_json::to_vec(&DivGameResponse::Running(DivGameRunningResponse::State(state.get_tiles()))).unwrap()); // QUES: a lot of useless clone
-                                self.state = Some(state);
+                                // let mut state = State::new(10, 10); // update state with settings
+
+                                let tiles = self.state.get_tiles();
+                                self.connection_handler.lock().unwrap().broadcast(
+                                    serde_json::to_vec(&DivGameResponse::Lobby(
+                                        DivGameLobbyResponse::StartGame(tiles),
+                                    ))
+                                    .unwrap(),
+                                ); // QEUS: WARN: a lot of useless clone
+                                self.state.make_move(Move::Step((2, 0), (2, 1), 0.5));
+                                
+                                let changes = self.state
+                                        .get_changes_serialized()
+                                        .expect("Could not serialize changes in state");
+                                self.connection_handler.lock().unwrap().broadcast(
+                                    changes
+                                ); // a lot of useless clone
                             }
                         },
                         DivGameLobbyRequest::NotReady => {
+                            let ready = client.lock().unwrap().get_ready();
+                            if !ready {
+                                return;
+                            }
+                            client.lock().unwrap().set_ready(false);
                             log::debug!("client is not ready");
-                            self.bucket_state.clients = self.connection_handler.lock().unwrap().connections.len() as u64;
+
+                            // self.bucket_state.clients =
+                            //     self.connection_handler.lock().unwrap().connections.len() as u64;
                             self.bucket_state.ready -= 1;
                         },
                         _ => {
-                            log::warn!("invalid APIRequest send to APIServer");
-                            client.lock().unwrap().send(serde_json::to_vec(&DivGameResponse::InvalidRequest).unwrap());
-                        },
+                            log::warn!("invalid DivGame Loby request");
+                            client.lock().unwrap().send(
+                                serde_json::to_vec(&DivGameResponse::InvalidRequest).unwrap(),
+                            );
+                        }
+                    }
+                }
+                DivGameRequest::Running(request) => match request {
+                    DivGameRunningRequest::Move(p_move) => {
+                        self.state
+                            .add_move(client_id, p_move);
+                    }
+                    _ => {
+                        log::warn!("invalid DivGame Loby request");
+                        client
+                            .lock()
+                            .unwrap()
+                            .send(serde_json::to_vec(&DivGameResponse::InvalidRequest).unwrap());
                     }
                 },
                 _ => {
                     log::warn!("invalid APIRequest send to APIServer");
-                    client.lock().unwrap().send(serde_json::to_vec(&DivGameResponse::InvalidRequest).unwrap());
-                },
+                    client
+                        .lock()
+                        .unwrap()
+                        .send(serde_json::to_vec(&DivGameResponse::InvalidRequest).unwrap());
+                }
             }
-        } else { // Prob: QUES: WARN: differentiate between invalid json and invalid request
+        } else {
+            // Prob: QUES: WARN: differentiate between invalid json and invalid request
             log::warn!("An error occured when parsing message");
-            client.lock().unwrap().send(serde_json::to_vec(&DivGameResponse::InvalidJson).unwrap()); // PROB: error handling // QUES: efficiency?
+            client
+                .lock()
+                .unwrap()
+                .send(serde_json::to_vec(&DivGameResponse::InvalidJson).unwrap()); // PROB: error handling // QUES: efficiency?
         }
     }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 enum DivGameRunningRequest {
-    Test,
+    Move(Move),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 enum DivGameLobbyRequest {
+    Join,
     Ready,
     NotReady,
     Leave,
@@ -159,7 +223,7 @@ enum DivGameRunningResponse {
     GameEnd, // TODO: send some score/ranking
     State(Vec<Vec<Tile>>),
     // StateUpdate(Vec<(usize, usize, Tile)>),
-    StateUpdate(HashMap<(usize, usize), Tile>),
+    StateUpdate(Vec<(usize, usize, Tile)>),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -240,7 +304,6 @@ impl Player {
     }
 
     // pub fn get_viewable() {
-        
     // }
 
     pub fn get_moves(&mut self, turn: i64) -> Option<Vec<Move>> {
@@ -251,7 +314,7 @@ impl Player {
         if let Some(data) = self.moves.get_mut(&turn) {
             data.push(p_move);
         } else {
-            self.moves.insert(turn, vec!(p_move));
+            self.moves.insert(turn, vec![p_move]);
         }
     }
 }
@@ -264,10 +327,7 @@ struct King {
 
 impl King {
     pub fn new(color: Color) -> Self {
-        Self {
-            color,
-            troops: 0,
-        }
+        Self { color, troops: 0 }
     }
 }
 
@@ -279,10 +339,7 @@ struct Field {
 
 impl Field {
     pub fn new(color: Color) -> Self {
-        Field {
-            color,
-            troops: 0,
-        }
+        Field { color, troops: 0 }
     }
 }
 
@@ -293,10 +350,10 @@ enum Tile {
 }
 
 struct Map {
-    width: usize, 
-    height: usize, 
+    width: usize,
+    height: usize,
     pub tiles: Vec<Vec<Tile>>, // WARN: remove pub
-    changes: HashMap<(usize, usize), Tile>,
+    changes: HashSet<(usize, usize)>,
 }
 
 impl Map {
@@ -304,7 +361,7 @@ impl Map {
         let mut tiles = vec![vec![Tile::Field(Field::new(Color::Empty)); width]; height];
         tiles[0][2] = Tile::King(King::new(Color::Blue));
         tiles[5][7] = Tile::King(King::new(Color::Green));
-        let changes = HashMap::new();
+        let changes = HashSet::new();
 
         Self {
             width,
@@ -314,33 +371,62 @@ impl Map {
         }
     }
 
-    pub fn get_changes(&mut self) -> HashMap<(usize, usize), Tile> {
-        let changes = self.changes.clone(); // PROB: very ugly
-        self.changes = HashMap::new();
-        changes
+    pub fn changes_exist(&self) -> bool {
+        !self.changes.is_empty()
+    }
+
+    pub fn get_changes(&mut self) -> Vec<(usize, usize, Tile)> {
+        // WARN: expensive
+        let mut res = Vec::new();
+        for change in &self.changes {
+            let (x, y) = change;
+            res.push((*x, *y, self.tiles[*y][*x].clone()));
+        }
+        self.changes.clear();
+        res
+    }
+
+    pub fn get_changes_serialized(
+        &mut self,
+    ) -> std::result::Result<Vec<u8>, serde_json::error::Error> {
+        serde_json::to_vec(&DivGameResponse::Running(
+            DivGameRunningResponse::StateUpdate(self.get_changes()),
+        ))
+    }
+
+    pub fn get_state_serialized(&self) -> std::result::Result<Vec<u8>, serde_json::error::Error> {
+        serde_json::to_vec(&DivGameResponse::Running(DivGameRunningResponse::State(
+            self.tiles.clone(),
+        )))
     }
 
     pub fn make_move(&mut self, p_move: Move) {
         match p_move {
             Move::Step((fx, fy), (tx, ty), ratio) => {
                 let color;
-                match &mut self.tiles[fy][fx] { // later with trait
+                match &mut self.tiles[fy][fx] {
+                    // later with trait
                     Tile::King(obj) => {
+                        color = obj.color.clone();
+                    },
+                    Tile::Field(obj) => {
                         color = obj.color.clone();
                     },
                     _ => panic!("This tile type can not make a step"),
                 }
-                match &mut self.tiles[ty][tx] { // later with trait
+                match &mut self.tiles[ty][tx] {
+                    // later with trait
                     Tile::King(obj) => {
                         obj.color = color;
-                    },
+                    }
                     Tile::Field(obj) => {
                         obj.color = color;
-                    },
+                    }
                     _ => panic!("This tile type can not make a step"),
                 }
                 let tile = self.tiles[tx][ty].clone();
-                self.changes.insert((tx, ty), tile);
+                // self.changes.insert((tx, ty), tile);
+                self.changes.insert((tx, ty));
             }
         }
     }
@@ -362,24 +448,67 @@ impl State {
     }
 
     pub fn update(&mut self) {
-        unimplemented!();
+        let mut collected_moves: Vec<(i64, Move)> = Vec::new();
+        for (id, player) in &mut self.players {
+            let p_moves = player.get_moves(self.turn);
+            if let Some(moves) = p_moves {
+                for p_move in moves {
+                    collected_moves.push((*id, p_move));
+                }
+            }
+        }
+        for (_id, p_move) in collected_moves {
+            // WARN: validate moves, does id belong to player, etc
+            self.make_move(p_move);
+        }
+        self.turn += 1;
     }
 
     pub fn get_tiles(&self) -> Vec<Vec<Tile>> {
         self.map.tiles.clone() // QUES: how better?
     }
 
-    pub fn get_changes(&mut self) -> HashMap<(usize, usize), Tile> {
+    pub fn changes_exist(&self) -> bool {
+        self.map.changes_exist()
+    }
+
+    pub fn get_state_serialized(&self) -> std::result::Result<Vec<u8>, serde_json::error::Error> {
+        self.map.get_state_serialized()
+    }
+
+    pub fn get_changes_serialized(
+        &mut self,
+    ) -> std::result::Result<Vec<u8>, serde_json::error::Error> {
+        self.map.get_changes_serialized()
+    }
+
+    pub fn get_changes(&mut self) -> Vec<(usize, usize, Tile)> {
         self.map.get_changes()
     }
 
-    pub fn make_move(&mut self, p_move: Move) {
+    pub fn add_move(&mut self, id: i64, p_move: Move) {
+        let turn = self.turn;
+        match &mut self.players.get_mut(&id) {
+            Some(player) => {
+                player.set_move(turn + 1, p_move);
+            }
+            None => {
+                log::warn!("no player found with that id: {}", id);
+            }
+        }
+    }
+
+    fn make_move(&mut self, p_move: Move) {
         self.map.make_move(p_move);
+    }
+
+    pub fn player_exists(&self, id: &i64) -> bool {
+        self.players.contains_key(id)
     }
 
     // pub fn get_serialized_tiles(&self) -> std::result::Result<std::vec::Vec<u8>, serde_json::error::Error> {
     //     serde_json::to_vec(&DivGameResponse::Running(DivGameRunningResponse::State(&self.map.tiles)))
     // }
 
-    // pub fn 
+    // pub fn
 }

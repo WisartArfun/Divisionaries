@@ -7,14 +7,14 @@ function log(message) {
 class ProtocolInterpreter {
     static get_type(type_encoding) {
         type_encoding = type_encoding.toLowerCase();
-        let types = {'field': 'field', 'king': 'king', 'city': 'city', 'fog': 'fog'};
+        let types = { 'field': 'field', 'king': 'king', 'city': 'city', 'fog': 'fog' };
         if (type_encoding in types) return types[type_encoding];
         return type_encoding; // WARN: dangerous
     }
 
     static get_color(color_encoding) {
         color_encoding = color_encoding.toLowerCase();
-        let colors = {'empty': 'empty', 'red': 'red', 'blue': 'blue', 'green': 'green'};
+        let colors = { 'empty': 'empty', 'red': 'red', 'blue': 'blue', 'green': 'green' };
         if (color_encoding in colors) return colors[color_encoding];
         return color_encoding;
     }
@@ -34,9 +34,18 @@ class ProtocolInterpreter {
         return state;
     }
 
-    static update_state(message) {
+    static translate_update_state(message) {
         log('updating state...');
-        console.log(message);
+        let state = [];
+        for (let i in message) {
+            let [x, y, part] = message[i];
+            state.push({
+                'x': x,
+                'y': y,
+                'state': ProtocolInterpreter.tranlate_field(part),
+            });
+        }
+        return state;
     }
 
     static tranlate_field(field) {
@@ -47,21 +56,23 @@ class ProtocolInterpreter {
                     let color = ProtocolInterpreter.get_color(field[type]['color']);
                     let troops = field[type]['troops'];
                     type = ProtocolInterpreter.get_type(type);
-                    return {'type': type, 'color': color, 'troops': troops};
-                } break;
+                    return { 'type': type, 'color': color, 'troops': troops };
+                }
+                break;
             case 'King':
                 {
                     let color = ProtocolInterpreter.get_color(field[type]['color']);
                     let troops = field[type]['troops'];
                     type = ProtocolInterpreter.get_type(type);
-                    return {'type': type, 'color': color, 'troops': troops};
-                } break;
+                    return { 'type': type, 'color': color, 'troops': troops };
+                }
+                break;
             default:
-                alert('unknow protocol type');
-                return {'type': '', 'color': '', 'troops': ''};
+                alert('unknow protocol type:', field);
+                return { 'type': '', 'color': '', 'troops': '' };
                 break;
         }
     }
 }
 
-export {ProtocolInterpreter};
+export { ProtocolInterpreter };

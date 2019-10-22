@@ -21,10 +21,14 @@ class DivGame {
         this.player_ready = false;
         this.running = false;
 
-        let div_game = this;
+        this.x_pos = 2;
+        this.y_pos = 0;
+
+        let that = this;
         socket.onopen = function(event) {
-            div_game.ready = true;
+            that.ready = true;
             log('ready');
+            that.send('{"Lobby":"Join"}');
 
             socket.onmessage = function(event) {
                 log("message received");
@@ -35,7 +39,7 @@ class DivGame {
                         // } else {
                         //     div_game.handle_message(res);
                         // }
-                        div_game.handle_message(res);
+                        that.handle_message(res);
                     });
                 } catch (err) {
                     log("error occured while receiving message: " + err.message);
@@ -47,6 +51,43 @@ class DivGame {
                 log("closing...");
             }
         }
+
+        window.addEventListener('keydown', function(event) {
+            that.handle_input(event.keyCode);
+        }, false);
+    }
+
+    handle_input(input) {
+        if (!this.running) {
+            return;
+        }
+        let ox = this.x_pos;
+        let oy = this.y_pos;
+        switch (input) {
+            case 37: // Left
+                this.x_pos -= 1;
+                break;
+            case 38: // Up
+                this.y_pos -= 1;
+                break;
+            case 39: // Right
+                this.x_pos += 1;
+                break;
+            case 40: // Down
+                this.y_pos += 1;
+                break;
+        }
+        let message = {
+            "Running": {
+                "Move": {
+                    "Step": [
+                        [ox, oy],
+                        [this.x_pos, this.y_pos], 1.0
+                    ]
+                }
+            }
+        };
+        this.send(JSON.stringify(message));
     }
 
     handle_message(message) {
@@ -63,20 +104,22 @@ class DivGame {
                     }
                     log("2. key: " + second_key);
                     switch (second_key) {
-                        case 'StartGame': {
-                            log('starting game...');
-                            let game_container = document.getElementById("game-container");
-                            window.game = game_html.then(text => {
-                                game_container.innerHTML = text;
-                                let canvas = document.getElementById('game-canvas'); // WARN: better solution
-                                let game = new Game(canvas);
-                                game.start(parsed[first_key]['StartGame']);
-                                this.running = true;
-                                return new Promise(function(resolve, reject) {
-                                    resolve(game);
+                        case 'StartGame':
+                            {
+                                log('starting game...');
+                                let game_container = document.getElementById("game-container");
+                                window.game = game_html.then(text => {
+                                    game_container.innerHTML = text;
+                                    let canvas = document.getElementById('game-canvas'); // WARN: better solution
+                                    let game = new Game(canvas);
+                                    game.start(parsed[first_key]['StartGame']);
+                                    this.running = true;
+                                    return new Promise(function(resolve, reject) {
+                                        resolve(game);
+                                    });
                                 });
-                            });
-                        } break;
+                            }
+                            break;
                         default:
                             {
                                 log("An unknown message type was received - Lobby: " + JSON.stringify(parsed['Lobby']));
@@ -103,11 +146,13 @@ class DivGame {
                                 game.then(game => game.update_state(parsed[first_key]['StateUpdate'])); // QUES: better solution
                             }
                             break;
-                        case 'State': {
-                            game.then(game => {
-                                game.set_state(parsed[first_key]['State']);
-                            }); // QUES: PROB: WARN: will order of execution stay the same??? what if state after stateupdate or something, wrong order???
-                        } break;
+                        case 'State':
+                            {
+                                game.then(game => {
+                                    game.set_state(parsed[first_key]['State']);
+                                }); // QUES: PROB: WARN: will order of execution stay the same??? what if state after stateupdate or something, wrong order???
+                            }
+                            break;
                         default:
                             {
                                 log("An unknown message type was received - Running: " + JSON.stringify(parsed['Running']));

@@ -53,7 +53,8 @@ impl BaseBucketServer {
         log::info!("starting BaseBucketServer with id: {}", &id);
         let handle = thread::spawn(move || {
             while running.load(Ordering::SeqCst) {
-                thread::sleep(time::Duration::from_millis(200));
+                thread::sleep(time::Duration::from_millis(50));
+                bucket.lock().unwrap().update();
                 
                 while running.load(Ordering::SeqCst) {
                     let message = connection_handler.lock().unwrap().receive_message(&id);

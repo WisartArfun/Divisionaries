@@ -15,7 +15,7 @@ class State {
         log('updating state');
         let x = input.x;
         let y = input.y;
-        let data = input.data;
+        let data = input.state;
         this.state[y][x] = data;
     }
 
