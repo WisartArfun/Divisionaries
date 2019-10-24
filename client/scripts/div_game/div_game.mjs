@@ -55,7 +55,13 @@ class DivGame {
         window.addEventListener('keydown', function(event) {
             that.handle_input(event.keyCode);
         }, false);
+
+        // canvas.addEventListener("click", handle_mouse_click, false);
     }
+
+    // handle_mouse_click(event) {
+    //     console.log('mouse click:', event.pageX, event.pageY);
+    // }
 
     handle_input(input) {
         if (!this.running) {

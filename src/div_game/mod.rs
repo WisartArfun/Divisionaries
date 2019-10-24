@@ -239,7 +239,7 @@ enum DivGameResponse {
     Lobby(DivGameLobbyResponse),
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 enum Color {
     Empty,
     Blue,
@@ -424,16 +424,19 @@ impl Map {
         )))
     }
 
-    pub fn make_move(&mut self, p_move: Move) {
+    pub fn make_move(&mut self, player: &mut Player, p_move: Move) {
         match p_move {
             Move::Step((fx, fy), (tx, ty), ratio) => {
-                // WARN: QUES: check if fx and fy belong to player
+                if self.tiles[fy][fx].color != player.color {
+                    log::warn!("Player is not permitted to make this move, tile does not belong to player");
+                    return;
+                }
                 let color = self.tiles[fy][fx].color.clone();
                 let walkable = self.tiles[tx][ty].walkable;
                 if walkable {
                     self.tiles[ty][tx].color = color;
                 } else {
-                    log::warn!("this move is not permitted");
+                    log::warn!("this move is not permitted, tile is not walkable");
                 }
                 self.changes.insert((tx, ty));
             }
@@ -444,7 +447,7 @@ impl Map {
 struct State {
     turn: i64,
     map: Map,
-    players: HashMap<i64, Player>,
+    players: HashMap<i64, Player>, // Vec??
 }
 
 impl State {
@@ -466,9 +469,9 @@ impl State {
                 }
             }
         }
-        for (_id, p_move) in collected_moves {
+        for (id, p_move) in collected_moves {
             // WARN: validate moves, does id belong to player, etc
-            self.make_move(p_move);
+            self.make_move(id, p_move);
         }
         self.turn += 1;
     }
@@ -507,8 +510,8 @@ impl State {
         }
     }
 
-    fn make_move(&mut self, p_move: Move) {
-        self.map.make_move(p_move);
+    fn make_move(&mut self, id: i64, p_move: Move) {
+        self.map.make_move(&mut self.players.get_mut(&id).expect("Player does not exist, can not make move"), p_move);
     }
 
     pub fn player_exists(&self, id: &i64) -> bool {
