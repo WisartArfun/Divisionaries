@@ -1,0 +1,27 @@
+- GENERAL
+    - describing errors and fatals in doc
+    - making better function and mod descriptions and structure
+    - code annotations
+    - join WSServer and Game Loop to one thread???
+    - automaticaly delete logs when too big
+
+- crate::http_server::http_utils::read_files
+    - add checking if file exists and error handling
+
+- logger
+    - log expect and panic to log file
+
+- crate::connection::trait_read_write
+    - better implementation for trait
+    - impl try_read
+    - read_string
+    - etc...
+    - close ?
+
+- crate::connection::trait_connection
+    - also for file_manager?
+    - ReadWrite needed? combine connection and read write???
+    - ping pong stuff ??? automaticaly disconnect when refresh ??? timeout ???
+
+- crate::data_manager::file_manager
+    - handle wrong paths
