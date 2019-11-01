@@ -196,7 +196,7 @@ impl BaseConnectionHandler {
             match message_res {
                 Ok(message) => {
                     if let Some(mes) = message {
-                        log::info!("BaseConnectionHandler received a message from id: {}", &game_id);
+                        log::info!("BaseConnectionHandler received a message from id: {}", game_id);
                         return Some(BaseBucketMessage::new(client, mes));
                     }
                 },
@@ -227,37 +227,45 @@ impl BaseConnectionHandler {
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct BaseBucketData { // get this passed to constructor
+    name: String,
     id: String,
     ip: String,
     port: String,
-    max_user_size: i64,
     current_users: i64,
+    max_users: i64,
+    running: bool,
 }
 
 impl BaseBucketData {
-    pub fn new<S: Into<String>>(id: S, ip: S, port: S, max_user_size: i64) -> Self {
+    pub fn new(name: &str, id: &str, ip: &str, port: &str, max_users: i64) -> Self {
         Self {
-            id: id.into(),
-            ip: ip.into(),
-            port: port.into(),
-            max_user_size,
+            name: name.to_string(),
+            id: id.to_string(),
+            ip: ip.to_string(),
+            port: port.to_string(),
             current_users: 0,
+            max_users,
+            running: false,
         }
     }
 
-    pub fn get_id(&mut self) -> String {
+    pub fn get_id(&self) -> String {
         self.id.clone()
     }
 
-    pub fn get_ip(&mut self) -> String {
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
+    pub fn get_ip(&self) -> String {
         self.ip.clone()
     }
 
-    pub fn get_port(&mut self) -> String {
+    pub fn get_port(&self) -> String {
         self.port.clone()
     }
 
-    pub fn get_current_users(&mut self) -> i64 {
+    pub fn get_current_users(&self) -> i64 {
         self.current_users.clone()
     }
 
@@ -269,7 +277,15 @@ impl BaseBucketData {
         self.current_users -= 1;
     }
 
-    pub fn get_max_user_size(&mut self) -> i64 {
-        self.max_user_size
+    pub fn get_max_user_size(&self) -> i64 {
+        self.max_users
+    }
+
+    pub fn get_running(&self) -> bool {
+        self.running
+    }
+
+    pub fn set_running(&mut self, running: bool) {
+        self.running = running;
     }
 }

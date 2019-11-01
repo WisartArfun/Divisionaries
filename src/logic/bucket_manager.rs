@@ -1,14 +1,12 @@
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::net::TcpListener;
 
 use log;
 
 use crate::logic::Bucket;
 use crate::logic::bucket_server::{BaseBucketServer, BaseBucketData, BaseConnectionHandler};
-
-use crate::api::ApiBucket;
-use std::sync::atomic::{AtomicBool, Ordering};
 
 pub struct BaseBucketManagerData {
     lobbies: HashMap<String, BaseBucketServer>,
