@@ -14,7 +14,6 @@
 //! ```
 
 use std::fs;
-use std::error::Error;
 
 /// reads the content of a file to a `String` and returns it in a `Result`
 /// 
