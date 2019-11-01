@@ -14,6 +14,8 @@ name = "mybin"
 path = "src/main.rs"
 
 [dependencies]
+log = "^0.4" # 0.4.8
+actix-web = "^1" # 1.0.7
 
 # dependencies v1
 
