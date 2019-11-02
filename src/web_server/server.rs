@@ -10,8 +10,8 @@ use actix_web::{web, App, HttpServer};
 ///
 /// # Variables
 ///
-/// * ip: `&'a str' - the ip of the `WebServer`
-/// * port: `&'a str' - the port of the `WebServer`
+/// * ip: `&'a str` - the ip of the `WebServer`
+/// * port: `&'a str` - the port of the `WebServer`
 /// * running: bool - whether the `WebServer` is running or not
 pub struct WebServer<'a> {
     ip: &'a str,
@@ -24,8 +24,8 @@ impl<'a> WebServer<'a> {
     ///
     /// # Arguments
     ///
-    /// * ip: `&'a str' - the ip of the `WebServer`
-    /// * port: `&'a str' - the port of the `WebServer`
+    /// * ip: `&'a str` - the ip of the `WebServer`
+    /// * port: `&'a str` - the port of the `WebServer`
     pub fn new(ip: &'a str, port: &'a str) -> Self {
         log::info!("creating a new WebServer at {}:{}", ip, port);
         Self {
