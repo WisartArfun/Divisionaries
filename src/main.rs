@@ -1,15 +1,39 @@
+// std
 use std::error::Error;
+use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
 
+// extern
 use log;
+use ctrlc;
 
-use bucketer::{file_manager, logger};
+// own library
+use bucketer::{logger, web_server::WebServer};
+
+// bin
+mod div;
+use div::web_server::ServiceProvider;
 
 fn main() -> Result<(), Box<dyn Error>> {
+    // initializing logger
     logger::init("config/log4rs.yaml");
 
-    log::debug!("this is a test");
+    // setting ctrlc handler and creating atomicbool running variable for all threads
+    log::info!("setting ctrl-c handler");
+    let running = Arc::new(AtomicBool::new(true));
+    let r = running.clone();
+    ctrlc::set_handler(move || {
+        log::warn!("ctrl-c was pressed, the program will be terminated"); // why not running?
+        r.store(false, Ordering::SeqCst);
+    }).expect("Error setting Ctrl-C handler");
 
-    println!("{}", file_manager::read_file("tests/read_file.txt")?);
+    // starting web server
+    let mut web_server = WebServer::new("127.0.0.1", "8000");
+    let web_server_handle = web_server.start::<ServiceProvider>().unwrap(); // this is safe as it is the first time the web_server is started // QUES: change to result ???
+
+    if let Err(e) = web_server_handle.join() {
+        log::error!("An error occured while joining the http_server:\n\t{:?}", e);
+        panic!("Terminating program due to a fatal error:\n\t{:?}", e);
+    }
 
     Ok(())
 }
