@@ -25,7 +25,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     ctrlc::set_handler(move || {
         log::warn!("ctrl-c was pressed, the program will be terminated"); // why not running?
         r.store(false, Ordering::SeqCst);
-    }).expect("Error setting Ctrl-C handler");
+    }).unwrap_or_else(|err| {
+        log::error!("an error occured while setting ctrlc handler: {:?}", err);
+        panic!("error while setting ctrlc handler: {:?}", err);
+    });
 
     // loading config file
     let config = Config::new("config/Settings.toml").unwrap_or_else(|err| {
