@@ -8,6 +8,7 @@ use ctrlc;
 
 // own library
 use bucketer::{logger, web_server::WebServer};
+use bucketer::web_socket::{WSConnection, WebSocketServer};
 
 // bin
 mod div;
@@ -39,6 +40,20 @@ fn main() -> Result<(), Box<dyn Error>> {
     // starting web server
     let mut web_server = WebServer::new(&config.http_ip, &config.http_port);
     let web_server_handle = web_server.start::<ServiceProvider>().unwrap(); // this is safe as it is the first time the web_server is started // QUES: change to result ???
+
+    log::error!("starting web socket");
+    // testing web socket
+    let mut web_socket = WebSocketServer::new(&config.api_ip, &config.api_port);
+    use std::sync::Mutex;
+    let test = Arc::new(Mutex::new(Vec::new()));
+    let closure_test = test.clone();
+    web_socket.start(move |inst| -> () {
+        log::error!("closure running");
+        closure_test.lock().unwrap().push(inst);
+    });
+
+    std::thread::sleep(std::time::Duration::from_secs(5));
+    log::error!("test size: {}", test.lock().unwrap().len());
 
     // letting handles join
     if let Err(e) = web_server_handle.join() {
