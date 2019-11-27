@@ -1,6 +1,6 @@
 // std
 use std::error::Error;
-use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
+use std::sync::{Arc, Mutex, atomic::{AtomicBool, Ordering}};
 
 // extern
 use log;
@@ -9,11 +9,13 @@ use ctrlc;
 // own library
 use bucketer::{logger, web_server::WebServer};
 use bucketer::web_socket::{WSConnection, WebSocketServer};
+use bucketer::bucket::BucketServer;
 
 // bin
 mod div;
 use div::web_server::ServiceProvider;
 use div::Config;
+use div::bucket::TestBucket;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // initializing logger
@@ -25,7 +27,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let r = running.clone();
     ctrlc::set_handler(move || {
         log::warn!("ctrl-c was pressed, the program will be terminated"); // why not running?
-        r.store(false, Ordering::SeqCst);
+        r.store(false, Ordering::SeqCst); // QUES: local and then call stop on parts
     }).unwrap_or_else(|err| {
         log::error!("an error occured while setting ctrlc handler: {:?}", err);
         panic!("error while setting ctrlc handler: {:?}", err);
@@ -41,25 +43,34 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut web_server = WebServer::new(&config.http_ip, &config.http_port);
     let web_server_handle = web_server.start::<ServiceProvider>().unwrap(); // this is safe as it is the first time the web_server is started // QUES: change to result ???
 
-    log::error!("starting web socket");
-    // testing web socket
-    let mut web_socket = WebSocketServer::new(&config.api_ip, &config.api_port);
-    use std::sync::Mutex;
-    let test = Arc::new(Mutex::new(Vec::new()));
-    let closure_test = test.clone();
-    web_socket.start(move |inst| -> () {
-        log::error!("closure running");
-        closure_test.lock().unwrap().push(inst);
-    });
+    // // testing web socket
+    // log::error!("starting web socket");
+    // let mut web_socket = WebSocketServer::new(config.api_ip, config.api_port); // QUES: moves part of struct???
+    // use std::sync::Mutex;
+    // let test = Arc::new(Mutex::new(Vec::new()));
+    // let closure_test = test.clone();
+    // web_socket.start(move |inst| -> () {
+    //     log::error!("closure running");
+    //     closure_test.lock().unwrap().push(inst);
+    // });
 
-    std::thread::sleep(std::time::Duration::from_secs(5));
-    log::error!("test size: {}", test.lock().unwrap().len());
+    // std::thread::sleep(std::time::Duration::from_secs(5));
+    // log::error!("test size: {}", test.lock().unwrap().len());
+
+    // testing bucket server
+    log::info!("starting bucket server");
+    let mut bucket_server = BucketServer::new(Arc::new(Mutex::new(TestBucket::new())), config.api_ip, config.api_port, 25);
+    let bucket_server_handle = bucket_server.start(); //.unwrap(); // this is safe as it is the first time bucket_server is started
 
     // letting handles join
     if let Err(e) = web_server_handle.join() {
         log::error!("An error occured while joining the http_server:\n\t{:?}", e);
         panic!("Terminating program due to a fatal error:\n\t{:?}", e);
     }
+    // if let Err(e) = bucket_server_handle.join() {
+    //     log::error!("An error occured while joining the bucket_server:\n\t{:?}", e);
+    //     panic!("Terminating program due to a fatal error:\n\t{:?}", e);
+    // }
 
     // successfully stoping program
     Ok(())
