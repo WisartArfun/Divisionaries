@@ -59,10 +59,10 @@ impl BucketMessage {
 /// 
 /// # Variables
 /// 
-/// * id: `i64` - the id of the client
+/// * id: `u64` - the id of the client
 /// * connection: `WSConnection` - the connection to the client
 pub struct BucketClient {
-    id: i64,
+    id: u64,
     connection: WSConnection,
 }
 
@@ -71,9 +71,9 @@ impl BucketClient {
     /// 
     /// # Arguments
     /// 
-    /// * id: `i64` - the id of the client
+    /// * id: `u64` - the id of the client
     /// * connection: `WSConnection` - the connection to the client
-    pub fn new(id: i64, connection: WSConnection) -> Self {
+    pub fn new(id: u64, connection: WSConnection) -> Self {
         log::info!("creating new BucketClient");
         Self {
             id,
@@ -85,8 +85,8 @@ impl BucketClient {
     /// 
     /// # Returns
     /// 
-    /// * id: `i64` - the id of the client
-    pub fn get_id(&self) -> i64 {
+    /// * id: `u64` - the id of the client
+    pub fn get_id(&self) -> u64 {
         self.id
     }
 
