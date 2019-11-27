@@ -210,7 +210,6 @@ impl BucketServer {
         running.store(true, Ordering::SeqCst);
         let connection_handler = self.connection_handler.clone();
         self.ws_server.start(move |con| {
-            log::error!("new connection");
             connection_handler
                 .lock()
                 .unwrap()
