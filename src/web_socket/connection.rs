@@ -56,7 +56,7 @@ impl WSConnection {
     /// 
     /// # Returns
     /// 
-    /// * message: `Result<Option<Vec<u8>>, tungstenite::error::Error>` - an `Option` with the message if one was received, if an error occured while receiving a message, an `tungstenite::error::Error` is returned
+    /// * message: `Result<Option<Vec<u8>>, tungstenite::error::Error>` - an `Option` with the message if one was received, if an error occured while receiving a message, a `tungstenite::error::Error` is returned
     pub fn try_recv(&mut self) -> Result<Option<Vec<u8>>, tungstenite::error::Error> {
         match self.ws_conn.lock().unwrap().read_message() {
             Ok(msg) => {
