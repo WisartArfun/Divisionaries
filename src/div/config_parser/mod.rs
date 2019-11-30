@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use config;
 use log;
 
-pub struct Config {
+pub struct Config { // WARN: TODO: not public
     pub api_ip: String,
     pub api_port: String,
     pub http_ip: String,

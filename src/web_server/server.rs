@@ -69,5 +69,6 @@ impl<'a> WebServer<'a> {
 /// allows the user to define the configuration of a `WebServer`
 pub trait ProvideService: Send + Sync {
     // QUES: both needed???
+    /// configures services
     fn configure_services(cfg: &mut web::ServiceConfig);
 }
