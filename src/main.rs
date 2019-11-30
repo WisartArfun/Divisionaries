@@ -11,15 +11,12 @@ extern crate bucketer;
 use bucketer::{logger, web_server::WebServer};
 use bucketer::bucket::{BucketServer, BucketData, ConnectionHandler};
 
-// bin
-mod div;
-use div::web_server::ServiceProvider;
-use div::Config;
-use div::bucket::TestBucket;
-
-// bin tic_tac_toe
-mod tic_tac_toe;
-use tic_tac_toe::TicTacToe;
+// prog
+mod prog;
+use prog::web_server::ServiceProvider;
+use prog::Config;
+use prog::bucket::TestBucket;
+use prog::tic_tac_toe::TicTacToe;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // initializing logger

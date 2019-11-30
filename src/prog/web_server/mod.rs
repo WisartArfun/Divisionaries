@@ -6,7 +6,7 @@ use log;
 
 use bucketer::web_server::{ProvideService, WebServer, utils};
 
-use crate::div::Config;
+use crate::prog::Config;
 
 fn load_config() -> Config {
     Config::new("config/Settings.toml").unwrap_or_else(|err| {
