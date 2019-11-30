@@ -1,3 +1,4 @@
+
 use std::str;
 
 use bucketer::bucket::{Bucket, BucketMessage};
@@ -24,10 +25,10 @@ impl Bucket for TestBucket {
     }
 
     fn update(&mut self) {
-        self.turn += 1;
-        if self.turn % 100 == 0 {
-            log::debug!("[REM] TestBucket turn #{}", self.turn);
-        }
+        // self.turn += 1;
+        // if self.turn % 100 == 0 {
+        //     log::debug!("[REM] TestBucket turn #{}", self.turn);
+        // }
     }
 
     fn handle_message(&mut self, message: BucketMessage) {

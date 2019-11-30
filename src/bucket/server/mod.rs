@@ -20,7 +20,7 @@ use super::types::{Bucket, BucketClient, BucketMessage};
 ///
 /// * `pub` connections: `HashMap<u64, Arc<Mutex<BucketClient>>>` - represents all connections
 /// * current_id: `u64` - lowest unused id
-struct ConnectionHandler {
+pub struct ConnectionHandler { // QUES: private again
     pub connections: HashMap<u64, Arc<Mutex<BucketClient>>>,
     current_id: u64,
 }
@@ -147,21 +147,106 @@ impl ConnectionHandler {
     }
 }
 
+/// configures a `BucketServer`
+/// 
+/// # Derives
+/// 
+/// * Clone
+#[derive(Clone)]
+pub struct BucketData {
+    name: String,
+    id: u64,
+    ip: String,
+    port: String,
+    tick_ms: u64,
+    max_players: u64,
+}
+
+impl BucketData {
+    /// creates a new `BucketData` instance
+    /// 
+    /// # Arguments
+    /// 
+    /// * name: `String` - the name of the `BucketSever`
+    /// * id: `u64` - the id of the `BucketServer`
+    /// * ip: `String` - the ip of the `BucketServer`
+    /// * port: `String` - the port of the `BucketServer`
+    /// * tick_ms: `u64` - the duration between two ticks in ms
+    /// * max_players: `u64` - the maximum amount of allowed players
+    pub fn new(name: String, id: u64, ip: String, port: String, tick_ms: u64, max_players: u64) -> Self {
+        log::debug!("creating new BucketData instance at {}:{} ...", &ip, &port);
+        Self {
+            name,
+            id,
+            ip,
+            port,
+            tick_ms,
+            max_players,
+        }
+    }
+
+    /// return the name of the `BucketData` instance
+    /// 
+    /// # Returns
+    /// 
+    /// * name: `&str` - the name of the `BucketData` instance
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
+
+    /// return the id of the `BucketData` instance
+    /// 
+    /// # Returns
+    /// 
+    /// * id: `u64` - the id of the `BucketData` instance
+    pub fn get_id(&self) -> u64 {
+        self.id
+    }
+
+    /// return the ip of the `BucketData` instance
+    /// 
+    /// # Returns
+    /// 
+    /// * ip: `&str` - the ip of the `BucketData` instance
+    pub fn get_ip(&self) -> &str {
+        &self.ip
+    }
+
+    /// return the port of the `BucketData` instance
+    /// 
+    /// # Returns
+    /// 
+    /// * name: `&str` - the name of the `BucketData` instance
+    pub fn get_port(&self) -> &str {
+        &self.port
+    }
+
+    /// return the tick rate in ms of the `BucketData` instance
+    /// 
+    /// # Returns
+    /// 
+    /// * tick_ms: `u64` - the tick rate in ms of the `BucketData` instance
+    pub fn get_tick_ms(&self) -> u64 {
+        self.tick_ms
+    }
+
+    /// return the max amount of players of the `BucketData` instance
+    /// 
+    /// # Returns
+    /// 
+    /// * max_players: `u64` - the max amount of players of the `BucketData` instance
+    pub fn get_max_players(&self) -> u64 {
+        self.max_players
+    }
+}
+
 /// wraps a server around a `Bucket` and hosts it
-///
-/// # Variables
-///
-/// * bucket: Arc<Mutex<dyn Bucket>>,
-/// * ws_server: WebSocketServer,
-/// * connection_handler: Arc<Mutex<ConnectionHandler>>,
-/// * tick_ms: u64,
-/// * running: Arc<AtomicBool>,
 pub struct BucketServer {
     // TODO: data struct for running, tick rate, etc...
     bucket: Arc<Mutex<dyn Bucket>>,
+    bucket_data: BucketData,
     ws_server: WebSocketServer,
     connection_handler: Arc<Mutex<ConnectionHandler>>,
-    tick_ms: u64,
     running: Arc<AtomicBool>,
 }
 
@@ -172,21 +257,24 @@ impl BucketServer {
     /// # Arguments
     ///
     /// * bucket: `Arc<Mutex<dyn Bucket>>` - the bucket to host
-    /// * ip: `String` - the ip where the `BucketServer` is hosted
-    /// * port: `String` - the port where the `BucketServer is hosted
-    /// * tick_ms: `u64` - the duration of a tick in ms
+    /// * bucket_data: `BucketData` - data to configure the `BucketServer`
+    /// * connection_handler: `Arc<Mutex<ConnectionHandler>>` - handles connections
     ///
     /// # Returns
     ///
     /// * instance: `BucketServer` - a new `BucketServer` instance
-    pub fn new(bucket: Arc<Mutex<dyn Bucket>>, ip: String, port: String, tick_ms: u64) -> Self {
+    // WARN: TODO: somehow not take the connection_handler from outside
+    pub fn new(bucket: Arc<Mutex<dyn Bucket>>, bucket_data: BucketData, connection_handler: Arc<Mutex<ConnectionHandler>>) -> Self {
         // QUES: pass WebSocketServer or ip and port???, QUES: Arc<Mutex<>> or Box<> ?
-        log::debug!("creating new BucketServer at {}:{}", &ip, &port);
+        let ip = bucket_data.get_ip().to_string();
+        let port = bucket_data.get_port().to_string();
+        log::info!("creating new BucketServer at {}:{} called {}", &ip, &port, bucket_data.get_name());
         Self {
             bucket,
+            bucket_data,
             ws_server: WebSocketServer::new(ip, port),
-            connection_handler: Arc::new(Mutex::new(ConnectionHandler::new())),
-            tick_ms,
+            // connection_handler: Arc::new(Mutex::new(ConnectionHandler::new())), WARN:
+            connection_handler,
             running: Arc::new(AtomicBool::new(false)),
         }
     }
@@ -223,7 +311,7 @@ impl BucketServer {
         });
 
         let bucket = self.bucket.clone();
-        let tick_ms = self.tick_ms;
+        let tick_ms = self.bucket_data.get_tick_ms();
         let connection_handler = self.connection_handler.clone();
         Some(thread::spawn(move || {
             while running.load(Ordering::SeqCst) {
@@ -231,8 +319,8 @@ impl BucketServer {
                 bucket.lock().unwrap().update();
 
                 while running.load(Ordering::SeqCst) {
-                    if let Some(message) = connection_handler.lock().unwrap().receive_message()
-                    {
+                    let res = connection_handler.lock().unwrap().receive_message(); // WARN: needed like this, because con_han needed in handle message
+                    if let Some(message) = res {
                         log::debug!("[REM] message received from a BucketServer");
                         bucket.lock().unwrap().handle_message(message);
                     } else {
@@ -243,5 +331,14 @@ impl BucketServer {
 
             Ok(())
         }))
+    }
+
+    /// returns a reference to `bucket_data`
+    /// 
+    /// # Returns
+    /// 
+    /// * bucket_data: `&BucketData` - a reference to `bucket_data`
+    pub fn get_bucket_data(&self) -> &BucketData {
+        &self.bucket_data
     }
 }

@@ -7,15 +7,20 @@ use log;
 use ctrlc;
 
 // own library
+extern crate bucketer;
 use bucketer::{logger, web_server::WebServer};
 use bucketer::web_socket::{WSConnection, WebSocketServer};
-use bucketer::bucket::BucketServer;
+use bucketer::bucket::{BucketServer, BucketData, ConnectionHandler};
 
 // bin
 mod div;
 use div::web_server::ServiceProvider;
 use div::Config;
 use div::bucket::TestBucket;
+
+// bin tic_tac_toe
+mod tic_tac_toe;
+use tic_tac_toe::TicTacToe;
 
 fn main() -> Result<(), Box<dyn Error>> {
     // initializing logger
@@ -61,6 +66,22 @@ fn main() -> Result<(), Box<dyn Error>> {
     log::info!("starting bucket server");
     let mut bucket_server = BucketServer::new(Arc::new(Mutex::new(TestBucket::new())), config.api_ip, config.api_port, 25);
     let bucket_server_handle = bucket_server.start(); //.unwrap(); // this is safe as it is the first time bucket_server is started
+    std::thread::sleep(std::time::Duration::from_secs(5));
+    log::error!("test size: {}", test.lock().unwrap().len());
+    // testing bucket server
+    log::info!("starting bucket server");
+    let bucket_data = BucketData::new("TestBucket".to_string(), 1234567890, config.api_ip, config.api_port, 25, 5);
+    let bucket_connection_handler = Arc::new(Mutex::new(ConnectionHandler::new()));
+    let mut bucket_server = BucketServer::new(Arc::new(Mutex::new(TestBucket::new())), bucket_data, bucket_connection_handler);
+    let bucket_server_handle = bucket_server.start().unwrap(); // this is safe as it is the first time bucket_server is started
+
+    // testing tic-tac-toe bucket server
+    log::info!("starting tic-tac-toe...");
+    let tic_data = BucketData::new("TicTacToe".to_string(), 123, "127.0.0.1".to_string(), "8001".to_string(), 50, 2);
+    let tic_connection_handler = Arc::new(Mutex::new(ConnectionHandler::new()));
+    let tic_bucket = Arc::new(Mutex::new(TicTacToe::new(tic_connection_handler.clone())));
+    let mut tic_server = BucketServer::new(tic_bucket, tic_data, tic_connection_handler);
+    let tic_server_handle = tic_server.start().unwrap();
 
     // letting handles join
     if let Err(e) = web_server_handle.join() {
@@ -71,6 +92,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     //     log::error!("An error occured while joining the bucket_server:\n\t{:?}", e);
     //     panic!("Terminating program due to a fatal error:\n\t{:?}", e);
     // }
+    if let Err(e) = bucket_server_handle.join() {
+        log::error!("An error occured while joining the bucket_server:\n\t{:?}", e);
+        panic!("Terminating program due to a fatal error:\n\t{:?}", e);
+    }
 
     // successfully stoping program
     Ok(())
