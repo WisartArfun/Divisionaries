@@ -1,1 +1,24 @@
-Hello there
+<!DOCTYPE html>
+<html lang="us">
+
+<head>
+    <meta charset="utf-8">
+    <script type="module">
+        let module = import('/scripts/api.mjs'); window.api = module.then((mod) => { return new Promise(function(resolve, reject) { resolve(new mod.Api('##API-IP##', '##API-PORT##')) }); });
+    </script>
+</head>
+
+<body>
+
+    <h1>Welcome to BucketGames</h1>
+
+    <div>
+        <h2>Tic Tac Toe</h2>
+
+        <h3>Play with Friends:</h3>
+
+        <h3>Join Queue</h3>
+        <button onclick="api.then(join_div_game_normal())">Normal</button>
+    </div>
+
+</html>
