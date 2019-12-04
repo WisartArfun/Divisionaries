@@ -13,12 +13,12 @@
     <h1>Welcome to BucketGames</h1>
 
     <div>
-        <h2>Tic Tac Toe</h2>
+        <h2>Play with Friends:</h2>
+        Please enter a lobby name: <input id="lobby_id_input" type="text" name="lobby_id" value="TicTacToe"><br>
+        <button onclick="api.then(api => api.join_game('lobby_id_input'))">Join Game</button>
 
-        <h3>Play with Friends:</h3>
-
-        <h3>Join Queue</h3>
-        <button onclick="api.then(join_div_game_normal())">Normal</button>
+        <h2>Matchmaking</h2>
+        <button onclick="api.then(api => api.join_game('TicTacToe'))">TicTacToe</button>
     </div>
 
 </html>

@@ -100,6 +100,10 @@ class Api {
     }
 
     // general
+    join_game(name) {
+        this.send('{"JoinGame": "' + name + '"}');
+    }
+
     join_div_game_normal() {
         this.send('"JoinDivGameNormal"');
     }
