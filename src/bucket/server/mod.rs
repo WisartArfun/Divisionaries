@@ -118,15 +118,12 @@ impl ConnectionHandler {
     ///
     /// * id: `u64` - the id of the client to disconnect
     pub fn disconnect_client(&mut self, id: u64) {
-        self.connections
-            .remove(&id)
-            .unwrap_or_else(|| {
-                log::error!("the client with the id #{} does not exist", id);
-                panic!("the client with the id #{} does not exist", id);
-            })
-            .lock()
-            .unwrap()
-            .close_connection();
+        if let Some(client) = self.connections.remove(&id) {
+            client.lock().unwrap().close_connection();
+        } else {
+            log::error!("no client with id #{} does not exist", id);
+            panic!("no client with id #{} does not exist", id); // PROB: nice handling
+        }
     }
 
     /// broadcastas a message to all clients
@@ -321,7 +318,6 @@ impl BucketServer {
                 while running.load(Ordering::SeqCst) {
                     let res = connection_handler.lock().unwrap().receive_message(); // WARN: needed like this, because con_han needed in handle message
                     if let Some(message) = res {
-                        log::debug!("[REM] message received from a BucketServer");
                         bucket.lock().unwrap().handle_message(message);
                     } else {
                         break;

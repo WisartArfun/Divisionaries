@@ -133,7 +133,7 @@ pub trait Bucket: Send {
     fn stop(&mut self);
 
     /// updates the `Bucket`
-    fn update(&mut self);
+    fn update(&mut self) {}
 
     /// handles a `BucketMessage`
     /// 

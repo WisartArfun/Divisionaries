@@ -5,10 +5,10 @@ use std::net::TcpListener;
 use super::{BucketData, BucketServer}; // QUES: bad practice to import reexport?
 
 /// manages `BucketServer` instances
+// TODO: do it with a id
 pub struct BucketManager {
-    // QUES: name or id as key???
-    lobbies: HashMap<u64, BucketServer>,
-    games: HashMap<u64, BucketServer>,
+    lobbies: HashMap<String, BucketServer>,
+    games: HashMap<String, BucketServer>,
 }
 
 impl BucketManager {
@@ -28,12 +28,12 @@ impl BucketManager {
     /// 
     /// # Arguments
     /// 
-    /// * id: `u64` - the `id` of the lobby to check
+    /// * id: `String` - the `id` of the lobby to check
     /// 
     /// # Returns
     /// 
     /// * exists: `bool` - `true` if a lobby with `id` exists, else `false`
-    fn lobby_exists(&mut self, id: u64) -> bool {
+    fn lobby_exists(&mut self, id: String) -> bool {
         if self.lobbies.contains_key(&id) {
             return true;
         }
@@ -44,12 +44,12 @@ impl BucketManager {
     /// 
     /// # Arguments
     /// 
-    /// * id: `u64` - the `id` of the game to check
+    /// * id: `String` - the `id` of the game to check
     /// 
     /// # Returns
     /// 
     /// * exists: `bool` - `true` if a game with `id` exists, else `false`
-    fn game_exists(&mut self, id: u64) -> bool {
+    fn game_exists(&mut self, id: String) -> bool {
         if self.games.contains_key(&id) {
             return true;
         }
@@ -62,10 +62,10 @@ impl BucketManager {
     /// 
     /// * bucket_server: `BucketServer` - the bucket_server used to create a new lobby
     pub fn new_lobby(&mut self, bucket_server: BucketServer) {
-        let id = bucket_server.get_bucket_data().get_id();
+        let id = bucket_server.get_bucket_data().get_name().to_string();
         log::info!(
             "BucketManager is creating a new lobby with the id: {} ...",
-            id
+            &id
         );
         self.lobbies.insert(id, bucket_server);
     }
@@ -74,7 +74,7 @@ impl BucketManager {
     /// 
     /// # Arguments
     /// 
-    /// * id: `u64` - the id of the lobby to turn into a game
+    /// * id: `String` - the id of the lobby to turn into a game
     /// 
     /// # Returns
     /// 
@@ -83,7 +83,7 @@ impl BucketManager {
     /// # Errors
     /// 
     /// returns an error if no lobby with the given id exists
-    pub fn new_game(&mut self, id: u64) -> Result<(), String> {
+    pub fn new_game(&mut self, id: String) -> Result<(), String> {
         log::debug!("starting a new game from lobby with id: {}", id);
         let bucket_server = match self.lobbies.remove(&id) {
             None => return Err("No matching id in lobbies".to_string()),
@@ -98,7 +98,7 @@ impl BucketManager {
     /// 
     /// # Arguments
     /// 
-    /// id: `u64` - the id of the game to close
+    /// id: `&str` - the id of the game to close
     /// 
     /// # Returns
     /// 
@@ -107,9 +107,9 @@ impl BucketManager {
     /// # Errors
     /// 
     /// returns an error if no game with the given id exists
-    pub fn close_game(&mut self, id: u64) -> Result<(), String> {
+    pub fn close_game(&mut self, id: &str) -> Result<(), String> {
         log::debug!("closing game with id: {}", id);
-        if self.games.remove(&id).is_none() {
+        if self.games.remove(id).is_none() {
             return Err("No matching id in games".to_string());
         }
         Ok(())
@@ -145,7 +145,7 @@ impl BucketManager {
     /// 
     /// # Arguments
     /// 
-    /// * id: `u64` - the id of the lobby to look up
+    /// * id: `&str` - the id of the lobby to look up
     /// 
     /// # Returns
     /// 
@@ -154,15 +154,15 @@ impl BucketManager {
     /// # None
     /// 
     /// returns none if no lobby with the given id exists
-    pub fn get_lobby_location(&self, id: u64) -> Option<BucketData> {
-        Some(self.lobbies.get(&id)?.get_bucket_data().clone())
+    pub fn get_lobby_location(&self, id: &str) -> Option<BucketData> {
+        Some(self.lobbies.get(id)?.get_bucket_data().clone())
     }
 
     /// returns the data about a game with a certain id
     /// 
     /// # Arguments
     /// 
-    /// * id: `u64` - the id of the game to look up
+    /// * id: `&str` - the id of the game to look up
     /// 
     /// # Returns
     /// 
@@ -171,8 +171,8 @@ impl BucketManager {
     /// # None
     /// 
     /// returns none if no game with the given id exists
-    pub fn get_game_location(&self, id: u64) -> Option<BucketData> {
-        Some(self.games.get(&id)?.get_bucket_data().clone())
+    pub fn get_game_location(&self, id: &str) -> Option<BucketData> {
+        Some(self.games.get(id)?.get_bucket_data().clone())
     }
 
     /// checks if a certain address is available
@@ -207,7 +207,7 @@ impl BucketManager {
     /// 
     /// returns none if no port is available
     pub fn get_available_port(ip: &str) -> Option<String> {
-        let port = (8000..9000).find(|port| Self::address_is_available(ip, &format!("{}", port)));
+        let port = (8002..9000).find(|port| Self::address_is_available(ip, &format!("{}", port)));
         if let Some(port) = port {
             return Some(format!("{}", port));
         }
