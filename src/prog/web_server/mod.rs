@@ -21,7 +21,8 @@ impl ProvideService for ServiceProvider {
     fn configure_services(cfg: &mut web::ServiceConfig) {
         log::debug!("configuring ServiceProvider");
         cfg.service(web::resource("/").to(ServiceProvider::html_index))
-        .service(web::resource("/scripts/{name}").to(ServiceProvider::script));
+        .service(web::resource("/scripts/{name}").to(ServiceProvider::script))
+        .service(web::resource("/games/{name}").to(ServiceProvider::games));
     }
 }
 
@@ -42,6 +43,11 @@ impl ServiceProvider {
 
     fn script(name: web::Path<(String)>) -> impl Responder {
         log::debug!("getting script from ServiceProvider with name: {}", &name);
-        utils::get_file(&format!("client/scripts/{}",  name), "application/javascript")
+        utils::get_file(&format!("client/scripts/{}",  name), "application/javascript") // handle result
+    }
+
+    fn games(name: web::Path<(String)>) -> impl Responder {
+        log::debug!("getting file from ServiceProvider with name: {}", &name);
+        utils::get_file(&format!("client/files/{}.html",  name), "text/html")
     }
 }

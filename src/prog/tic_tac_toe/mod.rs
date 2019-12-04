@@ -35,10 +35,6 @@ impl Bucket for TicTacToe {
         unimplemented!();
     }
 
-    fn update(&mut self) {
-        // unimplemented!();
-    }
-
     fn handle_message(&mut self, message: BucketMessage) {
         let msg = message.get_content();
         log::info!(
