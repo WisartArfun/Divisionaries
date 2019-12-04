@@ -32,9 +32,11 @@ impl WSConnection {
     }
     
     /// closes the connection
-    pub fn close(&mut self) { // WARN: do this with a trait
+    pub fn close(&mut self) { // WARN: do this with a trait // WARN: return error for better practice
         log::info!("closing WSConnection");
-        self.ws_conn.lock().unwrap().close(None).unwrap(); // WARN: unsafe unwrap
+        self.ws_conn.lock().unwrap().close(None).unwrap_or_else(|err| {
+            log::warn!("a problem occured while closing a WSConnection: {}", err);
+        });
     }
 
     /// sends a message over the connection if possible, otherwise returns an `Error`
