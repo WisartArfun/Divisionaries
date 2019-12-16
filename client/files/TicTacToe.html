@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="us">
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body>
+
+    <h1>Have fun playing Tic-Tac-Toe</h1>
+
+    <div id="field">
+    </div>
+
+    <script>
+        let socket = new WebSocket('ws://localhost:8002');
+        let field = document.getElementById("field");
+        let state = [
+            ["_", "_", "_"],
+            ["_", "_", "_"],
+            ["_", "_", "_"]
+        ];
+
+        function place(x, y) {
+            socket.send('{"Place": [' + x + ', ' + y + ']}');
+        }
+
+        function state_to_field(field, state) {
+            let rend = "";
+            for (let y in state) {
+                for (let x in state[y]) {
+                    let val = state[y][x];
+                    rend += "<button onclick='place(" + x + ", " + y + ")'>" + val + "</button>";
+                }
+                rend += "<br>";
+            }
+            field.innerHTML = rend;
+        }
+
+        state_to_field(field, state);
+
+        function handle_message(field, state, message) {
+            let parsed = JSON.parse(message);
+            let first_key = Object.keys(parsed)[0];
+            switch (first_key) {
+                case 'State':
+                    {
+                        let new_state = parsed[first_key];
+                        for (let y in new_state) {
+                            for (let x in new_state[y]) {
+                                let val = new_state[y][x];
+                                if (val == true) {
+                                    state[y][x] = "X";
+                                } else if (val == false) {
+                                    state[y][x] = "O";
+                                } else {
+                                    state[y][x] = "_";
+                                }
+                            }
+                        }
+                        state_to_field(field, state);
+                    }
+                    break;
+                case 'Win':
+                    {
+                        alert("Vitory");
+                    }
+                    break;
+                case 'Defeat':
+                    {
+                        alert("Defeat");
+                    }
+                    break;
+                default:
+                    {
+                        console.log("An unknown message type was received: " + parsed);
+                        alert(JSON.stringify(parsed));
+                    }
+                    break;
+            }
+        }
+
+        socket.onopen = function(event) {
+            socket.send('"Ready"');
+
+            socket.onmessage = function(event) {
+                event.data.text().then(res => handle_message(field, state, res));
+            };
+            // socket.onmessage = function(event) {
+            //     console.log(event);
+            //     // event.data.text().then(res => console.log(res));
+            //     // try {
+            //     //     // event.data.text().then(res => handle_message(res));
+            //     // } catch (err) {
+            //     //     // console.log(err); // handle or close ???
+            //     // }
+            // }​
+
+            socket.onclose = function(event) {
+                console.log("connection closed");
+                console.log(event);
+            };
+        };
+    </script>
+
+</html>
